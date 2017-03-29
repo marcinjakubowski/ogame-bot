@@ -90,7 +90,14 @@ namespace OgameBot
             }
 
             // Prepare uri
-            Uri targetUri = new Uri(SubstituteRoot, ctx.Request.Url.PathAndQuery);
+            var pathAndQuery = ctx.Request.Url.PathAndQuery;
+            if (pathAndQuery.Contains("redir.php"))
+            {
+                pathAndQuery = ctx.Request.QueryString["url"];
+                Logging.Logger.Instance.Log(Logging.LogLevel.Warning, $"Tried redirect to {pathAndQuery}");
+                pathAndQuery = pathAndQuery.Replace($"http://{_listenHost}:{_listenPort}", "");
+            }
+            Uri targetUri = new Uri(SubstituteRoot, pathAndQuery);
 
             // NOTE: Enable this to load external ressources through proxy
             //if (targetUri.AbsolutePath.StartsWith("/SPECIAL/"))
