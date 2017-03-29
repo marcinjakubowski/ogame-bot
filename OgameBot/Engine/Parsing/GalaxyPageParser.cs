@@ -11,6 +11,7 @@ using OgameBot.Objects.Types;
 using OgameBot.Utilities;
 using ScraperClientLib.Engine;
 using ScraperClientLib.Engine.Parsing;
+using Newtonsoft.Json.Linq;
 
 namespace OgameBot.Engine.Parsing
 {
@@ -26,7 +27,10 @@ namespace OgameBot.Engine.Parsing
 
         public override IEnumerable<DataObject> ProcessInternal(ClientBase client, ResponseContainer container)
         {
-            HtmlDocument doc = container.ResponseHtml.Value;
+            JObject galaxyJson = JObject.Parse(container.Raw.Value);
+
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(galaxyJson["galaxy"].ToString());
             HtmlNode tableNode = doc.DocumentNode.SelectSingleNode("//table[@id='galaxytable']");
             HtmlNodeCollection rows = tableNode?.SelectNodes("./tbody/tr");
 
