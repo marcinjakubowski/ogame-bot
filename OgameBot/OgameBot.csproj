@@ -65,6 +65,9 @@
     <Compile Include="Db\Interfaces\ICreatedOn.cs" />
     <Compile Include="Db\Interfaces\ILazySaver.cs" />
     <Compile Include="Db\Interfaces\IModifiedOn.cs" />
+    <Compile Include="Db\Parts\DbPlanetBuildings.cs" />
+    <Compile Include="Db\Parts\DbPlanetDefences.cs" />
+    <Compile Include="Db\Parts\DbPlanetShips.cs" />
     <Compile Include="Engine\Commands\CommandBase.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Db\DebrisField.cs" />
@@ -160,7 +163,9 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="config.template.json" />
-    <None Include="config.json" />
+    <None Include="config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="Resources\strings-en.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

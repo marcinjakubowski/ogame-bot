@@ -43,19 +43,19 @@ namespace OgameBot.Engine.Savers
 
                     if (report.Details.HasFlag(ReportDetails.Buildings))
                     {
-                        item.PlanetInfo.Buildings = report.DetectedBuildings;
+                        item.Buildings = report.DetectedBuildings;
                         item.LastBuildingsTime = report.Sent;
                     }
 
                     if (report.Details.HasFlag(ReportDetails.Defense))
                     {
-                        item.PlanetInfo.Defences = report.DetectedDefence;
+                        item.Defences = report.DetectedDefence;
                         item.LastDefencesTime = report.Sent;
                     }
 
                     if (report.Details.HasFlag(ReportDetails.Ships))
                     {
-                        item.PlanetInfo.Ships = report.DetectedShips;
+                        item.Ships = report.DetectedShips;
                         item.LastShipsTime = report.Sent;
                     }
                 }

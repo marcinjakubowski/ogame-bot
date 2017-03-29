@@ -5,16 +5,18 @@ using OgameBot.Db.Interfaces;
 using OgameBot.Db.Parts;
 using OgameBot.Objects;
 using OgameBot.Utilities;
+using System.Collections.Generic;
 
 namespace OgameBot.Db
 {
-    public class DbPlanet : ICreatedOn, IModifiedOn, ILazySaver
+    public class DbPlanet : ICreatedOn, IModifiedOn
     {
-        private PlanetInfo _planetInfo;
-
         public DbPlanet()
         {
             Resources = new DbResources();
+            Buildings = new DbPlanetBuildings();
+            Defences = new DbPlanetDefences();
+            Ships = new DbPlanetShips();
         }
 
         [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -26,33 +28,15 @@ namespace OgameBot.Db
             set { LocationId = CoordHelper.ToNumber(value); }
         }
 
-        /// <summary>
-        /// Internal. Don't touch this
-        /// </summary>
-        public byte[] PlanetInfoData { get; set; }
-        
         public DateTimeOffset CreatedOn { get; set; }
 
         public DateTimeOffset UpdatedOn { get; set; }
 
-        [NotMapped]
-        public PlanetInfo PlanetInfo
-        {
-            get
-            {
-                if (_planetInfo == null)
-                {
-                    if (PlanetInfoData != null)
-                        _planetInfo = SerializerHelper.DeserializeFromBytes<PlanetInfo>(PlanetInfoData);
-                    else
-                        _planetInfo = new PlanetInfo();
-                }
-
-                return _planetInfo;
-            }
-        }
 
         public DbResources Resources { get; set; }
+        public DbPlanetBuildings Buildings { get; set; }
+        public DbPlanetShips Ships { get; set; }
+        public DbPlanetDefences Defences { get; set; }
 
         public DateTimeOffset LastResourcesTime { get; set; }
 
@@ -70,14 +54,16 @@ namespace OgameBot.Db
         [ForeignKey(nameof(PlayerId))]
         public virtual DbPlayer Player { get; set; }
 
-        public void Update()
-        {
-            PlanetInfoData = SerializerHelper.SerializeToBytes(PlanetInfo);
-        }
-
         public override string ToString()
         {
             return $"DbPlanet {Coordinate}, id: {LocationId}";
+        }
+
+        public static int? GetFromDictionary<T>(Dictionary<T, int> dict, T type)
+        {
+            if (dict == null || !dict.ContainsKey(type)) return 0;
+
+            return dict[type];
         }
     }
 }
