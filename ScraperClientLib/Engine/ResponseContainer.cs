@@ -15,6 +15,7 @@ namespace ScraperClientLib.Engine
         public HttpRequestMessage RequestMessage { get; }
 
         public HttpResponseMessage ResponseMessage { get; }
+        public Lazy<string> Raw { get; }
 
         public Lazy<HtmlDocument> ResponseHtml { get; }
 
@@ -34,6 +35,11 @@ namespace ScraperClientLib.Engine
             ResponseMessage = responseMessage;
 
             ParsedObjects = new List<DataObject>();
+            Raw = new Lazy<string>(() =>
+            {
+                StreamReader sr = new StreamReader(ResponseMessage.Content.ReadAsStream2Async().Sync());
+                return sr.ReadToEnd();
+            });
 
             ResponseHtml = new Lazy<HtmlDocument>(() =>
             {
@@ -43,10 +49,8 @@ namespace ScraperClientLib.Engine
                     return null;
                 }
 
-                Stream contentStream = ResponseMessage.Content.ReadAsStream2Async().Sync();
-
                 HtmlDocument doc = new HtmlDocument();
-                doc.Load(contentStream);
+                doc.LoadHtml(Raw.Value);
 
                 return doc;
             });
