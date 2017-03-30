@@ -23,40 +23,40 @@ namespace OgameBot.Engine.Parsing
         public override IEnumerable<DataObject> ProcessInternal(ClientBase client, ResponseContainer container)
         {
             HtmlDocument doc = container.ResponseHtml.Value;
-            HtmlNodeCollection imageFields = doc.DocumentNode.SelectNodes("//div[@id='buttonz']/div[@class='content']//div[starts-with(@class, 'supply')]");
+            HtmlNodeCollection imageFields = doc.DocumentNode.SelectNodes("//div[@id='buttonz']/div[@class='content']//a[contains(@class, 'detail_button')]");
 
             if (imageFields == null)
                 yield break;
 
             foreach (HtmlNode node in imageFields)
             {
-                string cssClass = node.GetCssClasses(CssRegex).FirstOrDefault();
+                string cssClass = node.GetAttributeValue("ref", "");
 
                 Building type;
                 switch (cssClass)
                 {
-                    case "supply1":
+                    case "1":
                         type = Building.MetalMine;
                         break;
-                    case "supply2":
+                    case "2":
                         type = Building.CrystalMine;
                         break;
-                    case "supply3":
+                    case "3":
                         type = Building.DeuteriumSynthesizer;
                         break;
-                    case "supply4":
+                    case "4":
                         type = Building.SolarPlant;
                         break;
-                    case "supply12":
+                    case "12":
                         type = Building.FusionReactor;
                         break;
-                    case "supply23":
+                    case "22":
                         type = Building.MetalStorage;
                         break;
-                    case "supply24":
+                    case "23":
                         type = Building.CrystalStorage;
                         break;
-                    case "supply25":
+                    case "24":
                         type = Building.DeuteriumTank;
                         break;
                     default:
