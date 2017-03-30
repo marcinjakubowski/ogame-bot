@@ -22,6 +22,24 @@ namespace OgameBot.Db.Parts
         public int? SmallCargo     { get; set; } = null;
         public int? SolarSatellite { get; set; } = null;
 
+        public void FromPartialResult(Dictionary<ShipType, int> dict)
+        {
+            if (dict.ContainsKey(ShipType.Battlecruiser )) Battlecruiser  = dict[ShipType.Battlecruiser ];
+            if (dict.ContainsKey(ShipType.Battleship    )) Battleship     = dict[ShipType.Battleship    ];
+            if (dict.ContainsKey(ShipType.Bomber        )) Bomber         = dict[ShipType.Bomber        ];
+            if (dict.ContainsKey(ShipType.ColonyShip    )) ColonyShip     = dict[ShipType.ColonyShip    ];
+            if (dict.ContainsKey(ShipType.Cruiser       )) Cruiser        = dict[ShipType.Cruiser       ];
+            if (dict.ContainsKey(ShipType.Deathstar     )) Deathstar      = dict[ShipType.Deathstar     ];
+            if (dict.ContainsKey(ShipType.Destroyer     )) Destroyer      = dict[ShipType.Destroyer     ];
+            if (dict.ContainsKey(ShipType.EspionageProbe)) EspionageProbe = dict[ShipType.EspionageProbe];
+            if (dict.ContainsKey(ShipType.HeavyFighter  )) HeavyFighter   = dict[ShipType.HeavyFighter  ];
+            if (dict.ContainsKey(ShipType.LargeCargo    )) LargeCargo     = dict[ShipType.LargeCargo    ];
+            if (dict.ContainsKey(ShipType.LightFighter  )) LightFighter   = dict[ShipType.LightFighter  ];
+            if (dict.ContainsKey(ShipType.Recycler      )) Recycler       = dict[ShipType.Recycler      ];
+            if (dict.ContainsKey(ShipType.SmallCargo    )) SmallCargo     = dict[ShipType.SmallCargo    ];
+            if (dict.ContainsKey(ShipType.SolarSatellite)) SolarSatellite = dict[ShipType.SolarSatellite];
+        }
+
         public static implicit operator DbPlanetShips(Dictionary<ShipType, int> type)
         {
             return new DbPlanetShips()

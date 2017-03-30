@@ -26,6 +26,28 @@ namespace OgameBot.Db.Parts
         public int? SolarPlant           { get; set; } = null;
         public int? Terraformer          { get; set; } = null;
 
+        public void FromPartialResult(Dictionary<BuildingType, int> dict)
+        {
+            if (dict.ContainsKey(BuildingType.AllianceDepot       )) AllianceDepot        = dict[BuildingType.AllianceDepot       ];
+            if (dict.ContainsKey(BuildingType.CrystalMine         )) CrystalMine          = dict[BuildingType.CrystalMine         ];
+            if (dict.ContainsKey(BuildingType.CrystalStorage      )) CrystalStorage       = dict[BuildingType.CrystalStorage      ];
+            if (dict.ContainsKey(BuildingType.DeuteriumSynthesizer)) DeuteriumSynthesizer = dict[BuildingType.DeuteriumSynthesizer];
+            if (dict.ContainsKey(BuildingType.DeuteriumTank       )) DeuteriumTank        = dict[BuildingType.DeuteriumTank       ];
+            if (dict.ContainsKey(BuildingType.FusionReactor       )) FusionReactor        = dict[BuildingType.FusionReactor       ];
+            if (dict.ContainsKey(BuildingType.JumpGate            )) JumpGate             = dict[BuildingType.JumpGate            ];
+            if (dict.ContainsKey(BuildingType.LunarBase           )) LunarBase            = dict[BuildingType.LunarBase           ];
+            if (dict.ContainsKey(BuildingType.MetalMine           )) MetalMine            = dict[BuildingType.MetalMine           ];
+            if (dict.ContainsKey(BuildingType.MetalStorage        )) MetalStorage         = dict[BuildingType.MetalStorage        ];
+            if (dict.ContainsKey(BuildingType.MissileSilo         )) MissileSilo          = dict[BuildingType.MissileSilo         ];
+            if (dict.ContainsKey(BuildingType.NaniteFactory       )) NaniteFactory        = dict[BuildingType.NaniteFactory       ];
+            if (dict.ContainsKey(BuildingType.ResearchLab         )) ResearchLab          = dict[BuildingType.ResearchLab         ];
+            if (dict.ContainsKey(BuildingType.RoboticFactory      )) RoboticFactory       = dict[BuildingType.RoboticFactory      ];
+            if (dict.ContainsKey(BuildingType.SensorPhalanx       )) SensorPhalanx        = dict[BuildingType.SensorPhalanx       ];
+            if (dict.ContainsKey(BuildingType.Shipyard            )) Shipyard             = dict[BuildingType.Shipyard            ];
+            if (dict.ContainsKey(BuildingType.SolarPlant          )) SolarPlant           = dict[BuildingType.SolarPlant          ];
+            if (dict.ContainsKey(BuildingType.Terraformer         )) Terraformer          = dict[BuildingType.Terraformer         ];
+        }
+
         public static implicit operator DbPlanetBuildings(Dictionary<BuildingType, int> type)
         {
             return new DbPlanetBuildings()

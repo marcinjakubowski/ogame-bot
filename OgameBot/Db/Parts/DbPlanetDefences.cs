@@ -18,6 +18,20 @@ namespace OgameBot.Db.Parts
         public int? RocketLauncher         { get; set; } = null;
         public int? SmallShieldDome        { get; set; } = null;
 
+        public void FromPartialResult(Dictionary<DefenceType, int> dict)
+        {
+            if (dict.ContainsKey(DefenceType.AntiBallisticMissiles )) AntiBallisticMissiles  = dict[DefenceType.AntiBallisticMissiles ];
+            if (dict.ContainsKey(DefenceType.GaussCannon           )) GaussCannon            = dict[DefenceType.GaussCannon           ];
+            if (dict.ContainsKey(DefenceType.HeavyLaser            )) HeavyLaser             = dict[DefenceType.HeavyLaser            ];
+            if (dict.ContainsKey(DefenceType.InterplanetaryMissiles)) InterplanetaryMissiles = dict[DefenceType.InterplanetaryMissiles];
+            if (dict.ContainsKey(DefenceType.IonCannon             )) IonCannon              = dict[DefenceType.IonCannon             ];
+            if (dict.ContainsKey(DefenceType.LargeShieldDome       )) LargeShieldDome        = dict[DefenceType.LargeShieldDome       ];
+            if (dict.ContainsKey(DefenceType.LightLaser            )) LightLaser             = dict[DefenceType.LightLaser            ];
+            if (dict.ContainsKey(DefenceType.PlasmaTurret          )) PlasmaTurret           = dict[DefenceType.PlasmaTurret          ];
+            if (dict.ContainsKey(DefenceType.RocketLauncher        )) RocketLauncher         = dict[DefenceType.RocketLauncher        ];
+            if (dict.ContainsKey(DefenceType.SmallShieldDome       )) SmallShieldDome        = dict[DefenceType.SmallShieldDome       ];
+        }
+
         public static implicit operator DbPlanetDefences(Dictionary<DefenceType, int> type)
         {
             return new DbPlanetDefences()

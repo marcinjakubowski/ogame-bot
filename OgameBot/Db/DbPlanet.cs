@@ -22,6 +22,9 @@ namespace OgameBot.Db
         [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long LocationId { get; set; }
 
+        // cp
+        public int? PlanetId { get; set; }
+
         public Coordinate Coordinate
         {
             get { return CoordHelper.GetCoordinate(LocationId); }

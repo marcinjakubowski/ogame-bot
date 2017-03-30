@@ -44,6 +44,7 @@ namespace OgameBot
             client.RegisterSaver(new EspionageReportSaver());
             client.RegisterSaver(new GalaxyPageDebrisSaver());
             client.RegisterSaver(new MessageSaver());
+            client.RegisterSaver(new PlayerPlanetSaver());
 
             // UA stuff
             client.RegisterDefaultHeader("Accept-Language", "en-GB,en;q=0.8,da;q=0.6");
