@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace OgameBot.Db.Parts
 {
     [ComplexType]
-    public class DbPlanetBuildings
+    public class PlanetBuildings
     {
         public int? AllianceDepot        { get; set; } = null;
         public int? CrystalMine          { get; set; } = null;
@@ -48,32 +48,32 @@ namespace OgameBot.Db.Parts
             if (dict.ContainsKey(BuildingType.Terraformer         )) Terraformer          = dict[BuildingType.Terraformer         ];
         }
 
-        public static implicit operator DbPlanetBuildings(Dictionary<BuildingType, int> type)
+        public static implicit operator PlanetBuildings(Dictionary<BuildingType, int> type)
         {
-            return new DbPlanetBuildings()
+            return new PlanetBuildings()
             {
-                AllianceDepot           = DbPlanet.GetFromDictionary(type, BuildingType.AllianceDepot       ),
-                CrystalMine             = DbPlanet.GetFromDictionary(type, BuildingType.CrystalMine         ),
-                CrystalStorage          = DbPlanet.GetFromDictionary(type, BuildingType.CrystalStorage      ),
-                DeuteriumSynthesizer    = DbPlanet.GetFromDictionary(type, BuildingType.DeuteriumSynthesizer),
-                DeuteriumTank           = DbPlanet.GetFromDictionary(type, BuildingType.DeuteriumTank       ),
-                FusionReactor           = DbPlanet.GetFromDictionary(type, BuildingType.FusionReactor       ),
-                JumpGate                = DbPlanet.GetFromDictionary(type, BuildingType.JumpGate            ),
-                LunarBase               = DbPlanet.GetFromDictionary(type, BuildingType.LunarBase           ),
-                MetalMine               = DbPlanet.GetFromDictionary(type, BuildingType.MetalMine           ),
-                MetalStorage            = DbPlanet.GetFromDictionary(type, BuildingType.MetalStorage        ),
-                MissileSilo             = DbPlanet.GetFromDictionary(type, BuildingType.MissileSilo         ),
-                NaniteFactory           = DbPlanet.GetFromDictionary(type, BuildingType.NaniteFactory       ),
-                ResearchLab             = DbPlanet.GetFromDictionary(type, BuildingType.ResearchLab         ),
-                RoboticFactory          = DbPlanet.GetFromDictionary(type, BuildingType.RoboticFactory      ),
-                SensorPhalanx           = DbPlanet.GetFromDictionary(type, BuildingType.SensorPhalanx       ),
-                Shipyard                = DbPlanet.GetFromDictionary(type, BuildingType.Shipyard            ),
-                SolarPlant              = DbPlanet.GetFromDictionary(type, BuildingType.SolarPlant          ),
-                Terraformer             = DbPlanet.GetFromDictionary(type, BuildingType.Terraformer         )
+                AllianceDepot           = Planet.GetFromDictionary(type, BuildingType.AllianceDepot       ),
+                CrystalMine             = Planet.GetFromDictionary(type, BuildingType.CrystalMine         ),
+                CrystalStorage          = Planet.GetFromDictionary(type, BuildingType.CrystalStorage      ),
+                DeuteriumSynthesizer    = Planet.GetFromDictionary(type, BuildingType.DeuteriumSynthesizer),
+                DeuteriumTank           = Planet.GetFromDictionary(type, BuildingType.DeuteriumTank       ),
+                FusionReactor           = Planet.GetFromDictionary(type, BuildingType.FusionReactor       ),
+                JumpGate                = Planet.GetFromDictionary(type, BuildingType.JumpGate            ),
+                LunarBase               = Planet.GetFromDictionary(type, BuildingType.LunarBase           ),
+                MetalMine               = Planet.GetFromDictionary(type, BuildingType.MetalMine           ),
+                MetalStorage            = Planet.GetFromDictionary(type, BuildingType.MetalStorage        ),
+                MissileSilo             = Planet.GetFromDictionary(type, BuildingType.MissileSilo         ),
+                NaniteFactory           = Planet.GetFromDictionary(type, BuildingType.NaniteFactory       ),
+                ResearchLab             = Planet.GetFromDictionary(type, BuildingType.ResearchLab         ),
+                RoboticFactory          = Planet.GetFromDictionary(type, BuildingType.RoboticFactory      ),
+                SensorPhalanx           = Planet.GetFromDictionary(type, BuildingType.SensorPhalanx       ),
+                Shipyard                = Planet.GetFromDictionary(type, BuildingType.Shipyard            ),
+                SolarPlant              = Planet.GetFromDictionary(type, BuildingType.SolarPlant          ),
+                Terraformer             = Planet.GetFromDictionary(type, BuildingType.Terraformer         )
             };
         }
 
-        public static implicit operator Dictionary<BuildingType, int>(DbPlanetBuildings type)
+        public static implicit operator Dictionary<BuildingType, int>(PlanetBuildings type)
         {
             var newType = new Dictionary<BuildingType, int>();
             if (type.AllianceDepot       .HasValue) newType[BuildingType.AllianceDepot       ] = (int)type.AllianceDepot       ;

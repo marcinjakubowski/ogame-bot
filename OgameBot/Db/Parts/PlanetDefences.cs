@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace OgameBot.Db.Parts
 {
     [ComplexType]
-    public class DbPlanetDefences
+    public class PlanetDefences
     {
         public int? AntiBallisticMissiles  { get; set; } = null;
         public int? GaussCannon            { get; set; } = null;
@@ -32,24 +32,24 @@ namespace OgameBot.Db.Parts
             if (dict.ContainsKey(DefenceType.SmallShieldDome       )) SmallShieldDome        = dict[DefenceType.SmallShieldDome       ];
         }
 
-        public static implicit operator DbPlanetDefences(Dictionary<DefenceType, int> type)
+        public static implicit operator PlanetDefences(Dictionary<DefenceType, int> type)
         {
-            return new DbPlanetDefences()
+            return new PlanetDefences()
             {
-                AntiBallisticMissiles  = DbPlanet.GetFromDictionary(type, DefenceType.AntiBallisticMissiles ),
-                GaussCannon            = DbPlanet.GetFromDictionary(type, DefenceType.GaussCannon           ),
-                HeavyLaser             = DbPlanet.GetFromDictionary(type, DefenceType.HeavyLaser            ),
-                InterplanetaryMissiles = DbPlanet.GetFromDictionary(type, DefenceType.InterplanetaryMissiles),
-                IonCannon              = DbPlanet.GetFromDictionary(type, DefenceType.IonCannon             ),
-                LargeShieldDome        = DbPlanet.GetFromDictionary(type, DefenceType.LargeShieldDome       ),
-                LightLaser             = DbPlanet.GetFromDictionary(type, DefenceType.LightLaser            ),
-                PlasmaTurret           = DbPlanet.GetFromDictionary(type, DefenceType.PlasmaTurret          ),
-                RocketLauncher         = DbPlanet.GetFromDictionary(type, DefenceType.RocketLauncher        ),
-                SmallShieldDome        = DbPlanet.GetFromDictionary(type, DefenceType.SmallShieldDome       )
+                AntiBallisticMissiles  = Planet.GetFromDictionary(type, DefenceType.AntiBallisticMissiles ),
+                GaussCannon            = Planet.GetFromDictionary(type, DefenceType.GaussCannon           ),
+                HeavyLaser             = Planet.GetFromDictionary(type, DefenceType.HeavyLaser            ),
+                InterplanetaryMissiles = Planet.GetFromDictionary(type, DefenceType.InterplanetaryMissiles),
+                IonCannon              = Planet.GetFromDictionary(type, DefenceType.IonCannon             ),
+                LargeShieldDome        = Planet.GetFromDictionary(type, DefenceType.LargeShieldDome       ),
+                LightLaser             = Planet.GetFromDictionary(type, DefenceType.LightLaser            ),
+                PlasmaTurret           = Planet.GetFromDictionary(type, DefenceType.PlasmaTurret          ),
+                RocketLauncher         = Planet.GetFromDictionary(type, DefenceType.RocketLauncher        ),
+                SmallShieldDome        = Planet.GetFromDictionary(type, DefenceType.SmallShieldDome       )
             };
         }
 
-        public static implicit operator Dictionary<DefenceType, int>(DbPlanetDefences type)
+        public static implicit operator Dictionary<DefenceType, int>(PlanetDefences type)
         {
             var newType = new Dictionary<DefenceType, int>();
             if (type.AntiBallisticMissiles .HasValue) newType[DefenceType.AntiBallisticMissiles ] = (int)type.AntiBallisticMissiles ;

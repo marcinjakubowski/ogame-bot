@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace OgameBot.Db.Parts
 {
     [ComplexType]
-    public class DbPlanetShips
+    public class PlanetShips
     {
         public int? Battlecruiser  { get; set; } = null;
         public int? Battleship     { get; set; } = null;
@@ -40,28 +40,28 @@ namespace OgameBot.Db.Parts
             if (dict.ContainsKey(ShipType.SolarSatellite)) SolarSatellite = dict[ShipType.SolarSatellite];
         }
 
-        public static implicit operator DbPlanetShips(Dictionary<ShipType, int> type)
+        public static implicit operator PlanetShips(Dictionary<ShipType, int> type)
         {
-            return new DbPlanetShips()
+            return new PlanetShips()
             {
-                Battlecruiser  = DbPlanet.GetFromDictionary(type, ShipType.Battlecruiser ),
-                Battleship     = DbPlanet.GetFromDictionary(type, ShipType.Battleship    ),
-                Bomber         = DbPlanet.GetFromDictionary(type, ShipType.Bomber        ),
-                ColonyShip     = DbPlanet.GetFromDictionary(type, ShipType.ColonyShip    ),
-                Cruiser        = DbPlanet.GetFromDictionary(type, ShipType.Cruiser       ),
-                Deathstar      = DbPlanet.GetFromDictionary(type, ShipType.Deathstar     ),
-                Destroyer      = DbPlanet.GetFromDictionary(type, ShipType.Destroyer     ),
-                EspionageProbe = DbPlanet.GetFromDictionary(type, ShipType.EspionageProbe),
-                HeavyFighter   = DbPlanet.GetFromDictionary(type, ShipType.HeavyFighter  ),
-                LargeCargo     = DbPlanet.GetFromDictionary(type, ShipType.LargeCargo    ),
-                LightFighter   = DbPlanet.GetFromDictionary(type, ShipType.LightFighter  ),
-                Recycler       = DbPlanet.GetFromDictionary(type, ShipType.Recycler      ),
-                SmallCargo     = DbPlanet.GetFromDictionary(type, ShipType.SmallCargo    ),
-                SolarSatellite = DbPlanet.GetFromDictionary(type, ShipType.SolarSatellite)
+                Battlecruiser  = Planet.GetFromDictionary(type, ShipType.Battlecruiser ),
+                Battleship     = Planet.GetFromDictionary(type, ShipType.Battleship    ),
+                Bomber         = Planet.GetFromDictionary(type, ShipType.Bomber        ),
+                ColonyShip     = Planet.GetFromDictionary(type, ShipType.ColonyShip    ),
+                Cruiser        = Planet.GetFromDictionary(type, ShipType.Cruiser       ),
+                Deathstar      = Planet.GetFromDictionary(type, ShipType.Deathstar     ),
+                Destroyer      = Planet.GetFromDictionary(type, ShipType.Destroyer     ),
+                EspionageProbe = Planet.GetFromDictionary(type, ShipType.EspionageProbe),
+                HeavyFighter   = Planet.GetFromDictionary(type, ShipType.HeavyFighter  ),
+                LargeCargo     = Planet.GetFromDictionary(type, ShipType.LargeCargo    ),
+                LightFighter   = Planet.GetFromDictionary(type, ShipType.LightFighter  ),
+                Recycler       = Planet.GetFromDictionary(type, ShipType.Recycler      ),
+                SmallCargo     = Planet.GetFromDictionary(type, ShipType.SmallCargo    ),
+                SolarSatellite = Planet.GetFromDictionary(type, ShipType.SolarSatellite)
             };
         }
 
-        public static implicit operator Dictionary<ShipType, int>(DbPlanetShips type)
+        public static implicit operator Dictionary<ShipType, int>(PlanetShips type)
         {
             var newType = new Dictionary<ShipType, int>();
             if (type.Battlecruiser .HasValue) newType[ShipType.Battlecruiser ] = (int)type.Battlecruiser ;

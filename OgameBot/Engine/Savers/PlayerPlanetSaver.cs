@@ -9,6 +9,7 @@ namespace OgameBot.Engine.Savers
 {
     public class PlayerPlanetSaver : SaverBase
     {
+        private bool _isPlayerSeeded = false;
         public override void Run(List<DataObject> result)
         {
             OgamePageInfo current = result.OfType<OgamePageInfo>().FirstOrDefault();
@@ -26,20 +27,35 @@ namespace OgameBot.Engine.Savers
             using (BotDb db = new BotDb())
             {
                 long[] locIds = playerPlanets.Select(s => s.Coordinate.Id).ToArray();
-                Dictionary<long, DbPlanet> existing = db.Planets.Where(s => locIds.Contains(s.LocationId)).ToDictionary(s => s.LocationId);
+                Dictionary<long, Planet> existing = db.Planets.Where(s => locIds.Contains(s.LocationId)).ToDictionary(s => s.LocationId);
+
+                if (!_isPlayerSeeded)
+                {
+                    if (!db.Players.Where(s => s.PlayerId == current.PlayerId).Any())
+                    {
+                        db.Players.Add(new Player()
+                        {
+                            PlayerId = current.PlayerId,
+                            Name = current.PlayerName,
+                            Status = PlayerStatus.None
+                        });
+                    }
+                    _isPlayerSeeded = true;
+                }
+                
 
                 foreach (var playerPlanet in playerPlanets)
                 {
-                    DbPlanet item;
+                    Planet item;
 
                     if (!existing.TryGetValue(playerPlanet.Coordinate.Id, out item))
                     {
-                        item = new DbPlanet()
+                        item = new Planet()
                         {
                             Coordinate = playerPlanet.Coordinate,
                             Name = playerPlanet.Name,
                             PlanetId = playerPlanet.Id,
-                            PlayerId = -1
+                            PlayerId = current.PlayerId
                         };
                         db.Planets.Add(item);
                     }
@@ -73,10 +89,10 @@ namespace OgameBot.Engine.Savers
 
                 foreach (MessageBase message in messages.Where(s => !existing.Contains(s.MessageId)))
                 {
-                    db.Messages.Add(new DbMessage
+                    db.Messages.Add(new Message
                     {
                         MessageId = message.MessageId,
-                        Message = message,
+                        Body = message,
                         TabType = message.TabType
                     });
                 }

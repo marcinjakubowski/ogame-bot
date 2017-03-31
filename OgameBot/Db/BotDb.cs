@@ -12,13 +12,25 @@ namespace OgameBot.Db
     {
         public DbSet<GalaxyScan> Scans { get; set; }
 
-        public DbSet<DbPlanet> Planets { get; set; }
+        public DbSet<Planet> Planets { get; set; }
 
-        public DbSet<DbPlayer> Players { get; set; }
+        public DbSet<Player> Players { get; set; }
 
         public DbSet<DebrisField> DebrisFields { get; set; }
 
-        public DbSet<DbMessage> Messages { get; set; }
+        public DbSet<Message> Messages { get; set; }
+
+        public BotDb() : base()
+        {
+            if (!Database.Exists())
+            {
+                Database.Initialize(true);
+                Players.Add(new Player() { PlayerId = -1 });
+                SaveChanges();
+            }
+
+            
+        }
 
         public override int SaveChanges()
         {

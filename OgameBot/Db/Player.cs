@@ -7,7 +7,7 @@ using OgameBot.Engine.Parsing.Objects;
 
 namespace OgameBot.Db
 {
-    public class DbPlayer : ICreatedOn, IModifiedOn
+    public class Player : ICreatedOn, IModifiedOn
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int PlayerId { get; set; }
@@ -19,7 +19,7 @@ namespace OgameBot.Db
 
         public DateTimeOffset UpdatedOn { get; set; }
     
-        public virtual ICollection<DbPlanet> Planets { get; set; }
+        public virtual ICollection<Planet> Planets { get; set; }
 
         public PlayerStatus Status { get; set; }
 

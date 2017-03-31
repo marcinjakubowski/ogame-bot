@@ -35,20 +35,20 @@ namespace OgameBot.Engine.Savers
 
                 // Prep players
                 int[] playerIds = result.OfType<GalaxyPageInfoItem>().Select(s => s.PlayerId).ToArray();
-                Dictionary<int, DbPlayer> players = db.Players.Where(s => playerIds.Contains(s.PlayerId)).ToDictionary(s => s.PlayerId);
+                Dictionary<int, Player> players = db.Players.Where(s => playerIds.Contains(s.PlayerId)).ToDictionary(s => s.PlayerId);
 
                 // Individual items
                 long systemLower = systemDetails.System.LowerCoordinate;
                 long systemUpper = systemDetails.System.UpperCoordinate;
 
-                Dictionary<long, DbPlanet> toRemove = db.Planets.Where(s => systemLower <= s.LocationId && s.LocationId <= systemUpper).ToDictionary(s => s.LocationId);
+                Dictionary<long, Planet> toRemove = db.Planets.Where(s => systemLower <= s.LocationId && s.LocationId <= systemUpper).ToDictionary(s => s.LocationId);
 
                 foreach (GalaxyPageInfoItem row in result.OfType<GalaxyPageInfoItem>())
                 {
-                    DbPlayer player;
+                    Player player;
                     if (!players.TryGetValue(row.PlayerId, out player))
                     {
-                        player = new DbPlayer
+                        player = new Player
                         {
                             PlayerId = row.PlayerId
                         };
@@ -60,10 +60,10 @@ namespace OgameBot.Engine.Savers
                     player.Name = row.PlayerName;
                     player.Status = row.PlayerStatus;
 
-                    DbPlanet planet;
+                    Planet planet;
                     if (!toRemove.TryRemove(row.Planet.Coordinate, out planet))
                     {
-                        planet = new DbPlanet
+                        planet = new Planet
                         {
                             Coordinate = row.Planet.Coordinate
                         };
@@ -76,10 +76,10 @@ namespace OgameBot.Engine.Savers
 
                     if (row.Moon != null)
                     {
-                        DbPlanet moon;
+                        Planet moon;
                         if (!toRemove.TryRemove(row.Moon.Coordinate, out moon))
                         {
-                            moon = new DbPlanet
+                            moon = new Planet
                             {
                                 Coordinate = row.Moon.Coordinate
                             };

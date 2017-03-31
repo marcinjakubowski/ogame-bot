@@ -61,14 +61,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Db\DbMessage.cs" />
-    <Compile Include="Db\DbPlayer.cs" />
+    <Compile Include="Db\Message.cs" />
+    <Compile Include="Db\Player.cs" />
     <Compile Include="Db\Interfaces\ICreatedOn.cs" />
     <Compile Include="Db\Interfaces\ILazySaver.cs" />
     <Compile Include="Db\Interfaces\IModifiedOn.cs" />
-    <Compile Include="Db\Parts\DbPlanetBuildings.cs" />
-    <Compile Include="Db\Parts\DbPlanetDefences.cs" />
-    <Compile Include="Db\Parts\DbPlanetShips.cs" />
+    <Compile Include="Db\Parts\PlanetBuildings.cs" />
+    <Compile Include="Db\Parts\PlanetDefences.cs" />
+    <Compile Include="Db\Parts\PlanetShips.cs" />
     <Compile Include="Engine\Commands\CommandBase.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Db\DebrisField.cs" />
@@ -107,10 +107,8 @@
     <Compile Include="Utilities\KeyValuePair.cs" />
     <Compile Include="Engine\Commands\OGameRequestBuilder.cs" />
     <Compile Include="Db\BotDb.cs" />
-    <Compile Include="Db\Parts\DbResources.cs" />
-    <Compile Include="Db\DbPlanet.cs" />
+    <Compile Include="Db\Planet.cs" />
     <Compile Include="Db\GalaxyScan.cs" />
-    <Compile Include="Db\Parts\PlanetInfo.cs" />
     <Compile Include="Utilities\SerializerHelper.cs" />
     <Compile Include="Engine\Interventions\OGameAutoLoginner.cs" />
     <Compile Include="Engine\OGameClient.cs" />

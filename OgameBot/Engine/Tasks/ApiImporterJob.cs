@@ -98,16 +98,16 @@ namespace OgameBot.Engine.Tasks
         {
             using (BotDb db = new BotDb())
             {
-                Dictionary<int, DbPlayer> allPlayers = db.Players.ToDictionary(s => s.PlayerId);
-                List<DbPlayer> newPlayers = new List<DbPlayer>();
+                Dictionary<int, Db.Player> allPlayers = db.Players.ToDictionary(s => s.PlayerId);
+                List<Db.Player> newPlayers = new List<Db.Player>();
 
                 for (int i = 0; i < model.Players.Length; i++)
                 {
                     var player = model.Players[i];
-                    DbPlayer dbPlayer;
+                    Db.Player dbPlayer;
                     if (!allPlayers.TryGetValue(player.Id, out dbPlayer))
                     {
-                        dbPlayer = new DbPlayer
+                        dbPlayer = new Db.Player
                         {
                             PlayerId = player.Id
                         };
@@ -144,21 +144,21 @@ namespace OgameBot.Engine.Tasks
         {
             using (BotDb db = new BotDb())
             {
-                Dictionary<long, DbPlanet> allPlanets = db.Planets.ToDictionary(s => s.LocationId);
-                Dictionary<int, DbPlayer> allPlayers = db.Players.ToDictionary(s => s.PlayerId);
+                Dictionary<long, Db.Planet> allPlanets = db.Planets.ToDictionary(s => s.LocationId);
+                Dictionary<int, Db.Player> allPlayers = db.Players.ToDictionary(s => s.PlayerId);
 
-                List<DbPlanet> newPlanets = new List<DbPlanet>();
-                List<DbPlayer> newPlayers = new List<DbPlayer>();
+                List<Db.Planet> newPlanets = new List<Db.Planet>();
+                List<Db.Player> newPlayers = new List<Db.Player>();
 
                 for (int i = 0; i < model.Planets.Length; i++)
                 {
-                    Planet planet = model.Planets[i];
+                    OgameApi.Objects.Planet planet = model.Planets[i];
                     Coordinate planetCoords = Coordinate.Parse(planet.Coords, CoordinateType.Planet);
 
-                    DbPlanet dbPlanet;
+                    Db.Planet dbPlanet;
                     if (!allPlanets.TryGetValue(planetCoords.Id, out dbPlanet))
                     {
-                        dbPlanet = new DbPlanet
+                        dbPlanet = new Db.Planet
                         {
                             Coordinate = planetCoords
                         };
@@ -174,10 +174,10 @@ namespace OgameBot.Engine.Tasks
                     {
                         Coordinate moonCoords = Coordinate.Create(planetCoords, CoordinateType.Moon);
 
-                        DbPlanet dbMoon;
+                        Db.Planet dbMoon;
                         if (!allPlanets.TryGetValue(moonCoords.Id, out dbMoon))
                         {
-                            dbMoon = new DbPlanet
+                            dbMoon = new Db.Planet
                             {
                                 Coordinate = moonCoords
                             };
@@ -189,10 +189,10 @@ namespace OgameBot.Engine.Tasks
                         dbMoon.Name = planet.Moon.Name;
                     }
 
-                    DbPlayer dbPlayer;
+                    Db.Player dbPlayer;
                     if (!allPlayers.TryGetValue(planet.Player, out dbPlayer))
                     {
-                        dbPlayer = new DbPlayer
+                        dbPlayer = new Db.Player
                         {
                             PlayerId = planet.Player
                         };

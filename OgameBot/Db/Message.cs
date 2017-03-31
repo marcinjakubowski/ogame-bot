@@ -8,7 +8,7 @@ using OgameBot.Utilities;
 
 namespace OgameBot.Db
 {
-    public class DbMessage : ILazySaver, ICreatedOn
+    public class Message : ILazySaver, ICreatedOn
     {
         private MessageBase _message;
 
@@ -29,7 +29,7 @@ namespace OgameBot.Db
         public string SerializedMessageType { get; set; }
 
         [NotMapped]
-        public MessageBase Message
+        public MessageBase Body
         {
             get
             {
@@ -48,8 +48,8 @@ namespace OgameBot.Db
 
         public void Update()
         {
-            SerializedMessage = SerializerHelper.SerializeToBytes(Message, true);
-            SerializedMessageType = Message.GetType().FullName;
+            SerializedMessage = SerializerHelper.SerializeToBytes(Body, true);
+            SerializedMessageType = Body.GetType().FullName;
         }
     }
 }

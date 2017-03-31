@@ -18,16 +18,16 @@ namespace OgameBot.Engine.Savers
             using (BotDb db = new BotDb())
             {
                 long[] locIds = reports.Select(s => s.Coordinate.Id).ToArray();
-                Dictionary<long, DbPlanet> existing = db.Planets.Where(s => locIds.Contains(s.LocationId)).ToDictionary(s => s.LocationId);
+                Dictionary<long, Planet> existing = db.Planets.Where(s => locIds.Contains(s.LocationId)).ToDictionary(s => s.LocationId);
 
                 foreach (EspionageReport report in reports)
                 {
                     Logger.Instance.Log(LogLevel.Info, $"Saving esp report on {report.Coordinate}, level: {report.Details}");
 
-                    DbPlanet item;
+                    Planet item;
                     if (!existing.TryGetValue(report.Coordinate, out item))
                     {
-                        item = new DbPlanet
+                        item = new Planet
                         {
                             Coordinate = report.Coordinate
                         };

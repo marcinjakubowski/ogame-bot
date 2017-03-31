@@ -9,14 +9,14 @@ using System.Collections.Generic;
 
 namespace OgameBot.Db
 {
-    public class DbPlanet : ICreatedOn, IModifiedOn
+    public class Planet : ICreatedOn, IModifiedOn
     {
-        public DbPlanet()
+        public Planet()
         {
-            Resources = new DbResources();
-            Buildings = new DbPlanetBuildings();
-            Defences = new DbPlanetDefences();
-            Ships = new DbPlanetShips();
+            Resources = new Resources();
+            Buildings = new PlanetBuildings();
+            Defences = new PlanetDefences();
+            Ships = new PlanetShips();
         }
 
         [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -36,10 +36,10 @@ namespace OgameBot.Db
         public DateTimeOffset UpdatedOn { get; set; }
 
 
-        public DbResources Resources { get; set; }
-        public DbPlanetBuildings Buildings { get; set; }
-        public DbPlanetShips Ships { get; set; }
-        public DbPlanetDefences Defences { get; set; }
+        public Resources Resources { get; set; }
+        public PlanetBuildings Buildings { get; set; }
+        public PlanetShips Ships { get; set; }
+        public PlanetDefences Defences { get; set; }
 
         public DateTimeOffset LastResourcesTime { get; set; }
 
@@ -55,7 +55,7 @@ namespace OgameBot.Db
         public int? PlayerId { get; set; }
 
         [ForeignKey(nameof(PlayerId))]
-        public virtual DbPlayer Player { get; set; }
+        public virtual Player Player { get; set; }
 
         public override string ToString()
         {

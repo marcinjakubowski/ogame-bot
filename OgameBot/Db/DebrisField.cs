@@ -17,18 +17,18 @@ namespace OgameBot.Db
             set { LocationId = CoordHelper.ToNumber(value); }
         }
 
-        public DbResources Resources { get; set; }
+        public Resources Resources { get; set; }
 
         public DateTimeOffset LastSeen { get; set; }
 
         public DebrisField()
         {
-            Resources = new DbResources();
+            Resources = new Resources();
         }
 
         public override string ToString()
         {
-            return $"DebrisField {Coordinate}, id: {LocationId}, {(Resources)Resources}";
+            return $"DebrisField {Coordinate}, id: {LocationId}, {(Objects.Resources)Resources}";
         }
     }
 }

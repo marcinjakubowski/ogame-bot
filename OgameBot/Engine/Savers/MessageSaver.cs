@@ -23,10 +23,10 @@ namespace OgameBot.Engine.Savers
 
                 foreach (MessageBase message in messages.Where(s => !existing.Contains(s.MessageId)))
                 {
-                    db.Messages.Add(new DbMessage
+                    db.Messages.Add(new Message
                     {
                         MessageId = message.MessageId,
-                        Message = message,
+                        Body = message,
                         TabType = message.TabType
                     });
                 }

@@ -1,10 +1,16 @@
 using System;
 using OgameBot.Objects.Types;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OgameBot.Objects
 {
-    public struct Resources : IEquatable<Resources>
+    [ComplexType]
+    public class Resources : IEquatable<Resources>
     {
+        public Resources()
+        {
+        }
+
         public Resources(int metal, int crystal, int deuterium, int energy)
         {
             Metal = metal;
@@ -61,6 +67,7 @@ namespace OgameBot.Objects
         /// <summary>
         /// Total transferrable (Excludes energy)
         /// </summary>
+        [NotMapped]
         public int Total => Metal + Crystal + Deuterium;
 
         public int GetResource(ResourceType type)
