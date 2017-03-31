@@ -100,6 +100,7 @@
     <Compile Include="Engine\Tasks\SessionKeepAliveJob.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logging\LogLevel.cs" />
+    <Compile Include="Objects\Cost.cs" />
     <Compile Include="Objects\Types\Page.cs" />
     <Compile Include="Objects\Types\PageType.cs" />
     <Compile Include="Utilities\EnumerableExtensions.cs" />

@@ -5,6 +5,18 @@ namespace OgameBot.Objects
 {
     public struct Resources : IEquatable<Resources>
     {
+        public Resources(int metal, int crystal, int deuterium, int energy)
+        {
+            Metal = metal;
+            Crystal = crystal;
+            Deuterium = deuterium;
+            Energy = energy;
+        }
+
+        public Resources(int metal, int crystal, int deuterium) : this(metal, crystal, deuterium, 0)
+        {
+        }
+
         public bool Equals(Resources other)
         {
             return Metal == other.Metal && Crystal == other.Crystal && Deuterium == other.Deuterium && Energy == other.Energy;
