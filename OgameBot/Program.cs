@@ -83,6 +83,9 @@ namespace OgameBot
             SessionKeepAliveJob job3 = new SessionKeepAliveJob(client);
             job3.Start();
 
+            Builder buildJob = new Builder(client);
+            buildJob.Start();
+
             // Farming bot
             //FarmingBot bot = new FarmingBot(client, SystemCoordinate.Create(6, 60), SystemCoordinate.Create(6, 100));
             //bot.Start();

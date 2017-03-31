@@ -3,6 +3,7 @@ using System.Net.Http;
 using OgameBot.Objects;
 using OgameBot.Objects.Types;
 using OgameBot.Utilities;
+using OgameBot.Db;
 
 namespace OgameBot.Engine.Commands
 {
@@ -13,6 +14,63 @@ namespace OgameBot.Engine.Commands
         public OGameRequestBuilder(OGameClient client)
         {
             _client = client;
+        }
+
+        public HttpRequestMessage GetPage(PageType page, int? cp = null)
+        {
+            string link = Page.Get(page).Link;
+            if (cp != null)
+            {
+                link += $"&cp={cp}";
+            }
+            return _client.BuildRequest(new Uri($"/game/index.php?page={link}", UriKind.Relative));
+        }
+
+        public HttpRequestMessage GetBuildBuildingRequest(BuildingType type, string token)
+        {
+            PageType page;
+            switch (type)
+            {
+                
+                case BuildingType.CrystalMine:
+                case BuildingType.CrystalStorage:
+                case BuildingType.DeuteriumSynthesizer:
+                case BuildingType.DeuteriumTank:
+                case BuildingType.FusionReactor:
+                case BuildingType.MetalMine:
+                case BuildingType.MetalStorage:
+                case BuildingType.SolarPlant:
+                    page = PageType.Resources;
+                    break;
+
+                case BuildingType.AllianceDepot:
+                case BuildingType.NaniteFactory:
+                case BuildingType.MissileSilo:
+                case BuildingType.ResearchLab:
+                case BuildingType.RoboticFactory:
+                case BuildingType.Shipyard:
+                case BuildingType.Terraformer:
+                    page = PageType.Facilities;
+                    break;
+
+                case BuildingType.JumpGate:
+                case BuildingType.LunarBase:
+                case BuildingType.SensorPhalanx:
+                default:
+                    page = PageType.Unknown;
+                    throw new NotImplementedException($"{type} not supported for building yet");
+            }
+
+            string pageLink = Page.Get(page).Link;
+
+            return _client.BuildPost(new Uri($"/game/index.php?page={pageLink}&deprecated=1", UriKind.Relative), new []
+            {
+                KeyValuePair.Create("type", ((int)type).ToString()), // building id
+                KeyValuePair.Create("modus", "1"), // 1 = build, 2 = cancel, 3 = demolish
+                KeyValuePair.Create("token", token)
+            });
+
+
         }
 
         public HttpRequestMessage GetGalaxyContent(SystemCoordinate system)
