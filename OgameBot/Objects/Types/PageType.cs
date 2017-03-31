@@ -25,7 +25,9 @@
         Highscores,
         Notes,
         Buddies,
-        Chat,
-        ResourceUpdate
+        AjaxChat,
+        ResourceUpdate,
+        Messages,
+        Chat
     }
 }
