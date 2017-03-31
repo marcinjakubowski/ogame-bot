@@ -54,11 +54,6 @@ namespace OgameBot.Engine.Savers
                         item.Ships.FromPartialResult(ships);
                         item.Defences.FromPartialResult(defences);
                         item.Buildings.FromPartialResult(buildings);
-
-                        foreach (var z in buildings)
-                        {
-                            Logging.Logger.Instance.Log(Logging.LogLevel.Info, $"{z.Key} = {z.Value}");
-                        }
                     }
 
                     item.PlanetId = playerPlanet.Id;
