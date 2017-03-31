@@ -9,6 +9,7 @@ using OgameBot.Objects.Types;
 using System;
 using System.Linq;
 using System.Web;
+using OgameBot.Logging;
 
 namespace OgameBot.Engine.Parsing
 {
@@ -45,7 +46,15 @@ namespace OgameBot.Engine.Parsing
             if (query["page"] != null)
             {
                 IEnumerable<PageType> pages = (PageType[])Enum.GetValues(typeof(PageType));
-                res.Page = pages.Where(s => ((Page)s).Link == query["page"]).FirstOrDefault();
+                try
+                {
+                    res.Page = pages.Where(s => ((Page)s).Link == query["page"]).FirstOrDefault();
+                }
+                catch (KeyNotFoundException)
+                {
+                    Logger.Instance.Log(LogLevel.Error, $"Page {query["page"]} could not be identified, {nameof(PageType)} missing.");
+                }
+                
             }
 
             // JS Vars
