@@ -4,6 +4,11 @@ using HtmlAgilityPack;
 using OgameBot.Engine.Parsing.Objects;
 using ScraperClientLib.Engine;
 using ScraperClientLib.Engine.Parsing;
+using System.Collections.Specialized;
+using OgameBot.Objects.Types;
+using System;
+using System.Linq;
+using System.Web;
 
 namespace OgameBot.Engine.Parsing
 {
@@ -33,6 +38,14 @@ namespace OgameBot.Engine.Parsing
                 string value = field.GetAttributeValue("content", string.Empty);
 
                 res.Fields[key] = value;
+            }
+
+            // Page info: make use of the implicit Page <-> PageType casts to find the matching link
+            NameValueCollection query = HttpUtility.ParseQueryString(container.RequestMessage.RequestUri.Query);
+            if (query["page"] != null)
+            {
+                IEnumerable<PageType> pages = (PageType[])Enum.GetValues(typeof(PageType));
+                res.Page = pages.Where(s => ((Page)s).Link == query["page"]).FirstOrDefault();
             }
 
             // JS Vars

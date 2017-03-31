@@ -45,6 +45,7 @@ namespace OgameBot.Engine.Parsing.Objects
         }
 
         public string MiniFleetToken { get; set; }
+        public PageType Page { get; internal set; }
 
         private string TryGet(string key, string @default)
         {
@@ -67,6 +68,7 @@ namespace OgameBot.Engine.Parsing.Objects
         public OgamePageInfo()
         {
             Fields = new NameValueCollection();
+            Page = PageType.Unknown;
         }
 
         public override string ToString()
