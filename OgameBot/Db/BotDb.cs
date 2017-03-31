@@ -20,18 +20,6 @@ namespace OgameBot.Db
 
         public DbSet<Message> Messages { get; set; }
 
-        public BotDb() : base()
-        {
-            if (!Database.Exists())
-            {
-                Database.Initialize(true);
-                Players.Add(new Player() { PlayerId = -1 });
-                SaveChanges();
-            }
-
-            
-        }
-
         public override int SaveChanges()
         {
             HandleAuditing();

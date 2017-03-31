@@ -4,6 +4,7 @@ using OgameBot.Db;
 using OgameBot.Engine.Parsing.Objects;
 using OgameBot.Utilities;
 using ScraperClientLib.Engine.Parsing;
+using System;
 
 namespace OgameBot.Engine.Savers
 {
@@ -23,6 +24,7 @@ namespace OgameBot.Engine.Savers
             var buildings = result.OfType<DetectedBuilding>().ToDictionary(s => s.Building, s => s.Level);
             var ships = result.OfType<DetectedShip>().ToDictionary(s => s.Ship, s => s.Count);
             var defences = result.OfType<DetectedDefence>().ToDictionary(s => s.Building, s => s.Count);
+            var research = result.OfType<DetectedResearch>().ToDictionary(s => s.Research, s => s.Level);
 
             using (BotDb db = new BotDb())
             {
@@ -39,6 +41,7 @@ namespace OgameBot.Engine.Savers
                             Name = current.PlayerName,
                             Status = PlayerStatus.None
                         });
+                        db.SaveChanges();
                     }
                     _isPlayerSeeded = true;
                 }
@@ -67,9 +70,26 @@ namespace OgameBot.Engine.Savers
 
                     if (current.PlanetId == playerPlanet.Id)
                     {
-                        item.Ships.FromPartialResult(ships);
-                        item.Defences.FromPartialResult(defences);
-                        item.Buildings.FromPartialResult(buildings);
+                        if (ships.Count > 0)
+                        {
+                            item.Ships.FromPartialResult(ships);
+                            item.LastShipsTime = DateTimeOffset.Now;
+                        }
+                        else if (defences.Count > 0)
+                        {
+                            item.Defences.FromPartialResult(defences);
+                            item.LastDefencesTime = DateTimeOffset.Now;
+                        }
+                        else if (buildings.Count > 0)
+                        {
+                            item.Buildings.FromPartialResult(buildings);
+                            item.LastBuildingsTime = DateTimeOffset.Now;
+                        }
+                        else if (research.Count > 0)
+                        {
+                            item.Player.Research.FromPartialResult(research);
+                            item.Player.LastResearchTime = DateTimeOffset.Now;
+                        }
                     }
 
                     item.PlanetId = playerPlanet.Id;

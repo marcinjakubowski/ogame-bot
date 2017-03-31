@@ -58,6 +58,12 @@ namespace OgameBot.Engine.Savers
                         item.Ships = report.DetectedShips;
                         item.LastShipsTime = report.Sent;
                     }
+
+                    if (report.Details.HasFlag(ReportDetails.Research))
+                    {
+                        item.Player.Research = report.DetectedResearch;
+                        item.Player.LastResearchTime = report.Sent;
+                    }
                 }
 
                 db.SaveChanges();

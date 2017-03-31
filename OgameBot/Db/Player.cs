@@ -4,11 +4,17 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using OgameBot.Db.Interfaces;
 using OgameBot.Engine.Parsing.Objects;
+using OgameBot.Db.Parts;
 
 namespace OgameBot.Db
 {
     public class Player : ICreatedOn, IModifiedOn
     {
+        public Player()
+        {
+            Research = new PlayerResearch();
+        }
+
         [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int PlayerId { get; set; }
 
@@ -22,6 +28,9 @@ namespace OgameBot.Db
         public virtual ICollection<Planet> Planets { get; set; }
 
         public PlayerStatus Status { get; set; }
+        public PlayerResearch Research { get; set; }
+        public DateTimeOffset LastResearchTime { get; set; }
+
 
         public override string ToString()
         {

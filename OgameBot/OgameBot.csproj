@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Db\Message.cs" />
+    <Compile Include="Db\Parts\PlayerResearch.cs" />
     <Compile Include="Db\Player.cs" />
     <Compile Include="Db\Interfaces\ICreatedOn.cs" />
     <Compile Include="Db\Interfaces\ILazySaver.cs" />
