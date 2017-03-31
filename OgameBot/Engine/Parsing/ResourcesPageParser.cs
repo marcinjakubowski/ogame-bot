@@ -23,7 +23,7 @@ namespace OgameBot.Engine.Parsing
         public override IEnumerable<DataObject> ProcessInternal(ClientBase client, ResponseContainer container)
         {
             HtmlDocument doc = container.ResponseHtml.Value;
-            HtmlNodeCollection imageFields = doc.DocumentNode.SelectNodes("//div[@id='buttonz']/div[@class='content']//a[contains(@class, 'detail_button')]");
+            HtmlNodeCollection imageFields = doc.DocumentNode.SelectNodes("//div[@id='buttonz']/div[@class='content']//a[contains(@class, 'tooltip') or contains(@class, 'detail_button')]");
 
             if (imageFields == null)
                 yield break;
