@@ -18,6 +18,7 @@ namespace OgameBot.Engine.Tasks
         private MessageCountObject _lastCount;
         private DateTime _lastCountTime;
         private DateTime _lastRun;
+        private bool _isFirstRun = true;
 
         public MessageReaderJob(OGameClient client)
         {
@@ -44,8 +45,10 @@ namespace OgameBot.Engine.Tasks
                 return;
 
             _lastRun = DateTime.UtcNow;
-            if (_lastCount.NewMessages <= 0)
+            if (_lastCount.NewMessages <= 0 && !_isFirstRun)
                 return;
+
+            _isFirstRun = false;
 
             Logger.Instance.Log(LogLevel.Debug, $"Checking for new messages, {_lastCount.NewMessages:N0} reported at {_lastCountTime}");
 
