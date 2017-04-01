@@ -26,15 +26,7 @@ namespace OgameBot.Engine.Tasks
             if (_isRunning)
             {
                 // Run task
-                try
-                {
-                    RunInternal();
-                }
-                catch (Exception)
-                {
-                    if (Debugger.IsAttached)
-                        throw;
-                }
+                RunInternal();
             }
 
             if (_isRunning)
