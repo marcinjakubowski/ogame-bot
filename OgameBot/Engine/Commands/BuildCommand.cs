@@ -43,7 +43,7 @@ namespace OgameBot.Engine.Commands
 
             if (underConstruction != null)
             {
-                Logger.Instance.Log(LogLevel.Warning, $"Building {underConstruction.Building} already under construction on planet {Where.Name}");
+                Logger.Instance.Log(LogLevel.Warning, $"Building {underConstruction.Building} already under construction on planet {Where.Name}, will finish at {underConstruction.FinishingAt}");
                 cannotContinue = true;
             }
             else if (cost.Metal > Where.Resources.Metal || cost.Crystal > Where.Resources.Crystal || cost.Deuterium > Where.Resources.Deuterium)

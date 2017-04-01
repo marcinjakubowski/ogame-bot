@@ -13,6 +13,8 @@ namespace OgameBot.Engine.Parsing
     public class OngoingActivityParser : BaseParser
     {
         private static readonly Regex ActivityIdRegex = new Regex(@"cancel((?:Production|Research))\(([\d]+).*level ([\d]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        // #todo this works for commander only, is different when no commander available
+        private static readonly Regex ActivityCountdownCommanderRegex = new Regex(@"new baulisteCountdown\(getElementByIdWithCache\(""(research)?Countdown""\),([\d]+)", RegexOptions.Compiled);
 
         public override bool ShouldProcessInternal(ResponseContainer container)
         {
@@ -26,32 +28,63 @@ namespace OgameBot.Engine.Parsing
         public override IEnumerable<DataObject> ProcessInternal(ClientBase client, ResponseContainer container)
         {
             HtmlDocument doc = container.ResponseHtml.Value;
-            HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//a[contains(@class, 'abortNow')]");
+            HtmlNodeCollection scriptBlocks = doc.DocumentNode.SelectNodes("//script[@type='text/javascript' and not(@src)]");
 
-            foreach (HtmlNode node in nodes)
+            var construction = new DetectedOngoingConstruction();
+            var research = new DetectedOngoingResearch();
+
+            if (scriptBlocks != null)
             {
-                string onClick = node.GetAttributeValue("onclick", "");
-                var match = ActivityIdRegex.Match(onClick);
-                if (match.Success)
+                foreach (HtmlNode block in scriptBlocks)
                 {
-                    int id = int.Parse(match.Groups[2].Value);
-                    int level = int.Parse(match.Groups[3].Value);
-                    // buildings
-                    if (id < 100)
+                    var matches = ActivityCountdownCommanderRegex.Matches(block.InnerText);
+                    if (matches.Count > 0)
                     {
-                        yield return new DetectedOngoingConstruction()
+                        Logger.Instance.Log(LogLevel.Error, $"Got {matches.Count} matches");
+
+                        foreach (Match match in matches)
                         {
-                            Building = (BuildingType)id,
-                            Level = level
-                        };
+                            string type = match.Groups[1].Value;
+                            int remainingDuration = int.Parse(match.Groups[2].Value);
+                            DateTime finishingAt = DateTime.Now.AddSeconds(remainingDuration);
+
+                            if (type == "research")
+                            {
+                                research.FinishingAt = finishingAt;
+                            }
+                            else
+                            {
+                                construction.FinishingAt = finishingAt;
+                            }
+                        }
+                        break;
                     }
-                    else if (id >= 100 && id <= 200)
+                }
+            }
+            HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//a[contains(@class, 'abortNow')]");
+            if (nodes != null)
+            {
+                foreach (HtmlNode node in nodes)
+                {
+                    string onClick = node.GetAttributeValue("onclick", "");
+                    var match = ActivityIdRegex.Match(onClick);
+                    if (match.Success)
                     {
-                        yield return new DetectedOngoingResearch()
+                        int id = int.Parse(match.Groups[2].Value);
+                        int level = int.Parse(match.Groups[3].Value);
+                        // buildings
+                        if (id < 100)
                         {
-                            Research = (ResearchType)id,
-                            Level = level
-                        };
+                            construction.Building = (BuildingType)id;
+                            construction.Level = level;
+                            yield return construction;
+                        }
+                        else if (id >= 100 && id <= 200)
+                        {
+                            research.Research = (ResearchType)id;
+                            research.Level = level;
+                            yield return research;
+                        }
                     }
                 }
 
