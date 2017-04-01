@@ -42,11 +42,13 @@ namespace OgameBot.Engine.Tasks
             Uri alliancesUri = new Uri(_client.BaseUri, "/api/alliances.xml");
             Uri playersUri = new Uri(_client.BaseUri, "/api/players.xml");
             Uri serverDataUri = new Uri(_client.BaseUri, "/api/serverData.xml");
+            Uri highscoreUri = new Uri(_client.BaseUri, "/api/highscore.xml?category=1&type=0"); // player highscore total
 
             FileInfo universeFile = new FileInfo(Path.Combine(_baseDir.FullName, _client.BaseUri.Host + "-universe.xml"));
             FileInfo alliancesFile = new FileInfo(Path.Combine(_baseDir.FullName, _client.BaseUri.Host + "-alliances.xml"));
             FileInfo playersFile = new FileInfo(Path.Combine(_baseDir.FullName, _client.BaseUri.Host + "-players.xml"));
             FileInfo serverDataFile = new FileInfo(Path.Combine(_baseDir.FullName, _client.BaseUri.Host + "-serverData.xml"));
+            FileInfo highscoreFile = new FileInfo(Path.Combine(_baseDir.FullName, _client.BaseUri.Host + "-highscore.xml"));
 
             if (NeedUpdate(universeUri, universeFile, "universe").Sync())
             {
@@ -87,10 +89,45 @@ namespace OgameBot.Engine.Tasks
                 ServerData model = XmlModelSerializer.Deserialize<ServerData>(serverDataFile);
                 ProcessData(model);
             }
+
+            if (NeedUpdate(highscoreUri, highscoreFile, "highscore").Sync())
+            {
+                Logger.Instance.Log(LogLevel.Info, "ApiImporterJob: Updating highscore from API");
+
+                Update(highscoreUri, highscoreFile).Sync();
+
+                HighscoreContainer model = XmlModelSerializer.Deserialize<HighscoreContainer>(highscoreFile);
+                ProcessData(model);
+            }
+        }
+
+        private void ProcessData(HighscoreContainer model)
+        {
+            using (BotDb db = new BotDb())
+            {
+                Dictionary<int, Db.Player> allPlayers = db.Players.ToDictionary(s => s.PlayerId);
+
+                for (int i=0; i < model.Highscores.Length; i++)
+                {
+                    var highscore = model.Highscores[i];
+                    Db.Player dbPlayer;
+                    if (allPlayers.TryGetValue(highscore.Id, out dbPlayer))
+                    {
+                        dbPlayer.Ranking = highscore.Position;
+
+                        if (i % 250 == 0)
+                        {
+                            db.SaveChanges();
+                        }
+                    }
+                }
+                db.SaveChanges();
+            }
         }
 
         private void ProcessData(AlliancesContainer model)
         {
+            
 
         }
 

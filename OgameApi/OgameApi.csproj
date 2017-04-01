@@ -43,6 +43,8 @@
     <Compile Include="Objects\AllianceInfo.cs" />
     <Compile Include="Objects\AlliancePlayer.cs" />
     <Compile Include="Objects\AlliancesContainer.cs" />
+    <Compile Include="Objects\HighscoreContainer.cs" />
+    <Compile Include="Objects\PlayerHighscore.cs" />
     <Compile Include="Objects\Player.cs" />
     <Compile Include="Utilities\XmlModelSerializer.cs" />
     <Compile Include="Objects\Moon.cs" />
