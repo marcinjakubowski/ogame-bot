@@ -170,10 +170,18 @@ namespace OgameBot
             ctx.Response.ContentType = resp.ResponseMessage.Content.Headers.ContentType.ToString();
 
             // Write content
-            ctx.Response.OutputStream.Write(data, 0, data.Length);
-
-            // Return
-            ctx.Response.Close();
+            try
+            {
+                ctx.Response.OutputStream.Write(data, 0, data.Length);
+            }
+            catch (Exception ex)
+            {
+                Logging.Logger.Instance.LogException(ex);
+            }
+            finally
+            {
+                ctx.Response.Close();
+            }
         }
     }
 }
