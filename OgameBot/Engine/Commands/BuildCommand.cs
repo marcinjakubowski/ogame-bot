@@ -37,17 +37,26 @@ namespace OgameBot.Engine.Commands
             // validate resources
             Dictionary<BuildingType, int> currentBuildings = Where.Buildings;
             Resources cost = Building.Get(BuildingToBuild).Cost.ForLevel(currentBuildings[BuildingToBuild] + 1);
+            DetectedOngoingConstruction underConstruction = res.GetParsedSingle<DetectedOngoingConstruction>(false);
 
-            if (cost.Metal > Where.Resources.Metal || cost.Crystal > Where.Resources.Crystal || cost.Deuterium > Where.Resources.Deuterium)
+            bool cannotContinue = false;
+
+            if (underConstruction != null)
             {
-                Logger.Instance.Log(LogLevel.Error, $"Not enough resources! It would cost {cost} to build {BuildingToBuild}, planet {Where.Name} only has {Where.Resources}");
-                return;
+                Logger.Instance.Log(LogLevel.Warning, $"Building {underConstruction.Building} already under construction on planet {Where.Name}");
+                cannotContinue = true;
+            }
+            else if (cost.Metal > Where.Resources.Metal || cost.Crystal > Where.Resources.Crystal || cost.Deuterium > Where.Resources.Deuterium)
+            {
+                Logger.Instance.Log(LogLevel.Warning, $"Not enough resources! It would cost {cost} to build {BuildingToBuild}, planet {Where.Name} only has {Where.Resources}");
+                cannotContinue = true;
             }
 
-            // #todo building in progress check
-
-            HttpRequestMessage buildReq = Client.RequestBuilder.GetBuildBuildingRequest(BuildingToBuild, token);
-            AssistedIssue(buildReq);
+            if (!cannotContinue)
+            {
+                HttpRequestMessage buildReq = Client.RequestBuilder.GetBuildBuildingRequest(BuildingToBuild, token);
+                AssistedIssue(buildReq);
+            }
         }
     }
 }
