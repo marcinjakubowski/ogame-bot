@@ -35,31 +35,31 @@ namespace OgameBot.Engine.Savers
                         db.Planets.Add(item);
                     }
 
-                    if (report.Details.HasFlag(ReportDetails.Resources))
+                    if (report.Details.HasFlag(ReportDetails.Resources) && report.Sent > item.LastResourcesTime)
                     {
                         item.Resources = report.Resources;
                         item.LastResourcesTime = report.Sent;
                     }
 
-                    if (report.Details.HasFlag(ReportDetails.Buildings))
+                    if (report.Details.HasFlag(ReportDetails.Buildings) && report.Sent > item.LastBuildingsTime)
                     {
                         item.Buildings = report.DetectedBuildings;
                         item.LastBuildingsTime = report.Sent;
                     }
 
-                    if (report.Details.HasFlag(ReportDetails.Defense))
+                    if (report.Details.HasFlag(ReportDetails.Defense) && report.Sent > item.LastDefencesTime)
                     {
                         item.Defences = report.DetectedDefence;
                         item.LastDefencesTime = report.Sent;
                     }
 
-                    if (report.Details.HasFlag(ReportDetails.Ships))
+                    if (report.Details.HasFlag(ReportDetails.Ships) && report.Sent > item.LastShipsTime)
                     {
                         item.Ships = report.DetectedShips;
                         item.LastShipsTime = report.Sent;
                     }
 
-                    if (report.Details.HasFlag(ReportDetails.Research))
+                    if (report.Details.HasFlag(ReportDetails.Research) && report.Sent > item.Player.LastResearchTime)
                     {
                         item.Player.Research = report.DetectedResearch;
                         item.Player.LastResearchTime = report.Sent;
