@@ -2,7 +2,7 @@ namespace OgameBot.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;
-    
+
     public partial class PlanetCoords_Computed : DbMigration
     {
         public override void Up()
@@ -21,7 +21,7 @@ namespace OgameBot.Migrations
                   )
             ");
         }
-        
+
         public override void Down()
         {
             DropColumn("dbo.Planets", "Coords");

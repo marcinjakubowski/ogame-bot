@@ -20,6 +20,8 @@ namespace OgameBot.Db
 
         [MaxLength(128)]
         public string Name { get; set; }
+
+        public int Ranking { get; set; }
         
         public DateTimeOffset CreatedOn { get; set; }
 
