@@ -25,6 +25,10 @@ namespace OgameBot.Db
         // cp
         public int? PlanetId { get; set; }
 
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        [MaxLength(10)]
+        public string Coords { get { return Coordinate.ToString(); } private set { } }
+
         public Coordinate Coordinate
         {
             get { return CoordHelper.GetCoordinate(LocationId); }

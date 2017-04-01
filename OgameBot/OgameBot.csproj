@@ -106,6 +106,10 @@
     <Compile Include="Engine\Tasks\SessionKeepAliveJob.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logging\LogLevel.cs" />
+    <Compile Include="Migrations\201704012025426_PlanetCoords_Computed.cs" />
+    <Compile Include="Migrations\201704012025426_PlanetCoords_Computed.Designer.cs">
+      <DependentUpon>201704012025426_PlanetCoords_Computed.cs</DependentUpon>
+    </Compile>
     <Compile Include="Objects\Cost.cs" />
     <Compile Include="Objects\Types\Page.cs" />
     <Compile Include="Objects\Types\PageType.cs" />
@@ -191,6 +195,11 @@
       <Project>{B19BAE44-7FC4-45CE-B42D-867237E2D47E}</Project>
       <Name>ScraperClientLib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201704012025426_PlanetCoords_Computed.resx">
+      <DependentUpon>201704012025426_PlanetCoords_Computed.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
