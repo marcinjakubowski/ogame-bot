@@ -1,5 +1,7 @@
 ﻿using System.Net.Http;
 using OgameBot.Objects;
+using System.Linq;
+using OgameBot.Engine.Parsing.Objects;
 
 namespace OgameBot.Engine.Commands
 {
@@ -19,6 +21,13 @@ namespace OgameBot.Engine.Commands
             {
                 HttpRequestMessage req = Client.RequestBuilder.GetMessagePageRequest(type, 1);
                 AssistedIssue(req);
+
+                var page = ParsedObjects.OfType<MessagesPage>().FirstOrDefault();
+                for (int pageNo=2; pageNo<=page.MaxPage; ++pageNo)
+                {
+                    HttpRequestMessage nextPage = Client.RequestBuilder.GetMessagePageRequest(type, pageNo);
+                    AssistedIssue(nextPage);
+                }
             }
         }
     }
