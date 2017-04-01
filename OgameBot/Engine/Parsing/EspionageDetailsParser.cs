@@ -51,6 +51,11 @@ namespace OgameBot.Engine.Parsing
 
             // Establish location
             HtmlNode locationLink = message.SelectSingleNode(".//a[contains(@href, 'page=galaxy')]");
+            // This might happen for a destroyed planet
+            if (locationLink == null)
+            {
+                yield break;
+            }
             string locationType = locationLink.SelectSingleNode("./figure").GetCssClasses(s => s == "moon" || s == "planet").First();
 
             CoordinateType coordinateType = locationType == "moon" ? CoordinateType.Moon : CoordinateType.Planet;
@@ -70,7 +75,7 @@ namespace OgameBot.Engine.Parsing
                 var oneThousandAdd = oClient.ServerCulture.NumberFormat.NumberGroupSeparator + "000";
 
                 string[] vals = values.Select(s => s.InnerText
-                    .Replace("M", oneThousandAdd)
+                    .Replace("Mn", oneThousandAdd)
                     .Replace("Bn", oneThousandAdd + oneThousandAdd)).ToArray();
 
                 Resources resources = new Resources
