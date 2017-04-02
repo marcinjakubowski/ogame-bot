@@ -40,8 +40,6 @@ namespace OgameBot.Engine.Parsing
                     var matches = ActivityCountdownCommanderRegex.Matches(block.InnerText);
                     if (matches.Count > 0)
                     {
-                        Logger.Instance.Log(LogLevel.Error, $"Got {matches.Count} matches");
-
                         foreach (Match match in matches)
                         {
                             string type = match.Groups[1].Value;
