@@ -23,10 +23,14 @@ namespace OgameBot.Engine.Commands
                 AssistedIssue(req);
 
                 var page = ParsedObjects.OfType<MessagesPage>().FirstOrDefault();
-                for (int pageNo=2; pageNo<=page.MaxPage; ++pageNo)
+                // check against no espionage reports
+                if (page != null)
                 {
-                    HttpRequestMessage nextPage = Client.RequestBuilder.GetMessagePageRequest(type, pageNo);
-                    AssistedIssue(nextPage);
+                    for (int pageNo = 2; pageNo <= page.MaxPage; ++pageNo)
+                    {
+                        HttpRequestMessage nextPage = Client.RequestBuilder.GetMessagePageRequest(type, pageNo);
+                        AssistedIssue(nextPage);
+                    }
                 }
             }
         }
