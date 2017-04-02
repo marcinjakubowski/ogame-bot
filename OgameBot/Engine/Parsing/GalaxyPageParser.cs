@@ -124,7 +124,7 @@ namespace OgameBot.Engine.Parsing
                 if (planetNode != null)
                 {
                     string playerName;
-                    int playerId;
+                    int? playerId;
                     PlayerStatus playerStatus = PlayerStatus.None;
 
                     HtmlNode planetOwnerNode = row.SelectSingleNode(".//td[contains(@class, 'playername')]");
@@ -144,7 +144,7 @@ namespace OgameBot.Engine.Parsing
                     {
                         // Some users planet
                         playerName = playerLinkNode.InnerText.Trim();
-                        playerId = planetOwnerNode.SelectSingleNode(".//a[@data-playerid]").GetAttributeValue("data-playerid", 0);
+                        playerId = planetOwnerNode.SelectSingleNode(".//a[@data-playerid]")?.GetAttributeValue("data-playerid", 0);
 
                         HtmlNodeCollection playerStatusSpans = planetOwnerNode.SelectNodes("./span[@class='status']/span");
 
@@ -199,8 +199,8 @@ namespace OgameBot.Engine.Parsing
                             }
                         }
                     }
-
-                    item.PlayerId = playerId;
+                    // Admins will not have value, but will get their data imported from API
+                    if (playerId.HasValue) item.PlayerId = (int)playerId;
                     item.PlayerName = playerName;
                     item.PlayerStatus = playerStatus;
                 }
