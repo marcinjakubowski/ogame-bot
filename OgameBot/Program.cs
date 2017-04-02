@@ -77,8 +77,8 @@ namespace OgameBot
             ApiImporterJob job1 = new ApiImporterJob(client, new DirectoryInfo("temp"));
             job1.Start();
 
-            //MessageReaderJob job2 = new MessageReaderJob(client);
-            //job2.Start();
+            MessageReaderJob job2 = new MessageReaderJob(client);
+            job2.Start();
 
             SessionKeepAliveJob job3 = new SessionKeepAliveJob(client);
             job3.Start();
