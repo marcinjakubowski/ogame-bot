@@ -1,6 +1,6 @@
 namespace OgameBot.Objects.Types
 {
-    public class Building : BaseEntityType<BuildingType, Building>
+    public class Building : BaseGrowingCostEntity<BuildingType, Building>
     {
         public static Building AllianceDepot        { get; } = new Building(BuildingType.AllianceDepot       , new Cost(20000, 40000, 0, 2.0f));
         public static Building CrystalMine          { get; } = new Building(BuildingType.CrystalMine         , new Cost(48, 24, 0, 1.6f));
@@ -22,12 +22,7 @@ namespace OgameBot.Objects.Types
         public static Building SolarPlant           { get; } = new Building(BuildingType.SolarPlant          , new Cost(75, 30, 0, 1.5f));
         public static Building Terraformer          { get; } = new Building(BuildingType.Terraformer         , new Cost(0, 50000, 100000, 2.0f));
 
-        public Cost Cost { get; }
-
-        private Building(BuildingType type, Cost cost) : base(type)
-        {
-            Cost = cost;
-        }
+        private Building(BuildingType type, Cost cost) : base(type, cost) { }
 
         public static implicit operator Building(BuildingType type)
         {

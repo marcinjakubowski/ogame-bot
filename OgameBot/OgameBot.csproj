@@ -116,6 +116,8 @@
       <DependentUpon>201704012326330_PlanetCoords_Computed.cs</DependentUpon>
     </Compile>
     <Compile Include="Objects\Cost.cs" />
+    <Compile Include="Objects\Types\BaseGrowingCostEntity.cs" />
+    <Compile Include="Objects\Types\BaseCostEntity.cs" />
     <Compile Include="Objects\Types\Page.cs" />
     <Compile Include="Objects\Types\PageType.cs" />
     <Compile Include="Utilities\EnumerableExtensions.cs" />
