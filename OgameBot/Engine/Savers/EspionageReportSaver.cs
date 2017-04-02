@@ -59,7 +59,7 @@ namespace OgameBot.Engine.Savers
                         item.Ships.LastUpdated = report.Sent;
                     }
 
-                    if (report.Details.HasFlag(ReportDetails.Research) && item.Player.Research.NeedsUpdate(report.Sent))
+                    if (report.Details.HasFlag(ReportDetails.Research) && (item.Player?.Research.NeedsUpdate(report.Sent)).GetValueOrDefault(false))
                     {
                         item.Player.Research = report.DetectedResearch;
                         item.Player.Research.LastUpdated = report.Sent;
