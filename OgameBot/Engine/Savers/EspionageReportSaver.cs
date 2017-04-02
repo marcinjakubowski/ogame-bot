@@ -35,31 +35,31 @@ namespace OgameBot.Engine.Savers
                         db.Planets.Add(item);
                     }
 
-                    if (report.Details.HasFlag(ReportDetails.Resources) && report.Sent > item.LastResourcesTime)
+                    if (report.Details.HasFlag(ReportDetails.Resources) && (!item.LastResourcesTime.HasValue || report.Sent > item.LastResourcesTime))
                     {
                         item.Resources = report.Resources;
                         item.LastResourcesTime = report.Sent;
                     }
 
-                    if (report.Details.HasFlag(ReportDetails.Buildings) && report.Sent > item.Buildings.LastUpdated)
+                    if (report.Details.HasFlag(ReportDetails.Buildings) && item.Buildings.NeedsUpdate(report.Sent))
                     {
                         item.Buildings = report.DetectedBuildings;
                         item.Buildings.LastUpdated = report.Sent;
                     }
 
-                    if (report.Details.HasFlag(ReportDetails.Defense) && report.Sent > item.Defences.LastUpdated)
+                    if (report.Details.HasFlag(ReportDetails.Defense) && item.Defences.NeedsUpdate(report.Sent))
                     {
                         item.Defences = report.DetectedDefence;
                         item.Defences.LastUpdated = report.Sent;
                     }
 
-                    if (report.Details.HasFlag(ReportDetails.Ships) && report.Sent > item.Ships.LastUpdated)
+                    if (report.Details.HasFlag(ReportDetails.Ships) && item.Ships.NeedsUpdate(report.Sent))
                     {
                         item.Ships = report.DetectedShips;
                         item.Ships.LastUpdated = report.Sent;
                     }
 
-                    if (report.Details.HasFlag(ReportDetails.Research) && report.Sent > item.Player.Research.LastUpdated)
+                    if (report.Details.HasFlag(ReportDetails.Research) && item.Player.Research.NeedsUpdate(report.Sent))
                     {
                         item.Player.Research = report.DetectedResearch;
                         item.Player.Research.LastUpdated = report.Sent;

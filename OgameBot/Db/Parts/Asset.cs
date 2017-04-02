@@ -8,6 +8,11 @@ namespace OgameBot.Db.Parts
     {
         public DateTimeOffset? LastUpdated { get; set; }
 
+        public bool NeedsUpdate(DateTimeOffset now)
+        {
+            return !LastUpdated.HasValue || now > LastUpdated;
+        }
+
         public Asset()
         {
             _dict = new Dictionary<T, int>();
