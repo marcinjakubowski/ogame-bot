@@ -1,6 +1,7 @@
 ﻿using OgameBot.Objects.Types;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace OgameBot.Db.Parts
 {
@@ -95,6 +96,8 @@ namespace OgameBot.Db.Parts
             get { return TryGet(ShipType.SolarSatellite); }
             set { TrySet(ShipType.SolarSatellite, value); }
         }
+
+        public int TotalValue => _dict.Sum(s => ((Ship)s.Key).Cost.Total * s.Value);
 
         public static implicit operator PlanetShips(Dictionary<ShipType, int> type)
         {

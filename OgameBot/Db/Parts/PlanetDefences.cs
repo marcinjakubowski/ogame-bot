@@ -1,6 +1,7 @@
 ﻿using OgameBot.Objects.Types;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using System;
 
 namespace OgameBot.Db.Parts
@@ -79,6 +80,8 @@ namespace OgameBot.Db.Parts
         {
             return new PlanetDefences(type);
         }
+
+        public int TotalValue => _dict.Sum(s => ((Defence)s.Key).Cost.Total * s.Value);
 
         public static implicit operator Dictionary<DefenceType, int>(PlanetDefences type)
         {
