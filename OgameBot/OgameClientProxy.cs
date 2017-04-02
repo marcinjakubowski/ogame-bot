@@ -93,10 +93,9 @@ namespace OgameBot
             var pathAndQuery = ctx.Request.Url.PathAndQuery;
             if (pathAndQuery.Contains("redir.php"))
             {
-                pathAndQuery = ctx.Request.QueryString["url"];
-                Logging.Logger.Instance.Log(Logging.LogLevel.Warning, $"Tried redirect to {pathAndQuery}");
-                pathAndQuery = pathAndQuery.Replace($"http://{_listenHost}:{_listenPort}", "");
+                pathAndQuery = pathAndQuery.Replace(Uri.EscapeDataString($"http://{_listenHost}:{_listenPort}/"), Uri.EscapeDataString(SubstituteRoot.ToString()));
             }
+            
             Uri targetUri = new Uri(SubstituteRoot, pathAndQuery);
 
             // NOTE: Enable this to load external ressources through proxy
@@ -113,6 +112,13 @@ namespace OgameBot
             HttpRequestMessage proxyReq = _client.BuildRequest(targetUri);
 
             proxyReq.Method = requestedMethod;
+
+            string referer = ctx.Request.Headers.Get("Referer");
+            if (referer != null)
+            {
+                referer = referer.Replace($"http://{_listenHost}:{_listenPort}/", SubstituteRoot.ToString());
+                proxyReq.Headers.TryAddWithoutValidation("Referer", referer);
+            }
 
             if (requestedMethod == HttpMethod.Post)
             {
@@ -173,14 +179,11 @@ namespace OgameBot
             try
             {
                 ctx.Response.OutputStream.Write(data, 0, data.Length);
+                ctx.Response.Close();
             }
             catch (Exception ex)
             {
                 Logging.Logger.Instance.LogException(ex);
-            }
-            finally
-            {
-                ctx.Response.Close();
             }
         }
     }
