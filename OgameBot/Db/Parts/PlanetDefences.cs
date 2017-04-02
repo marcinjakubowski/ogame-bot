@@ -1,69 +1,88 @@
 ﻿using OgameBot.Objects.Types;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System;
 
 namespace OgameBot.Db.Parts
 {
     [ComplexType]
-    public class PlanetDefences
+    public class PlanetDefences : Asset<DefenceType>
     {
-        public int? AntiBallisticMissiles  { get; set; } = null;
-        public int? GaussCannon            { get; set; } = null;
-        public int? HeavyLaser             { get; set; } = null;
-        public int? InterplanetaryMissiles { get; set; } = null;
-        public int? IonCannon              { get; set; } = null;
-        public int? LargeShieldDome        { get; set; } = null;
-        public int? LightLaser             { get; set; } = null;
-        public int? PlasmaTurret           { get; set; } = null;
-        public int? RocketLauncher         { get; set; } = null;
-        public int? SmallShieldDome        { get; set; } = null;
-
-        public void FromPartialResult(Dictionary<DefenceType, int> dict)
+        public PlanetDefences() : base()
         {
-            if (dict.ContainsKey(DefenceType.AntiBallisticMissiles )) AntiBallisticMissiles  = dict[DefenceType.AntiBallisticMissiles ];
-            if (dict.ContainsKey(DefenceType.GaussCannon           )) GaussCannon            = dict[DefenceType.GaussCannon           ];
-            if (dict.ContainsKey(DefenceType.HeavyLaser            )) HeavyLaser             = dict[DefenceType.HeavyLaser            ];
-            if (dict.ContainsKey(DefenceType.InterplanetaryMissiles)) InterplanetaryMissiles = dict[DefenceType.InterplanetaryMissiles];
-            if (dict.ContainsKey(DefenceType.IonCannon             )) IonCannon              = dict[DefenceType.IonCannon             ];
-            if (dict.ContainsKey(DefenceType.LargeShieldDome       )) LargeShieldDome        = dict[DefenceType.LargeShieldDome       ];
-            if (dict.ContainsKey(DefenceType.LightLaser            )) LightLaser             = dict[DefenceType.LightLaser            ];
-            if (dict.ContainsKey(DefenceType.PlasmaTurret          )) PlasmaTurret           = dict[DefenceType.PlasmaTurret          ];
-            if (dict.ContainsKey(DefenceType.RocketLauncher        )) RocketLauncher         = dict[DefenceType.RocketLauncher        ];
-            if (dict.ContainsKey(DefenceType.SmallShieldDome       )) SmallShieldDome        = dict[DefenceType.SmallShieldDome       ];
+        }
+        protected PlanetDefences(Dictionary<DefenceType, int> other) : base(other)
+        {
+        }
+
+        public int? AntiBallisticMissiles
+        {
+            get { return TryGet(DefenceType.AntiBallisticMissiles); }
+            set { TrySet(DefenceType.AntiBallisticMissiles, value); }
+        }
+
+        public int? GaussCannon
+        {
+            get { return TryGet(DefenceType.GaussCannon); }
+            set { TrySet(DefenceType.GaussCannon, value); }
+        }
+
+        public int? HeavyLaser
+        {
+            get { return TryGet(DefenceType.HeavyLaser); }
+            set { TrySet(DefenceType.HeavyLaser, value); }
+        }
+
+        public int? InterplanetaryMissiles
+        {
+            get { return TryGet(DefenceType.InterplanetaryMissiles); }
+            set { TrySet(DefenceType.InterplanetaryMissiles, value); }
+        }
+
+        public int? IonCannon
+        {
+            get { return TryGet(DefenceType.IonCannon); }
+            set { TrySet(DefenceType.IonCannon, value); }
+        }
+
+        public int? LargeShieldDome
+        {
+            get { return TryGet(DefenceType.LargeShieldDome); }
+            set { TrySet(DefenceType.LargeShieldDome, value); }
+        }
+
+        public int? LightLaser
+        {
+            get { return TryGet(DefenceType.LightLaser); }
+            set { TrySet(DefenceType.LightLaser, value); }
+        }
+
+        public int? PlasmaTurret
+        {
+            get { return TryGet(DefenceType.PlasmaTurret); }
+            set { TrySet(DefenceType.PlasmaTurret, value); }
+        }
+
+        public int? RocketLauncher
+        {
+            get { return TryGet(DefenceType.RocketLauncher); }
+            set { TrySet(DefenceType.RocketLauncher, value); }
+        }
+
+        public int? SmallShieldDome
+        {
+            get { return TryGet(DefenceType.SmallShieldDome); }
+            set { TrySet(DefenceType.SmallShieldDome, value); }
         }
 
         public static implicit operator PlanetDefences(Dictionary<DefenceType, int> type)
         {
-            return new PlanetDefences()
-            {
-                AntiBallisticMissiles  = Planet.GetFromDictionary(type, DefenceType.AntiBallisticMissiles ),
-                GaussCannon            = Planet.GetFromDictionary(type, DefenceType.GaussCannon           ),
-                HeavyLaser             = Planet.GetFromDictionary(type, DefenceType.HeavyLaser            ),
-                InterplanetaryMissiles = Planet.GetFromDictionary(type, DefenceType.InterplanetaryMissiles),
-                IonCannon              = Planet.GetFromDictionary(type, DefenceType.IonCannon             ),
-                LargeShieldDome        = Planet.GetFromDictionary(type, DefenceType.LargeShieldDome       ),
-                LightLaser             = Planet.GetFromDictionary(type, DefenceType.LightLaser            ),
-                PlasmaTurret           = Planet.GetFromDictionary(type, DefenceType.PlasmaTurret          ),
-                RocketLauncher         = Planet.GetFromDictionary(type, DefenceType.RocketLauncher        ),
-                SmallShieldDome        = Planet.GetFromDictionary(type, DefenceType.SmallShieldDome       )
-            };
+            return new PlanetDefences(type);
         }
 
         public static implicit operator Dictionary<DefenceType, int>(PlanetDefences type)
         {
-            var newType = new Dictionary<DefenceType, int>();
-            if (type.AntiBallisticMissiles .HasValue) newType[DefenceType.AntiBallisticMissiles ] = (int)type.AntiBallisticMissiles ;
-            if (type.GaussCannon           .HasValue) newType[DefenceType.GaussCannon           ] = (int)type.GaussCannon           ;
-            if (type.HeavyLaser            .HasValue) newType[DefenceType.HeavyLaser            ] = (int)type.HeavyLaser            ;
-            if (type.InterplanetaryMissiles.HasValue) newType[DefenceType.InterplanetaryMissiles] = (int)type.InterplanetaryMissiles;
-            if (type.IonCannon             .HasValue) newType[DefenceType.IonCannon             ] = (int)type.IonCannon             ;
-            if (type.LargeShieldDome       .HasValue) newType[DefenceType.LargeShieldDome       ] = (int)type.LargeShieldDome       ;
-            if (type.LightLaser            .HasValue) newType[DefenceType.LightLaser            ] = (int)type.LightLaser            ;
-            if (type.PlasmaTurret          .HasValue) newType[DefenceType.PlasmaTurret          ] = (int)type.PlasmaTurret          ;
-            if (type.RocketLauncher        .HasValue) newType[DefenceType.RocketLauncher        ] = (int)type.RocketLauncher        ;
-            if (type.SmallShieldDome       .HasValue) newType[DefenceType.SmallShieldDome       ] = (int)type.SmallShieldDome       ;
-
-            return newType;
+            return type._dict;
         }
     }
 }

@@ -37,9 +37,8 @@ namespace OgameBot.Migrations
                 c => new
                     {
                         LocationId = c.Long(nullable: false),
-                        PlanetId = c.Int(),
-                        CreatedOn = c.DateTimeOffset(nullable: false, precision: 7),
-                        UpdatedOn = c.DateTimeOffset(nullable: false, precision: 7),
+                        PlayerId = c.Int(),
+                        Name = c.String(maxLength: 255),
                         Resources_Metal = c.Int(nullable: false),
                         Resources_Crystal = c.Int(nullable: false),
                         Resources_Deuterium = c.Int(nullable: false),
@@ -62,6 +61,7 @@ namespace OgameBot.Migrations
                         Buildings_Shipyard = c.Int(),
                         Buildings_SolarPlant = c.Int(),
                         Buildings_Terraformer = c.Int(),
+                        Buildings_LastUpdated = c.DateTimeOffset(precision: 7),
                         Ships_Battlecruiser = c.Int(),
                         Ships_Battleship = c.Int(),
                         Ships_Bomber = c.Int(),
@@ -76,6 +76,7 @@ namespace OgameBot.Migrations
                         Ships_Recycler = c.Int(),
                         Ships_SmallCargo = c.Int(),
                         Ships_SolarSatellite = c.Int(),
+                        Ships_LastUpdated = c.DateTimeOffset(precision: 7),
                         Defences_AntiBallisticMissiles = c.Int(),
                         Defences_GaussCannon = c.Int(),
                         Defences_HeavyLaser = c.Int(),
@@ -86,13 +87,12 @@ namespace OgameBot.Migrations
                         Defences_PlasmaTurret = c.Int(),
                         Defences_RocketLauncher = c.Int(),
                         Defences_SmallShieldDome = c.Int(),
-                        LastResourcesTime = c.DateTimeOffset(nullable: false, precision: 7),
-                        LastBuildingsTime = c.DateTimeOffset(nullable: false, precision: 7),
-                        LastShipsTime = c.DateTimeOffset(nullable: false, precision: 7),
-                        LastDefencesTime = c.DateTimeOffset(nullable: false, precision: 7),
-                        Name = c.String(maxLength: 255),
-                        PlayerId = c.Int(),
-                    })
+                        Defences_LastUpdated = c.DateTimeOffset(precision: 7),
+                        PlanetId = c.Int(),
+                        LastResourcesTime = c.DateTimeOffset(precision: 7),
+                        CreatedOn = c.DateTimeOffset(nullable: false, precision: 7),
+                        UpdatedOn = c.DateTimeOffset(nullable: false, precision: 7),
+                })
                 .PrimaryKey(t => t.LocationId)
                 .ForeignKey("dbo.Players", t => t.PlayerId)
                 .Index(t => t.PlayerId);
@@ -104,8 +104,6 @@ namespace OgameBot.Migrations
                         PlayerId = c.Int(nullable: false),
                         Name = c.String(maxLength: 128),
                         Ranking = c.Int(nullable: false),
-                        CreatedOn = c.DateTimeOffset(nullable: false, precision: 7),
-                        UpdatedOn = c.DateTimeOffset(nullable: false, precision: 7),
                         Status = c.Int(nullable: false),
                         Research_ArmourTechnology = c.Int(),
                         Research_Astrophysics = c.Int(),
@@ -123,8 +121,10 @@ namespace OgameBot.Migrations
                         Research_PlasmaTechnology = c.Int(),
                         Research_ShieldingTechnology = c.Int(),
                         Research_WeaponsTechnology = c.Int(),
-                        LastResearchTime = c.DateTimeOffset(nullable: false, precision: 7),
-                    })
+                        Research_LastUpdated = c.DateTimeOffset(precision: 7),
+                        CreatedOn = c.DateTimeOffset(nullable: false, precision: 7),
+                        UpdatedOn = c.DateTimeOffset(nullable: false, precision: 7),
+                })
                 .PrimaryKey(t => t.PlayerId);
             
             CreateTable(

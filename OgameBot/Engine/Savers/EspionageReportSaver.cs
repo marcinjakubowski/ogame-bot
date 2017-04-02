@@ -41,28 +41,28 @@ namespace OgameBot.Engine.Savers
                         item.LastResourcesTime = report.Sent;
                     }
 
-                    if (report.Details.HasFlag(ReportDetails.Buildings) && report.Sent > item.LastBuildingsTime)
+                    if (report.Details.HasFlag(ReportDetails.Buildings) && report.Sent > item.Buildings.LastUpdated)
                     {
                         item.Buildings = report.DetectedBuildings;
-                        item.LastBuildingsTime = report.Sent;
+                        item.Buildings.LastUpdated = report.Sent;
                     }
 
-                    if (report.Details.HasFlag(ReportDetails.Defense) && report.Sent > item.LastDefencesTime)
+                    if (report.Details.HasFlag(ReportDetails.Defense) && report.Sent > item.Defences.LastUpdated)
                     {
                         item.Defences = report.DetectedDefence;
-                        item.LastDefencesTime = report.Sent;
+                        item.Defences.LastUpdated = report.Sent;
                     }
 
-                    if (report.Details.HasFlag(ReportDetails.Ships) && report.Sent > item.LastShipsTime)
+                    if (report.Details.HasFlag(ReportDetails.Ships) && report.Sent > item.Ships.LastUpdated)
                     {
                         item.Ships = report.DetectedShips;
-                        item.LastShipsTime = report.Sent;
+                        item.Ships.LastUpdated = report.Sent;
                     }
 
-                    if (report.Details.HasFlag(ReportDetails.Research) && report.Sent > item.Player.LastResearchTime)
+                    if (report.Details.HasFlag(ReportDetails.Research) && report.Sent > item.Player.Research.LastUpdated)
                     {
                         item.Player.Research = report.DetectedResearch;
-                        item.Player.LastResearchTime = report.Sent;
+                        item.Player.Research.LastUpdated = report.Sent;
                     }
                 }
 

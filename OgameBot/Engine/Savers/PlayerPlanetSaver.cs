@@ -73,22 +73,22 @@ namespace OgameBot.Engine.Savers
                         if (ships.Count > 0)
                         {
                             item.Ships.FromPartialResult(ships);
-                            item.LastShipsTime = DateTimeOffset.Now;
+                            item.Ships.LastUpdated = DateTimeOffset.UtcNow;
                         }
                         else if (defences.Count > 0)
                         {
                             item.Defences.FromPartialResult(defences);
-                            item.LastDefencesTime = DateTimeOffset.Now;
+                            item.Defences.LastUpdated = DateTimeOffset.UtcNow;
                         }
                         else if (buildings.Count > 0)
                         {
                             item.Buildings.FromPartialResult(buildings);
-                            item.LastBuildingsTime = DateTimeOffset.Now;
+                            item.Buildings.LastUpdated = DateTimeOffset.UtcNow;
                         }
                         else if (research.Count > 0)
                         {
                             item.Player.Research.FromPartialResult(research);
-                            item.Player.LastResearchTime = DateTimeOffset.Now;
+                            item.Player.Research.LastUpdated = DateTimeOffset.UtcNow;
                         }
                     }
 

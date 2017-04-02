@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Db\Message.cs" />
+    <Compile Include="Db\Parts\Asset.cs" />
     <Compile Include="Db\Parts\PlayerResearch.cs" />
     <Compile Include="Db\Player.cs" />
     <Compile Include="Db\Interfaces\ICreatedOn.cs" />
@@ -106,9 +107,13 @@
     <Compile Include="Engine\Tasks\SessionKeepAliveJob.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logging\LogLevel.cs" />
-    <Compile Include="Migrations\201704012025426_PlanetCoords_Computed.cs" />
-    <Compile Include="Migrations\201704012025426_PlanetCoords_Computed.Designer.cs">
-      <DependentUpon>201704012025426_PlanetCoords_Computed.cs</DependentUpon>
+    <Compile Include="Migrations\201704012324437_Initial.cs" />
+    <Compile Include="Migrations\201704012324437_Initial.Designer.cs">
+      <DependentUpon>201704012324437_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201704012326330_PlanetCoords_Computed.cs" />
+    <Compile Include="Migrations\201704012326330_PlanetCoords_Computed.Designer.cs">
+      <DependentUpon>201704012326330_PlanetCoords_Computed.cs</DependentUpon>
     </Compile>
     <Compile Include="Objects\Cost.cs" />
     <Compile Include="Objects\Types\Page.cs" />
@@ -197,8 +202,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201704012025426_PlanetCoords_Computed.resx">
-      <DependentUpon>201704012025426_PlanetCoords_Computed.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201704012324437_Initial.resx">
+      <DependentUpon>201704012324437_Initial.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201704012326330_PlanetCoords_Computed.resx">
+      <DependentUpon>201704012326330_PlanetCoords_Computed.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

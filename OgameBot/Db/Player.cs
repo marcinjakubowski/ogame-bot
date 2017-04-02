@@ -22,17 +22,14 @@ namespace OgameBot.Db
         public string Name { get; set; }
 
         public int Ranking { get; set; }
-        
-        public DateTimeOffset CreatedOn { get; set; }
-
-        public DateTimeOffset UpdatedOn { get; set; }
-    
-        public virtual ICollection<Planet> Planets { get; set; }
 
         public PlayerStatus Status { get; set; }
         public PlayerResearch Research { get; set; }
-        public DateTimeOffset LastResearchTime { get; set; }
 
+        public DateTimeOffset CreatedOn { get; set; }
+        public DateTimeOffset UpdatedOn { get; set; }
+
+        public virtual ICollection<Planet> Planets { get; set; }
 
         public override string ToString()
         {
