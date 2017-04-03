@@ -11,6 +11,9 @@ namespace OgameBot.Engine.Tasks
         private bool _isRunning;
         public TimeSpan ExecutionInterval { get; set; }
 
+        public event Action OnJobStarted;
+        public event Action OnJobFinished;
+
         public WorkerBase()
         {
             ExecutionInterval = TimeSpan.FromMinutes(15);
@@ -26,7 +29,9 @@ namespace OgameBot.Engine.Tasks
             if (_isRunning)
             {
                 // Run task
+                OnJobStarted?.Invoke();
                 RunInternal();
+                OnJobFinished?.Invoke();
             }
 
             if (_isRunning)
