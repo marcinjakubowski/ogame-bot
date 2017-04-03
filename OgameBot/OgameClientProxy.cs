@@ -120,6 +120,12 @@ namespace OgameBot
                 proxyReq.Headers.TryAddWithoutValidation("Referer", referer);
             }
 
+            string requestedWith = ctx.Request.Headers.Get("X-Requested-With");
+            if (requestedWith != null)
+            {
+                proxyReq.Headers.TryAddWithoutValidation("X-Requested-With", requestedWith);
+            }
+
             if (requestedMethod == HttpMethod.Post)
             {
                 MemoryStream ms = new MemoryStream();
@@ -162,6 +168,8 @@ namespace OgameBot
                 str = str.Replace(SubstituteRoot.ToString(), $"http://{_listenHost}:{_listenPort}/");   // In links
                 str = str.Replace(SubstituteRoot.Host + ":" + SubstituteRoot.Port, $"{_listenHost}:{_listenPort}"); // Without scheme
                 str = str.Replace(SubstituteRoot.Host, $"{_listenHost}:{_listenPort}"); // Remainders
+                // To make overlays work, there is a check against ogameUrl in javascript
+                str = str.Replace(@"</body>", $@"<script type=""text/javascript"">ogameUrl = 'http://{_listenHost}:{_listenPort}'</script></body>");
 
                 data = Encoding.UTF8.GetBytes(str);
             }
