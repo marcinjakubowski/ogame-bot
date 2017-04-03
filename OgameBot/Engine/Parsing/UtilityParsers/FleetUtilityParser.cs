@@ -5,10 +5,11 @@ using HtmlAgilityPack;
 using OgameBot.Objects;
 using OgameBot.Objects.Types;
 using OgameBot.Utilities;
+using System;
 
 namespace OgameBot.Engine.Parsing.UtilityParsers
 {
-    public static class FleetCompositionParser
+    public static class FleetUtilityParser
     {
         public static FleetComposition ParseFleetInfoTable(OGameClient client, HtmlNode fleetInfoContainer)
         {
@@ -56,6 +57,17 @@ namespace OgameBot.Engine.Parsing.UtilityParsers
             res.Resources = resources;
 
             return res;
+        }
+        public static FleetMissionDetails ParseFleetMissionDetails(HtmlNode missionDetailsContainer)
+        {
+            FleetMissionDetails details = new FleetMissionDetails();
+
+            details.Mission = (MissionType)missionDetailsContainer.GetAttributeValue("data-mission-type", 0);
+            details.IsReturn = missionDetailsContainer.GetAttributeValue("data-return-flight", false);
+            int arrivalSec = missionDetailsContainer.GetAttributeValue("data-arrival-time", 0);
+            details.ArrivalTime = DateTimeOffset.FromUnixTimeSeconds(arrivalSec);
+
+            return details;
         }
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
@@ -34,13 +33,9 @@ namespace OgameBot.Engine.Parsing
                 string idText = node.GetAttributeValue("id", null);
                 int id = int.Parse(FleetIdRegex.Match(idText).Groups[1].Value, NumberStyles.AllowThousands | NumberStyles.Integer, client.ServerCulture);
 
-                MissionType missionType = (MissionType)node.GetAttributeValue("data-mission-type", 0);
-                bool isReturn = node.GetAttributeValue("data-return-flight", false);
-                int arrivalSec = node.GetAttributeValue("data-arrival-time", 0);
-                DateTimeOffset arrival = DateTimeOffset.FromUnixTimeSeconds(arrivalSec);
-
+                FleetMissionDetails missionDetails = FleetUtilityParser.ParseFleetMissionDetails(node);
                 HtmlNode fleetInfo = node.SelectSingleNode(".//span[@class='starStreak']");
-                FleetComposition composition = FleetCompositionParser.ParseFleetInfoTable((OGameClient) client, fleetInfo);
+                FleetComposition composition = FleetUtilityParser.ParseFleetInfoTable((OGameClient) client, fleetInfo);
 
                 FleetEndpointInfo endpointOrigin = ParseEndpoint(node.SelectSingleNode("./span[@class='originData']"));
                 FleetEndpointInfo endpointDestination = ParseEndpoint(node.SelectSingleNode("./span[@class='destinationData']"));
@@ -48,9 +43,9 @@ namespace OgameBot.Engine.Parsing
                 yield return new FleetInfo
                 {
                     Id = id,
-                    ArrivalTime = arrival,
-                    IsReturning = isReturn,
-                    MissionType = missionType,
+                    ArrivalTime = missionDetails.ArrivalTime,
+                    IsReturning = missionDetails.IsReturn,
+                    MissionType = missionDetails.Mission,
                     Origin = endpointOrigin,
                     Destination = endpointDestination,
                     Composition = composition

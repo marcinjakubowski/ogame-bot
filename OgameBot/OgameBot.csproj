@@ -118,6 +118,7 @@
       <DependentUpon>201704012326330_PlanetCoords_Computed.cs</DependentUpon>
     </Compile>
     <Compile Include="Objects\Cost.cs" />
+    <Compile Include="Objects\FleetMissionDetails.cs" />
     <Compile Include="Objects\Types\BaseGrowingCostEntity.cs" />
     <Compile Include="Objects\Types\BaseCostEntity.cs" />
     <Compile Include="Objects\Types\Page.cs" />
@@ -157,7 +158,7 @@
     <Compile Include="Engine\Parsing\DefencesPageParser.cs" />
     <Compile Include="Engine\Parsing\EspionageDetailsParser.cs" />
     <Compile Include="Engine\Parsing\FacilitiesPageParser.cs" />
-    <Compile Include="Engine\Parsing\UtilityParsers\FleetCompositionParser.cs" />
+    <Compile Include="Engine\Parsing\UtilityParsers\FleetUtilityParser.cs" />
     <Compile Include="Engine\Parsing\FleetMovementPageParser.cs" />
     <Compile Include="Engine\Parsing\GalaxyPageParser.cs" />
     <Compile Include="Engine\Parsing\MessagesPageParser.cs" />
