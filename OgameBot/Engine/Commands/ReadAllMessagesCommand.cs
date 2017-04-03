@@ -1,35 +1,46 @@
-﻿using System.Net.Http;
-using OgameBot.Objects;
-using System.Linq;
+﻿using OgameBot.Db;
 using OgameBot.Engine.Parsing.Objects;
+using OgameBot.Objects;
+using OgameBot.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
 
 namespace OgameBot.Engine.Commands
 {
     public class ReadAllMessagesCommand : CommandBase
     {
-        public ReadAllMessagesCommand(OGameClient client)
-            : base(client)
+        public ReadAllMessagesCommand(OGameClient client) : base(client)
         {
         }
 
         public override void Run()
         {
-            // Read first page of all message types
-            MessageTabType[] types = { MessageTabType.FleetsEspionage };
+            // Read all messages
+            FindAllMessagesCommand cmd = new FindAllMessagesCommand(Client);
+            cmd.Run();
 
-            foreach (MessageTabType type in types)
+            List<MessagesPage> messagePages = cmd.ParsedObjects.OfType<MessagesPage>().ToList();
+            List<int> messageIds = messagePages.SelectMany(s => s.MessageIds).Select(s => s.Item1).ToList();
+
+            HashSet<int> existing;
+            using (BotDb db = new BotDb())
+                existing = db.Messages.Where(s => messageIds.Contains(s.MessageId)).Select(s => s.MessageId).ToHashset();
+
+            foreach (MessagesPage messagesPage in messagePages)
             {
-                HttpRequestMessage req = Client.RequestBuilder.GetMessagePageRequest(type, 1);
-                AssistedIssue(req);
-
-                var page = ParsedObjects.OfType<MessagesPage>().FirstOrDefault();
-                // check against no espionage reports
-                if (page != null)
+                // Request each message
+                foreach (Tuple<int, MessageType> message in messagesPage.MessageIds)
                 {
-                    for (int pageNo = 2; pageNo <= page.MaxPage; ++pageNo)
+                    if (existing.Contains(message.Item1))
+                        // Already fetched
+                        continue;
+
+                    if (message.Item2 == MessageType.EspionageReport)
                     {
-                        HttpRequestMessage nextPage = Client.RequestBuilder.GetMessagePageRequest(type, pageNo);
-                        AssistedIssue(nextPage);
+                        HttpRequestMessage req = Client.RequestBuilder.GetMessagePage(message.Item1, MessageTabType.FleetsEspionage);
+                        AssistedIssue(req);
                     }
                 }
             }
