@@ -77,8 +77,8 @@ namespace OgameBot
             ApiImporterJob job1 = new ApiImporterJob(client, new DirectoryInfo("temp"));
             job1.Start();
 
-            MessageReaderJob job2 = new MessageReaderJob(client);
-            job2.Start();
+            /*MessageReaderJob job2 = new MessageReaderJob(client);
+            job2.Start();*/
 
             SessionKeepAliveJob job3 = new SessionKeepAliveJob(client);
             job3.Start();
@@ -86,9 +86,16 @@ namespace OgameBot
             Builder buildJob = new Builder(client);
             buildJob.Start();
 
+            //ScannerJob s = new ScannerJob(client, new SystemCoordinate(1, 1), new SystemCoordinate(6, 499));
+            //s.Start();
+
+
             // Farming bot
-            //FarmingBot bot = new FarmingBot(client, SystemCoordinate.Create(6, 60), SystemCoordinate.Create(6, 100));
-            //bot.Start();
+            if (config.ShouldStartFarm)
+            {
+                FarmingBot bot = new FarmingBot(client, config.Username, config.FarmPlanet, 60, 1500);
+                bot.Start();
+            }
 
             // Work
             Console.ReadLine();
