@@ -50,6 +50,15 @@ namespace OgameBot.Engine.Tasks
             FileInfo serverDataFile = new FileInfo(Path.Combine(_baseDir.FullName, _client.BaseUri.Host + "-serverData.xml"));
             FileInfo highscoreFile = new FileInfo(Path.Combine(_baseDir.FullName, _client.BaseUri.Host + "-highscore.xml"));
 
+            // Always update server data
+            {
+                Logger.Instance.Log(LogLevel.Info, "ApiImporterJob: Updating serverData from API");
+                Update(serverDataUri, serverDataFile).Sync();
+                ServerData model = XmlModelSerializer.Deserialize<ServerData>(serverDataFile);
+                ProcessData(model);
+            }
+
+
             if (NeedUpdate(universeUri, universeFile, "universe").Sync())
             {
                 Logger.Instance.Log(LogLevel.Info, "ApiImporterJob: Updating universe from API");
@@ -80,16 +89,8 @@ namespace OgameBot.Engine.Tasks
                 ProcessData(model);
             }
 
-            if (NeedUpdate(serverDataUri, serverDataFile, "serverData").Sync())
-            {
-                Logger.Instance.Log(LogLevel.Info, "ApiImporterJob: Updating serverData from API");
-
-                Update(serverDataUri, serverDataFile).Sync();
-
-                ServerData model = XmlModelSerializer.Deserialize<ServerData>(serverDataFile);
-                ProcessData(model);
-            }
-
+            
+            
             if (NeedUpdate(highscoreUri, highscoreFile, "highscore").Sync())
             {
                 Logger.Instance.Log(LogLevel.Info, "ApiImporterJob: Updating highscore from API");
@@ -174,7 +175,9 @@ namespace OgameBot.Engine.Tasks
 
         private void ProcessData(ServerData model)
         {
-
+            _client.Settings.ServerUtcOffset = TimeSpan.Parse(model.TimezoneOffset.Replace("+", ""));
+            _client.Settings.Galaxies = (byte)model.Galaxies;
+            _client.Settings.Systems = (short)model.Systems;
         }
 
         private void ProcessData(Universe model)

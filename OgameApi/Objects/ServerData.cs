@@ -14,6 +14,9 @@ namespace OgameApi.Objects
         [XmlElement("timezone")]
         public string Timezone { get; set; }
 
+        [XmlElement("timezoneOffset")]
+        public string TimezoneOffset { get; set; }
+
         [XmlElement("domain")]
         public string Domain { get; set; }
 
