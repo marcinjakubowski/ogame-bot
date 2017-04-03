@@ -19,7 +19,7 @@
 			"Battlecruiser" : "Battlecruiser",
 			"SmallCargo" : "Small Cargo",
 			"LargeCargo" : "Large Cargo",
-			"Colony" : "Colony Ship",
+			"ColonyShip" : "Colony Ship",
 			"SolarSatellite" : "Solar Satellite"
 		}
 	}
