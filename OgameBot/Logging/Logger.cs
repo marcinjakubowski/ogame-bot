@@ -43,6 +43,13 @@ namespace OgameBot.Logging
                     Console.ResetColor();
                     Console.Write("] ");
                     break;
+                case LogLevel.Success:
+                    Console.Write("[");
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.Write("ERR");
+                    Console.ResetColor();
+                    Console.Write("] ");
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(level), level, null);
             }
