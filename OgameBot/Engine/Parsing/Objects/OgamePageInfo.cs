@@ -46,7 +46,7 @@ namespace OgameBot.Engine.Parsing.Objects
 
         public string MiniFleetToken { get; set; }
         // token for building ships and facilities
-        public string BuildToken { get; set; }
+        public string OrderToken { get; set; }
         public PageType Page { get; internal set; }
 
         private string TryGet(string key, string @default)

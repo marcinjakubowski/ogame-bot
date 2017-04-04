@@ -77,7 +77,7 @@ namespace OgameBot.Engine.Parsing
             HtmlNode token = doc.DocumentNode.SelectSingleNode("//input[@type='hidden' and @name='token']");
             if (token != null)
             {
-                res.BuildToken = token.GetAttributeValue("value", string.Empty);
+                res.OrderToken = token.GetAttributeValue("value", string.Empty);
             }
 
             yield return res;

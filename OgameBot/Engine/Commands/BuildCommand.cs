@@ -32,7 +32,7 @@ namespace OgameBot.Engine.Commands
             // Make the initial request to get a token
             HttpRequestMessage req = Client.RequestBuilder.GetPage(PageType.Resources, Where.PlanetId);
             ResponseContainer res = AssistedIssue(req);
-            string token = res.GetParsedSingle<OgamePageInfo>().BuildToken;
+            string token = res.GetParsedSingle<OgamePageInfo>().OrderToken;
 
             // validate resources
             Dictionary<BuildingType, int> currentBuildings = Where.Buildings;
