@@ -3,7 +3,7 @@ using System.Net.Http;
 using OgameBot.Objects;
 using OgameBot.Objects.Types;
 using OgameBot.Utilities;
-using OgameBot.Db;
+using System.Collections.Generic;
 
 namespace OgameBot.Engine.Commands
 {
@@ -18,12 +18,18 @@ namespace OgameBot.Engine.Commands
 
         public HttpRequestMessage GetPage(PageType page, int? cp = null)
         {
-            string link = Page.Get(page).Link;
+            string link = ((Page)page).Link;
             if (cp != null)
             {
                 link += $"&cp={cp}";
             }
             return _client.BuildRequest(new Uri($"/game/index.php?page={link}", UriKind.Relative));
+        }
+
+        public HttpRequestMessage PostPage(PageType page, KeyValuePair<string, string>[] postParameters)
+        {
+            string link = ((Page)page).Link;
+            return _client.BuildPost(new Uri($"/game/index.php?page={link}", UriKind.Relative), postParameters);
         }
 
         public HttpRequestMessage GetBuildBuildingRequest(BuildingType type, string token)

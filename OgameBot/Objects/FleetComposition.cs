@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using OgameBot.Objects.Types;
+using System;
 
 namespace OgameBot.Objects
 {
@@ -16,6 +17,38 @@ namespace OgameBot.Objects
         {
             Ships = new Dictionary<ShipType, int>();
             Resources = new Resources();
+        }
+
+        public static FleetComposition ToTransport(Resources resources, ShipType cargo = ShipType.LargeCargo)
+        {
+            FleetComposition fleet = new FleetComposition();
+
+            fleet.Ships[cargo] = (int)Math.Ceiling(resources.Total / GetTransportCapacity(cargo));
+            fleet.Resources = resources;
+
+            return fleet;
+        }
+
+        public static FleetComposition ToPlunder(Resources resources, ShipType cargo = ShipType.LargeCargo)
+        {
+            FleetComposition fleet = new FleetComposition();
+            // Simple calculation method
+            fleet.Ships[cargo] = (int)Math.Ceiling(resources.Total / 2 / GetTransportCapacity(cargo));
+
+            return fleet;
+        }
+
+        private static decimal GetTransportCapacity(ShipType cargo)
+        {
+            switch(cargo)
+            {
+                case ShipType.LargeCargo:
+                    return 25000;
+                case ShipType.SmallCargo:
+                    return 10000;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(cargo), "Can only transport using Large or Small Cargo");
+            }
         }
     }
 }
