@@ -56,6 +56,28 @@ namespace OgameBot.Objects
             return !left.Equals(right);
         }
 
+        public static Resources operator /(Resources left, int right)
+        {
+            return new Resources
+            {
+                Metal = left.Metal / right,
+                Crystal = left.Crystal / right,
+                Deuterium = left.Deuterium / right,
+                Energy = left.Energy / right
+            };
+        }
+
+        public static Resources operator +(Resources left, Resources right)
+        {
+            return new Resources
+            {
+                Metal = left.Metal + right.Metal,
+                Crystal = left.Crystal + right.Crystal,
+                Deuterium = left.Deuterium + right.Deuterium,
+                Energy = left.Energy + right.Energy
+            };
+        }
+
         public int Metal { get; set; }
 
         public int Crystal { get; set; }
