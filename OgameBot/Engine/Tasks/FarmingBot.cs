@@ -26,6 +26,7 @@ namespace OgameBot.Engine.Tasks
         private int _minRanking;
         private string _player;
         private string _planet;
+        private Random _sleepTime = new Random();
 
         public FarmingBot(OGameClient client, string player, string planet, int range, int minRanking)
         {
@@ -69,23 +70,58 @@ namespace OgameBot.Engine.Tasks
         private void Worker()
         {
             _scanner.Stop();
-            List<Planet> farms;
+            IEnumerable<Planet> farms = GetFarms();
+            Logger.Instance.Log(LogLevel.Info, $"Got {farms.Count()} farms, probing...");
+
+            SendProbes(farms);
+            Logger.Instance.Log(LogLevel.Info, "Sending probes finished, waiting to come back and read messages");
+            WaitForProbes();
+            
+            // Read messages
+            ReadAllMessagesCommand cmd = new ReadAllMessagesCommand(_client);
+            cmd.Run();
+            var messages = cmd.ParsedObjects.OfType<EspionageReport>();
+
+            Resources totalPlunder = Attack(messages);
+            Logger.Instance.Log(LogLevel.Info, $"Job done, theoretical total plunder: {totalPlunder}");
+        }
+              
+
+        private IEnumerable<Planet> GetFarms()
+        {
             using (BotDb db = new BotDb())
             {
-                farms = db.Planets.Where(s => 
-                        s.LocationId >= _from.Id && s.LocationId <= _to.Id 
+                var farms = db.Planets.Where(s =>
+                        s.LocationId >= _from.Id && s.LocationId <= _to.Id
                      && (s.Player.Status.HasFlag(PlayerStatus.Inactive) || s.Player.Status.HasFlag(PlayerStatus.LongInactive))
                      && !s.Player.Status.HasFlag(PlayerStatus.Vacation)
                      && !s.Player.Status.HasFlag(PlayerStatus.Admin)
                      && s.Player.Ranking < _minRanking
                 ).ToList();
-            }
-            Logger.Instance.Log(LogLevel.Info, $"Got {farms.Count} farms");
-            foreach (Planet planet in farms)
-            {
-                Logger.Instance.Log(LogLevel.Debug, $"\t{planet.Coordinate} - {planet.Name}");
-            }
 
+                return farms;
+            }
+        }
+
+        private IEnumerable<Planet> GetFarmsToScanForFleet()
+        {
+            using (BotDb db = new BotDb())
+            {
+                var farms = db.Planets.Where(s =>
+                                        s.LocationId >= _from.Id && s.LocationId <= _to.Id
+                                     && !((s.Player.Status.HasFlag(PlayerStatus.Inactive) || s.Player.Status.HasFlag(PlayerStatus.LongInactive)))
+                                     && !s.Player.Status.HasFlag(PlayerStatus.Vacation)
+                                     && !s.Player.Status.HasFlag(PlayerStatus.Admin)
+                                     && !s.Player.Status.HasFlag(PlayerStatus.Noob)
+                                     && (!s.Player.Status.HasFlag(PlayerStatus.Strong) || s.Player.Status.HasFlag(PlayerStatus.Outlaw))
+                                ).ToList();
+
+                return farms;
+            }
+        }
+
+        private void SendProbes(IEnumerable<Planet> farms)
+        {
             HttpRequestMessage req = RequestBuilder.GetPage(PageType.Galaxy);
             ResponseContainer resp = _client.IssueRequest(req);
 
@@ -95,13 +131,10 @@ namespace OgameBot.Engine.Tasks
                 throw new ApplicationException("Not where we should be");
             }
 
-            Random sleepTime = new Random();
-
             string token = info.MiniFleetToken;
-
             bool wasSuccessful = false;
             int retry = 0;
-            
+
             foreach (Planet farm in farms)
             {
                 wasSuccessful = false;
@@ -112,52 +145,137 @@ namespace OgameBot.Engine.Tasks
                     req = RequestBuilder.GetMiniFleetSendMessage(MissionType.Espionage, farm.Coordinate, 2, token);
                     resp = _client.IssueRequest(req);
 
-/* #todo parse to class instead of jobject
-{  
-   "response":{  
-      "message":"Send espionage probe to:",
-      "type":1,
-      "slots":8,
-      "probes":18,
-      "recyclers":0,
-      "missiles":0,
-      "shipsSent":2,
-      "coordinates":{  
-         "galaxy":3,
-         "system":55,
-         "position":8
-      },
-      "planetType":1,
-      "success":true
-   },
-   "newToken":"fb74477ff26fd4ba9c41c110aa295baf"
-}
-*/
+                    //#todo parse to class instead of jobject
+                    //{  
+                    //"response":{  
+                    //"message":"Send espionage probe to:",
+                    //"type":1,
+                    //"slots":8,
+                    //"probes":18,
+                    //"recyclers":0,
+                    //"missiles":0,
+                    //"shipsSent":2,
+                    //"coordinates":{  
+                    //"galaxy":3,
+                    //"system":55,
+                    //"position":8
+                    //},
+                    //"planetType":1,
+                    //"success":true
+                    //},
+                    //"newToken":"fb74477ff26fd4ba9c41c110aa295baf"
+                    //}
+
                     JObject result = JObject.Parse(resp.Raw.Value);
                     wasSuccessful = (bool)result["response"]["success"];
                     if (!wasSuccessful)
                     {
                         retry++;
-                        Thread.Sleep(2000 + sleepTime.Next(4000));
+                        Thread.Sleep(2000 + _sleepTime.Next(4000));
                     }
                     token = result["newToken"].ToString();
-                    Thread.Sleep(1000 + sleepTime.Next(1000));
+
+                    Thread.Sleep(1000 + _sleepTime.Next(1000));
                 }
 
                 if (!wasSuccessful)
                 {
-                    Logger.Instance.Log(LogLevel.Error, $"Sending probes to ${farm.Coordinate} failed.");
+                    Logger.Instance.Log(LogLevel.Error, $"Sending probes to {farm.Coordinate} failed.");
                 }
             }
-            Logger.Instance.Log(LogLevel.Info, "Sending probes finished, waiting to come back and read messages");
-            // Wait for all the probes to come back
-            Thread.Sleep(15000 + sleepTime.Next(5000));
+        }
 
-            ReadAllMessagesCommand cmd = new ReadAllMessagesCommand(_client);
-            cmd.Run();
+        private void WaitForProbes()
+        {
+            Thread.Sleep(5000 + _sleepTime.Next(2000));
 
-            Logger.Instance.Log(LogLevel.Info, "Messages parsed, job done.");
-            
+            IEnumerable<FleetInfo> probes;
+            do
+            {
+                HttpRequestMessage req = RequestBuilder.GetPage(PageType.FleetMovement);
+                ResponseContainer resp = _client.IssueRequest(req);
+
+                probes = resp.GetParsed<FleetInfo>().Where(fi => fi.MissionType == MissionType.Espionage);
+                if (probes.Any())
+                {
+                    Thread.Sleep(3000 + _sleepTime.Next(2000));
+                }
+            } while (probes.Any());
+        }
+
+        private Resources Attack(IEnumerable<EspionageReport> messages)
+        {
+            ResponseContainer resp = _client.IssueRequest(RequestBuilder.GetPage(PageType.Fleet));
+            FleetSlotCount slotCount = resp.GetParsedSingle<FleetSlotCount>();
+
+
+            Logger.Instance.Log(LogLevel.Info, $"{messages.Count()} Messages parsed, sending ships. Currently {slotCount.Current} fleets out of {slotCount.Max} available slots.");
+
+            //Check if the planet wasn't changed in the meantime (ie. by user action), we'd be sending cargos for a long trip
+            OgamePageInfo info = resp.GetParsedSingle<OgamePageInfo>();
+            if (info.PlanetName != _planet)
+            {
+                throw new ApplicationException("Not where we should be when sending fleets");
+            }
+
+            // Check how many cargos are there
+            int? cargoCount = resp.GetParsed<DetectedShip>().Where(s => s.Ship == ShipType.LargeCargo).FirstOrDefault()?.Count;
+            if (!cargoCount.HasValue || cargoCount == 0)
+            {
+                Logger.Instance.Log(LogLevel.Error, "There are no cargos on the planet");
+                return new Resources();
+            }
+
+            int slotsAvailable = slotCount.Max - slotCount.Current - 1;
+            if (slotsAvailable <= 0)
+            {
+                Logger.Instance.Log(LogLevel.Error, "No slots available");
+                return new Resources();
+            }
+
+            // Get all the messages where defense and ships sections were found, but were empty
+            // We want that list in a descending order of total resources available for us to plunder
+            var farmsToAttack = messages.Where(m =>
+                                               m.Details.HasFlag(ReportDetails.Defense) && m.DetectedDefence == null &&
+                                               m.Details.HasFlag(ReportDetails.Ships) && m.DetectedShips == null)
+                                        .OrderByDescending(m => m.Resources.Total);
+
+            Resources totalPlunder = new Resources();
+            foreach (var farm in farmsToAttack)
+            {
+                
+                var fleetComposition = FleetComposition.ToPlunder(farm.Resources, ShipType.LargeCargo);
+                int cargosToUse = fleetComposition.Ships[ShipType.LargeCargo];
+                // stop farming when:
+                //  - just sending 1 cargo (not worth it)
+                //  - there are no remaining cargos on planet
+                //  - no slots available
+                if (cargosToUse == 1 || cargoCount <= 0 || slotsAvailable == 0)
+                {
+                    break;
+                }
+
+                Thread.Sleep(3000 + _sleepTime.Next(2000));
+                Resources plunder = farm.Resources / 2;
+                plunder.Energy = 0;
+                totalPlunder = totalPlunder + plunder;
+                Logger.Instance.Log(LogLevel.Info, $"Sending {cargosToUse} to planet {farm.Coordinate} to plunder {plunder}");
+
+                SendFleetCommand attack = new SendFleetCommand(_client)
+                {
+                    Mission = MissionType.Attack,
+                    Destination = farm.Coordinate,
+                    Source = info.PlanetCoord,
+                    Fleet = fleetComposition
+                };
+                attack.Run();
+
+                cargoCount -= cargosToUse;
+                slotsAvailable--;
+
+            }
+
+            return totalPlunder;
         }
     }
 }

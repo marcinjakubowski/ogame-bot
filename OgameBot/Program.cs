@@ -93,7 +93,7 @@ namespace OgameBot
             // Farming bot
             if (config.ShouldStartFarm)
             {
-                FarmingBot bot = new FarmingBot(client, config.Username, config.FarmPlanet, 60, 1500);
+                FarmingBot bot = new FarmingBot(client, config.Username, config.FarmPlanet, config.FarmRange, config.FarmMinimumRanking);
                 bot.Start();
             }
 
