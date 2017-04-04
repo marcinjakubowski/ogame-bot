@@ -48,8 +48,8 @@ namespace OgameBot.Logging
                     break;
                 case LogLevel.Success:
                     Console.Write("[");
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.Write("ERR");
+                    Console.ForegroundColor = ConsoleColor.DarkGreen;
+                    Console.Write("SUC");
                     Console.ResetColor();
                     Console.Write("] ");
                     break;

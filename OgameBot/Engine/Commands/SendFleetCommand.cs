@@ -89,7 +89,7 @@ namespace OgameBot.Engine.Commands
                 StringBuilder sb = new StringBuilder();
                 fi.Composition.Ships.ToList().ForEach(s => sb.AppendFormat("{1}x {0}, ", s.Key, s.Value));
                 sb.Remove(sb.Length - 2, 2);
-                Logger.Instance.Log(LogLevel.Info, $"Sent {Mission} fleet from {Source} to {Destination}: {sb.ToString()}");
+                Logger.Instance.Log(LogLevel.Success, $"Sent {Mission} fleet from {Source} to {Destination}: {sb.ToString()}");
             }
             else
             {

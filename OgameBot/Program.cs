@@ -68,7 +68,7 @@ namespace OgameBot
             proxy.SubstituteRoot = new Uri($"https://{config.Server}");
             proxy.Start();
 
-            Logger.Instance.Log(LogLevel.Warning, $"Prepared reverse proxy, visit: {proxy.ListenPrefix}");
+            Logger.Instance.Log(LogLevel.Success, $"Prepared reverse proxy, visit: {proxy.ListenPrefix}");
 
             // Kick-off
             client.PerformLogin();
