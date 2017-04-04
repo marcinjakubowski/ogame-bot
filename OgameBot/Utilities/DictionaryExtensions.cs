@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OgameBot.Utilities
 {
@@ -34,6 +35,11 @@ namespace OgameBot.Utilities
             }
 
             return false;
+        }
+
+        public static void Merge<TKey, TVal>(this Dictionary<TKey, TVal> dict, Dictionary<TKey, TVal> source)
+        {
+            source.ToList().ForEach(x => dict[x.Key] = x.Value);
         }
     }
 }

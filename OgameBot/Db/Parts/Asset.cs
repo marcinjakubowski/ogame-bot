@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OgameBot.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -27,7 +28,7 @@ namespace OgameBot.Db.Parts
 
         public void FromPartialResult(Dictionary<T, int> dict)
         {
-            dict.ToList().ForEach(x => _dict[x.Key] = x.Value);
+            _dict.Merge(dict);
             _isSet = true;
         }
 
