@@ -64,6 +64,20 @@ namespace OgameBot.Engine.Savers
                         item.Player.Research = report.DetectedResearch;
                         item.Player.Research.LastUpdated = report.Sent;
                     }
+
+                    if (report.Details.HasFlag(ReportDetails.Ships) && report.DetectedShips != null)
+                    {
+                        if (!db.PlanetShipLog.Where(s => s.LocationId == item.Coordinate.Id && s.CreatedOn == report.Sent).Any())
+                        {
+                            PlanetShipLog log = new PlanetShipLog()
+                            {
+                                Planet = item,
+                                Ships = report.DetectedShips,
+                                CreatedOn = report.Sent
+                            };
+                            db.PlanetShipLog.Add(log);
+                        }
+                    }
                 }
 
                 db.SaveChanges();

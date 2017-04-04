@@ -20,6 +20,8 @@ namespace OgameBot.Db
 
         public DbSet<Message> Messages { get; set; }
 
+        public DbSet<PlanetShipLog> PlanetShipLog { get; set; }
+
         public override int SaveChanges()
         {
             HandleAuditing();
