@@ -84,6 +84,7 @@
     <Compile Include="Engine\Parsing\Objects\DetectedOngoingConstruction.cs" />
     <Compile Include="Engine\Parsing\Objects\DetectedOngoingResearch.cs" />
     <Compile Include="Engine\Parsing\Objects\EspionageReport.cs" />
+    <Compile Include="Engine\Parsing\Objects\FleetSlotCount.cs" />
     <Compile Include="Engine\Parsing\Objects\MessageBase.cs" />
     <Compile Include="Engine\Parsing\MessageCountParser.cs" />
     <Compile Include="Engine\Parsing\Objects\MessageType.cs" />

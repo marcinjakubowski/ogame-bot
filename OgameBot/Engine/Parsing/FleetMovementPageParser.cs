@@ -28,6 +28,13 @@ namespace OgameBot.Engine.Parsing
             if (imageFields == null)
                 yield break;
 
+            FleetSlotCount count = new FleetSlotCount();
+            HtmlNode slots = doc.DocumentNode.SelectSingleNode("//div[@id='content']//div[@class='fleetStatus']/span[@class='fleetSlots']");
+            count.Current = int.Parse(slots.SelectSingleNode("./span[@class='current']").InnerText);
+            count.Max = int.Parse(slots.SelectSingleNode("./span[@class='all']").InnerText);
+
+            yield return count;
+
             foreach (HtmlNode node in imageFields)
             {
                 string idText = node.GetAttributeValue("id", null);

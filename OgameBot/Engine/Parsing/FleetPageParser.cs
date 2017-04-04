@@ -8,12 +8,13 @@ using OgameBot.Objects.Types;
 using OgameBot.Utilities;
 using ScraperClientLib.Engine;
 using ScraperClientLib.Engine.Parsing;
+using OgameBot.Logging;
 
 namespace OgameBot.Engine.Parsing
 {
     public class FleetPageParser : BaseParser
     {
-        private static Regex CssRegex = new Regex(@"(?:military[\d]+|civil[\d]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static Regex FleetsRegex = new Regex(@"([\d]+)/([\d]+)", RegexOptions.Compiled);
 
         public override bool ShouldProcessInternal(ResponseContainer container)
         {
@@ -27,6 +28,30 @@ namespace OgameBot.Engine.Parsing
 
             if (listItemFields == null)
                 yield break;
+
+            // 1 = fleets
+            // 2 = expeditions
+            // 3 = tactical retreat
+            HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//div[@class='fleetStatus']//span[contains(@class, 'tooltip')]");
+            if (nodes != null)
+            {
+                FleetSlotCount count = new FleetSlotCount();
+                string fleetText = nodes[0].InnerText;
+                Match match = FleetsRegex.Match(fleetText);
+                if (match.Success)
+                {
+                    count.Current = int.Parse(match.Groups[1].Value);
+                    count.Max = int.Parse(match.Groups[2].Value);
+
+                    yield return count;
+                }
+                else
+                {
+                    Logger.Instance.Log(LogLevel.Error, $"Could not parse fleet count match: {fleetText}");
+                }
+            }
+
+
 
             foreach (HtmlNode node in listItemFields)
             {
