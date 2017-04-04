@@ -1,4 +1,6 @@
-﻿namespace OgameBot
+﻿using OgameBot.Logging;
+
+namespace OgameBot
 {
     public class Config
     {
@@ -13,5 +15,7 @@
         public bool ShouldStartFarm { get; set; }
         public int FarmMinimumRanking { get; set; }
         public int FarmRange { get; set; }
+
+        public LogLevel LogLevel { get; set; }
     }
 }

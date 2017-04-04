@@ -5,6 +5,7 @@ namespace OgameBot.Logging
     public class Logger
     {
         public static Logger Instance { get; } = new Logger();
+        public LogLevel MinimumLogLevel { get; set; } = LogLevel.Info;
 
         private Logger()
         {
@@ -13,6 +14,8 @@ namespace OgameBot.Logging
 
         public void Log(LogLevel level, string message)
         {
+            if (level < MinimumLogLevel) return;
+
             switch (level)
             {
                 case LogLevel.Debug:
