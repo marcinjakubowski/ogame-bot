@@ -4,6 +4,9 @@ namespace OgameBot
 {
     public class Config
     {
+        public string ListenAddress { get; set; } = "127.0.0.1";
+        public int ListenPort { get; set; } = 9400;
+
         public string Username { get; set; }
 
         public string Password { get; set; }

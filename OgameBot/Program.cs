@@ -18,6 +18,12 @@ namespace OgameBot
     {
         public static void Main(string[] args)
         {
+            // Fuck that, it's impossible to make Mono accept certificates from OGame, at least I'm too stupid to do it apparently.
+            if (IsRunningOnMono())
+            {
+                System.Net.ServicePointManager.ServerCertificateValidationCallback += delegate { return true; };
+            }
+
             if (!File.Exists("config.json"))
             {
                 Console.WriteLine("Please copy config.template.json to config.json and fill it out");
@@ -29,7 +35,7 @@ namespace OgameBot
             Logger.Instance.Log(LogLevel.Info, $"Loaded settings, user: {config.Username}, server: {config.Server}");
 
             // Setup
-            OGameStringProvider stringProvider = OGameStringProvider.Load(@"Resources\strings-en.json");
+            OGameStringProvider stringProvider = OGameStringProvider.Load(@"Resources/strings-en.json");
             CultureInfo clientServerCulture = CultureInfo.GetCultureInfo("da-DK");
 
             // Processing
@@ -66,7 +72,7 @@ namespace OgameBot
                 Logger.Instance.Log(LogLevel.Info, $"Loaded Saver: {item.GetType().FullName}");
 
             // Start proxy
-            OgameClientProxy proxy = new OgameClientProxy("127.0.0.1", 9400, client);
+            OgameClientProxy proxy = new OgameClientProxy(config.ListenAddress, config.ListenPort, client);
             proxy.SubstituteRoot = new Uri($"https://{config.Server}");
             proxy.Start();
 
@@ -110,6 +116,11 @@ namespace OgameBot
 
             // Work
             Console.ReadLine();
+        }
+
+        public static bool IsRunningOnMono()
+        {
+            return Type.GetType("Mono.Runtime") != null;
         }
     }
 }
