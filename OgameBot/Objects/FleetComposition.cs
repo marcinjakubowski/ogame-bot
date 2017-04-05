@@ -33,9 +33,17 @@ namespace OgameBot.Objects
         {
             FleetComposition fleet = new FleetComposition();
             // Simple calculation method
-            fleet.Ships[cargo] = (int)Math.Ceiling(resources.Total / 2 / GetTransportCapacity(cargo));
+            fleet.Ships[cargo] = (int)Math.Ceiling(GetPlunder(resources).Total / GetTransportCapacity(cargo));
 
             return fleet;
+        }
+
+        public static Resources GetPlunder(Resources available)
+        {
+            Resources theoretical = available / 2;
+            theoretical.Energy = 0;
+
+            return theoretical;
         }
 
         private static decimal GetTransportCapacity(ShipType cargo)

@@ -6,7 +6,7 @@ using OgameBot.Db;
 using OgameBot.Objects;
 using OgameBot.Logging;
 
-namespace OgameBot.Engine.Tasks
+namespace OgameBot.Engine.Tasks.Farming
 {
     public class ScannerJob : WorkerBase
     {

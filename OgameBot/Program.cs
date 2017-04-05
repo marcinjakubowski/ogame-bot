@@ -9,6 +9,8 @@ using OgameBot.Logging;
 using OgameBot.Objects;
 using ScraperClientLib.Engine.Interventions;
 using ScraperClientLib.Engine.Parsing;
+using OgameBot.Engine.Tasks.Farming;
+using OgameBot.Engine.Tasks.Farming.Strategies;
 
 namespace OgameBot
 {
@@ -93,8 +95,16 @@ namespace OgameBot
             // Farming bot
             if (config.ShouldStartFarm)
             {
-                FarmingBot bot = new FarmingBot(client, config.Username, config.FarmPlanet, config.FarmRange, config.FarmMinimumRanking);
-                bot.Priority = new Resources(1, 2, 1);
+                IFarmingStrategy strategy = new InactiveFarmingStrategy(client)
+                {
+                    MinimumCargosToSend = 2,
+                    SlotsLeaveRemaining = 1,
+                    MinimumTotalStorageLevel = 5,
+                    ResourcePriority = new Resources(1, 2, 1),
+                    MinimumRanking = config.FarmMinimumRanking
+                };
+
+                FarmingBot bot = new FarmingBot(client, config.Username, config.FarmPlanet, config.FarmRange, strategy);
                 bot.Start();
             }
 

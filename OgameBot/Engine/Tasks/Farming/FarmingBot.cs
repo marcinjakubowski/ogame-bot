@@ -12,33 +12,32 @@ using OgameBot.Objects.Types;
 using System.Net.Http;
 using ScraperClientLib.Engine;
 using Newtonsoft.Json.Linq;
+using OgameBot.Engine.Tasks.Farming.Strategies;
 
-namespace OgameBot.Engine.Tasks
+namespace OgameBot.Engine.Tasks.Farming
 {
     public class FarmingBot
     {
         private readonly OGameClient _client;
         private OGameRequestBuilder RequestBuilder => _client.RequestBuilder;
 
-        private Coordinate _from, _to;
+        private SystemCoordinate _from, _to;
         private ScannerJob _scanner;
         private int _range;
-        private int _minRanking;
         private string _player;
         private string _planet;
         private Random _sleepTime = new Random();
+        private IFarmingStrategy _strategy;
 
-        public Resources Priority { get; set; } = new Resources(1, 1, 1);
         public int ProbeCount { get; set; } = 3;
-        public int LeaveRemainingFleetSlots { get; set; } = 1;
 
-        public FarmingBot(OGameClient client, string player, string planet, int range, int minRanking)
+        public FarmingBot(OGameClient client, string player, string planet, int range, IFarmingStrategy strategy)
         {
             _client = client;
             _player = player;
             _planet = planet;
             _range = range;
-            _minRanking = minRanking;
+            _strategy = strategy;
         }
 
         public void Start()
@@ -57,11 +56,9 @@ namespace OgameBot.Engine.Tasks
             // Start scanner
             _from = source.Coordinate;
             _from.System = (short)Math.Max(_from.System - _range, 1);
-            _from.Planet = 1;
 
             _to = source.Coordinate;
             _to.System = (short)Math.Min(_to.System + _range, 499);
-            _to.Planet = 15;
 
             _scanner = new ScannerJob(_client, _from, _to);
             _scanner.OnJobFinished += () => Task.Factory.StartNew(Worker);
@@ -74,7 +71,7 @@ namespace OgameBot.Engine.Tasks
         private void Worker()
         {
             _scanner.Stop();
-            IEnumerable<Planet> farms = GetFarms();
+            IEnumerable<Planet> farms = _strategy.GetFarms(_from, _to);
             Logger.Instance.Log(LogLevel.Info, $"Got {farms.Count()} farms, probing...");
 
             SendProbes(farms);
@@ -86,28 +83,14 @@ namespace OgameBot.Engine.Tasks
             cmd.Run();
             var messages = cmd.ParsedObjects.OfType<EspionageReport>();
 
+            Logger.Instance.Log(LogLevel.Info, $"{messages.Count()} Messages parsed, sending ships.");
+            _strategy.OnBeforeAttack();
             Resources totalPlunder = Attack(messages);
+            _strategy.OnAfterAttack();
             Logger.Instance.Log(LogLevel.Info, $"Job done, theoretical total plunder: {totalPlunder}");
         }
               
-
-        private IEnumerable<Planet> GetFarms()
-        {
-            using (BotDb db = new BotDb())
-            {
-                var farms = db.Planets.Where(s =>
-                        s.LocationId >= _from.Id && s.LocationId <= _to.Id
-                     && (s.Player.Status.HasFlag(PlayerStatus.Inactive) || s.Player.Status.HasFlag(PlayerStatus.LongInactive))
-                     && !s.Player.Status.HasFlag(PlayerStatus.Vacation)
-                     && !s.Player.Status.HasFlag(PlayerStatus.Admin)
-                     && s.Player.Ranking < _minRanking
-                     && (s.Buildings.LastUpdated == null || s.Buildings.MetalStorage + s.Buildings.CrystalMine + s.Buildings.DeuteriumTank > 5)
-                ).ToList();
-
-                return farms;
-            }
-        }
-
+        /* Extract to IFarmingStrategy
         private IEnumerable<Planet> GetFarmsToScanForFleet()
         {
             using (BotDb db = new BotDb())
@@ -124,6 +107,7 @@ namespace OgameBot.Engine.Tasks
                 return farms;
             }
         }
+        */
 
         private void SendProbes(IEnumerable<Planet> farms)
         {
@@ -140,8 +124,11 @@ namespace OgameBot.Engine.Tasks
             bool wasSuccessful = false;
             int retry = 0;
 
+            int count = farms.Count();
+
             foreach (Planet farm in farms)
             {
+                
                 wasSuccessful = false;
                 retry = 0;
 
@@ -181,6 +168,11 @@ namespace OgameBot.Engine.Tasks
                     token = result["newToken"].ToString();
 
                     Thread.Sleep(1000 + _sleepTime.Next(1000));
+
+                    if (--count % 10 == 0 && count > 0)
+                    {
+                        Logger.Instance.Log(LogLevel.Info, $"{count} remaining to scan...");
+                    }
                 }
 
                 if (!wasSuccessful)
@@ -210,74 +202,29 @@ namespace OgameBot.Engine.Tasks
 
         private Resources Attack(IEnumerable<EspionageReport> messages)
         {
-            ResponseContainer resp = _client.IssueRequest(RequestBuilder.GetPage(PageType.Fleet));
-            FleetSlotCount slotCount = resp.GetParsedSingle<FleetSlotCount>();
-
-
-            Logger.Instance.Log(LogLevel.Info, $"{messages.Count()} Messages parsed, sending ships. Currently {slotCount.Current} fleets out of {slotCount.Max} available slots.");
-
             //Check if the planet wasn't changed in the meantime (ie. by user action), we'd be sending cargos for a long trip
+            ResponseContainer resp = _client.IssueRequest(RequestBuilder.GetPage(PageType.Fleet));
             OgamePageInfo info = resp.GetParsedSingle<OgamePageInfo>();
             if (info.PlanetName != _planet)
             {
                 throw new ApplicationException("Not where we should be when sending fleets");
             }
 
-            // Check how many cargos are there
-            int? cargoCount = resp.GetParsed<DetectedShip>().Where(s => s.Ship == ShipType.LargeCargo).FirstOrDefault()?.Count;
-            if (!cargoCount.HasValue || cargoCount == 0)
-            {
-                Logger.Instance.Log(LogLevel.Error, "There are no cargos on the planet");
-                return new Resources();
-            }
-
-            int slotsAvailable = slotCount.Max - slotCount.Current - LeaveRemainingFleetSlots;
-            if (slotsAvailable <= 0)
-            {
-                Logger.Instance.Log(LogLevel.Error, "No slots available");
-                return new Resources();
-            }
-
-            // Get all the messages where defense and ships sections were found, but were empty
-            // We want that list in a descending order of total resources available for us to plunder
-            var farmsToAttack = messages.Where(m =>
-                                               m.Details.HasFlag(ReportDetails.Defense) && m.DetectedDefence == null &&
-                                               m.Details.HasFlag(ReportDetails.Ships) && m.DetectedShips == null)
-                                        .OrderByDescending(m => m.Resources.TotalWithPriority(Priority));
-
             Resources totalPlunder = new Resources();
-            foreach (var farm in farmsToAttack)
+            foreach (var farm in _strategy.GetTargets(messages))
             {
-                
-                var fleetComposition = FleetComposition.ToPlunder(farm.Resources, ShipType.LargeCargo);
-                int cargosToUse = fleetComposition.Ships[ShipType.LargeCargo];
-                // stop farming when:
-                //  - just sending 1 cargo (not worth it)
-                //  - there are no remaining cargos on planet
-                //  - no slots available
-                if (cargosToUse == 1 || cargoCount <= 0 || slotsAvailable == 0)
-                {
-                    break;
-                }
-
                 Thread.Sleep(3000 + _sleepTime.Next(2000));
-                Resources plunder = farm.Resources / 2;
-                plunder.Energy = 0;
-                totalPlunder = totalPlunder + plunder;
-                Logger.Instance.Log(LogLevel.Info, $"Sending {cargosToUse} to planet {farm.Coordinate} to plunder {plunder}");
+                totalPlunder += farm.ExpectedPlunder;
+                Logger.Instance.Log(LogLevel.Info, $"Attacking planet {farm.Destination} to plunder {farm.ExpectedPlunder}");
 
                 SendFleetCommand attack = new SendFleetCommand(_client)
                 {
                     Mission = MissionType.Attack,
-                    Destination = farm.Coordinate,
+                    Destination = farm.Destination,
                     Source = info.PlanetCoord,
-                    Fleet = fleetComposition
+                    Fleet = farm.Fleet
                 };
                 attack.Run();
-
-                cargoCount -= cargosToUse;
-                slotsAvailable--;
-
             }
 
             return totalPlunder;
