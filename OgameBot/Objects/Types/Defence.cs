@@ -13,6 +13,10 @@ namespace OgameBot.Objects.Types
         public static Defence AntiBallisticMissiles { get; } = new Defence(DefenceType.AntiBallisticMissiles, new Resources()); // no structural integrity
         public static Defence InterplanetaryMissiles { get; } = new Defence(DefenceType.InterplanetaryMissiles, new Resources()); // no structural integrity
 
+        static Defence()
+        {
+        }
+
         private Defence(DefenceType type, Resources cost) : base(type, cost) { }
 
         public static implicit operator Defence(DefenceType type)

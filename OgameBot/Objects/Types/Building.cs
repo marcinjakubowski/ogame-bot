@@ -22,6 +22,11 @@ namespace OgameBot.Objects.Types
         public static Building SolarPlant           { get; } = new Building(BuildingType.SolarPlant          , new Cost(75, 30, 0, 1.5f));
         public static Building Terraformer          { get; } = new Building(BuildingType.Terraformer         , new Cost(0, 50000, 100000, 2.0f));
 
+        static Building()
+        {
+        }
+
+
         private Building(BuildingType type, Cost cost) : base(type, cost) { }
 
         public static implicit operator Building(BuildingType type)

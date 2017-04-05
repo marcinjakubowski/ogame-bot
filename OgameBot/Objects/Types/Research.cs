@@ -19,6 +19,10 @@ namespace OgameBot.Objects.Types
         public static Research ShieldingTechnology { get; } = new Research(ResearchType.ShieldingTechnology);
         public static Research WeaponsTechnology { get; } = new Research(ResearchType.WeaponsTechnology);
 
+        static Research()
+        {
+        }
+
         private Research(ResearchType type) : base(type)
         {
         }

@@ -37,9 +37,13 @@ namespace OgameBot.Objects.Types
         public static Page Messages         { get; } = new Page(PageType.Messages        , "messages");
         public static Page AjaxChat         { get; } = new Page(PageType.AjaxChat        , "ajaxChat");
 
+        static Page()
+        {
+        }
+
         public string Link { get; }
 
-        public Page(PageType type, string link) : base(type)
+        private Page(PageType type, string link) : base(type)
         {
             Link = link;
         }

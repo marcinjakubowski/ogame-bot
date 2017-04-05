@@ -17,6 +17,11 @@ namespace OgameBot.Objects.Types
         public static Ship EspionageProbe { get; } = new Ship(ShipType.EspionageProbe, new Resources(0, 1000, 0));
         public static Ship SolarSatellite { get; } = new Ship(ShipType.SolarSatellite, new Resources(0, 2000, 500));
 
+
+        static Ship()
+        {
+        }
+
         private Ship(ShipType type, Resources cost) : base(type, cost) { }
 
 
