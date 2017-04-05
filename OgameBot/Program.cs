@@ -11,6 +11,8 @@ using ScraperClientLib.Engine.Interventions;
 using ScraperClientLib.Engine.Parsing;
 using OgameBot.Engine.Tasks.Farming;
 using OgameBot.Engine.Tasks.Farming.Strategies;
+using OgameBot.Engine.Injects;
+using OgameBot.Proxy;
 
 namespace OgameBot
 {
@@ -53,6 +55,9 @@ namespace OgameBot
             client.RegisterSaver(new GalaxyPageDebrisSaver());
             client.RegisterSaver(new MessageSaver());
             client.RegisterSaver(new PlayerPlanetSaver());
+
+            // Injects
+            client.RegisterInject(new CommandsInject());
 
             // UA stuff
             client.RegisterDefaultHeader("Accept-Language", "en-GB,en;q=0.8,da;q=0.6");

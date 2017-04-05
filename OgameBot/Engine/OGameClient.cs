@@ -10,6 +10,8 @@ using OgameBot.Engine.Savers;
 using OgameBot.Logging;
 using ScraperClientLib.Engine;
 using ScraperClientLib.Engine.Parsing;
+using OgameBot.Engine.Parsing.Objects;
+using OgameBot.Engine.Injects;
 
 namespace OgameBot.Engine
 {
@@ -20,6 +22,7 @@ namespace OgameBot.Engine
         private readonly string _password;
 
         private readonly List<SaverBase> _savers;
+        private readonly List<IInject> _injects;
 
         public event Action<ResponseContainer> OnResponseReceived;
 
@@ -36,6 +39,7 @@ namespace OgameBot.Engine
             _password = password;
 
             _savers = new List<SaverBase>();
+            _injects = new List<IInject>();
 
             RequestBuilder = new OGameRequestBuilder(this);
 
@@ -63,10 +67,21 @@ namespace OgameBot.Engine
             RegisterIntervention(new OGameAutoLoginner(this));
         }
 
+        public void RegisterInject(IInject inject)
+        {
+            using (EnterExclusive())
+                _injects.Add(inject);
+        }
+
         public void RegisterSaver(SaverBase saver)
         {
             using (EnterExclusive())
                 _savers.Add(saver);
+        }
+
+        public IReadOnlyList<IInject> GetInjects()
+        {
+            return _injects.AsReadOnly();
         }
 
         public IReadOnlyList<SaverBase> GetSavers()
@@ -106,6 +121,14 @@ namespace OgameBot.Engine
                 HttpRequestMessage loginReq = PrepareLogin();
                 IssueRequest(loginReq);
             }
+        }
+
+        public override string Inject(string body, ResponseContainer response)
+        {
+            foreach (IInject inject in _injects)
+                body = inject.Inject(body, response);
+
+            return base.Inject(body, response);
         }
     }
 }

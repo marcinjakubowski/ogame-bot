@@ -89,6 +89,8 @@
     <Compile Include="Engine\Commands\ReadAllMessagesCommand.cs" />
     <Compile Include="Engine\Commands\SendFleetCommand.cs" />
     <Compile Include="Engine\Commands\TransportAllCommand.cs" />
+    <Compile Include="Engine\Injects\IInject.cs" />
+    <Compile Include="Engine\Injects\InjectCommands.cs" />
     <Compile Include="Engine\Interventions\RetryIntervention.cs" />
     <Compile Include="Engine\Parsing\FleetPageParser.cs" />
     <Compile Include="Engine\Parsing\Objects\DetectedOngoingConstruction.cs" />
@@ -174,7 +176,7 @@
     <Compile Include="Objects\Types\ResourceType.cs" />
     <Compile Include="Objects\Types\Ship.cs" />
     <Compile Include="Objects\Types\ShipType.cs" />
-    <Compile Include="OgameClientProxy.cs" />
+    <Compile Include="Proxy\OgameClientProxy.cs" />
     <Compile Include="Engine\Parsing\DefencesPageParser.cs" />
     <Compile Include="Engine\Parsing\EspionageDetailsParser.cs" />
     <Compile Include="Engine\Parsing\FacilitiesPageParser.cs" />

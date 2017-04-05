@@ -196,5 +196,10 @@ namespace ScraperClientLib.Engine
                 Monitor.Exit(_client._lockObject);
             }
         }
+
+        public virtual string Inject(string body, ResponseContainer container)
+        {
+            return body;
+        }
     }
 }

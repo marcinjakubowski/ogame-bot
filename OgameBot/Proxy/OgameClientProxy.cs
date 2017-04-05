@@ -8,8 +8,9 @@ using System.Net.Http.Headers;
 using System.Text;
 using ScraperClientLib.Engine;
 using ScraperClientLib.Utilities;
+using OgameBot.Logging;
 
-namespace OgameBot
+namespace OgameBot.Proxy
 {
     public class OgameClientProxy
     {
@@ -66,6 +67,7 @@ namespace OgameBot
             if (ctx == null)
                 return;
 
+            string referer = ctx.Request.Headers.Get("Referer");
             // Process the current context
             HttpMethod requestedMethod = new HttpMethod(ctx.Request.HttpMethod);
             if (requestedMethod != HttpMethod.Get && requestedMethod != HttpMethod.Post)
@@ -75,17 +77,28 @@ namespace OgameBot
                 return;
             }
 
-            if (ctx.Request.Url.PathAndQuery == "/")
+            Action<string> Redirect = (location) =>
             {
-                // Asked for root - send the client to the overview page
-
                 ctx.Response.StatusCode = (int)HttpStatusCode.TemporaryRedirect;
-                ctx.Response.RedirectLocation = "/game/index.php?page=overview";
+                ctx.Response.RedirectLocation = location;
 
                 ctx.Response.OutputStream.WriteString("Redirecting to Overview");
 
                 // Return
                 ctx.Response.Close();
+            };
+            string overview = "/game/index.php?page=overview";
+
+            if (ctx.Request.Url.PathAndQuery == "/")
+            {
+                // Asked for root - send the client to the overview page
+                Redirect(overview);
+                return;
+            }
+            else if (ctx.Request.Url.PathAndQuery.StartsWith("/ogbcmd"))
+            {
+                Logger.Instance.Log(LogLevel.Warning, "Received command!");
+                Redirect(referer != null ? referer : overview);
                 return;
             }
 
@@ -113,7 +126,7 @@ namespace OgameBot
 
             proxyReq.Method = requestedMethod;
 
-            string referer = ctx.Request.Headers.Get("Referer");
+            
             if (referer != null)
             {
                 referer = referer.Replace($"http://{_listenHost}:{_listenPort}/", SubstituteRoot.ToString());
@@ -170,6 +183,7 @@ namespace OgameBot
                 str = str.Replace(SubstituteRoot.Host, $"{_listenHost}:{_listenPort}"); // Remainders
                 // To make overlays work, there is a check against ogameUrl in javascript
                 str = str.Replace(@"</body>", $@"<script type=""text/javascript"">ogameUrl = 'http://{_listenHost}:{_listenPort}'</script></body>");
+                str = _client.Inject(str, resp);
 
                 data = Encoding.UTF8.GetBytes(str);
             }
