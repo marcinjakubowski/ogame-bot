@@ -45,20 +45,25 @@ namespace OgameBot.Engine.Savers
 
                 foreach (GalaxyPageInfoItem row in result.OfType<GalaxyPageInfoItem>())
                 {
-                    Player player;
-                    if (!players.TryGetValue(row.PlayerId, out player))
+                    Player player = null;
+
+                    // not self
+                    if (row.PlayerId != -1)
                     {
-                        player = new Player
+                        if (!players.TryGetValue(row.PlayerId, out player))
                         {
-                            PlayerId = row.PlayerId
-                        };
+                            player = new Player
+                            {
+                                PlayerId = row.PlayerId
+                            };
 
-                        db.Players.Add(player);
-                        players[row.PlayerId] = player;
+                            db.Players.Add(player);
+                            players[row.PlayerId] = player;
+                        }
+
+                        player.Name = row.PlayerName;
+                        player.Status = row.PlayerStatus;
                     }
-
-                    player.Name = row.PlayerName;
-                    player.Status = row.PlayerStatus;
 
                     Planet planet;
                     if (!toRemove.TryRemove(row.Planet.Coordinate, out planet))
@@ -72,7 +77,7 @@ namespace OgameBot.Engine.Savers
                     }
 
                     planet.Name = row.Planet.Name;
-                    planet.Player = player;
+                    if (player != null) planet.Player = player;
 
                     if (row.Moon != null)
                     {
