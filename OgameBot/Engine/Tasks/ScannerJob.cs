@@ -4,12 +4,13 @@ using System.Linq;
 using System.Net.Http;
 using OgameBot.Db;
 using OgameBot.Objects;
+using OgameBot.Logging;
 
 namespace OgameBot.Engine.Tasks
 {
     public class ScannerJob : WorkerBase
     {
-        private static readonly TimeSpan RescanInterval = TimeSpan.FromHours(8);
+        private static readonly TimeSpan RescanInterval = TimeSpan.FromHours(6);
 
         private readonly OGameClient _client;
         private readonly SystemCoordinate _from;
@@ -42,6 +43,9 @@ namespace OgameBot.Engine.Tasks
                 existing = db.Scans.Where(s => from <= s.LocationId && s.LocationId <= to).ToDictionary(s => s.LocationId);
             }
 
+            int count = (_to.Galaxy - _from.Galaxy + 1) * (_to.System - _from.System + 1);
+
+            Logger.Instance.Log(LogLevel.Info, $"Scanning between {_from} and {_to}: {count} systems");
             for (byte gal = _from.Galaxy; gal <= _to.Galaxy; gal++)
             {
                 short sFrom = gal == _from.Galaxy ? _from.System : (short)0;
@@ -62,6 +66,11 @@ namespace OgameBot.Engine.Tasks
                     // Scan
                     HttpRequestMessage req = _client.RequestBuilder.GetGalaxyContent(coord);
                     _client.IssueRequest(req);
+
+                    if (--count % 10 == 0 && count > 0)
+                    {
+                        Logger.Instance.Log(LogLevel.Info, $"{count} systems remaining to scan...");
+                    }
                 }
             }
         }
