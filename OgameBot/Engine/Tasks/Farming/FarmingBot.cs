@@ -24,17 +24,15 @@ namespace OgameBot.Engine.Tasks.Farming
         private SystemCoordinate _from, _to;
         private ScannerJob _scanner;
         private int _range;
-        private string _player;
-        private string _planet;
+        private int _planet;
         private Random _sleepTime = new Random();
         private IFarmingStrategy _strategy;
 
         public int ProbeCount { get; set; } = 3;
 
-        public FarmingBot(OGameClient client, string player, string planet, int range, IFarmingStrategy strategy)
+        public FarmingBot(OGameClient client, int planet, int range, IFarmingStrategy strategy)
         {
             _client = client;
-            _player = player;
             _planet = planet;
             _range = range;
             _strategy = strategy;
@@ -42,22 +40,17 @@ namespace OgameBot.Engine.Tasks.Farming
 
         public void Start()
         {
-            Planet source = null;
-            using (BotDb db = new BotDb())
-            {
-                source = db.Planets.Where(s => s.Name == _planet && s.Player.Name ==_player).FirstOrDefault();
-            }
+            var req = _client.RequestBuilder.GetPage(PageType.Galaxy, _planet == 0 ? null : (int?)_planet);
+            var resp = _client.IssueRequest(req);
 
-            var req = _client.RequestBuilder.GetPage(PageType.Galaxy, source.PlanetId);
-            _client.IssueRequest(req);
-
-            if (source == null) throw new ArgumentException("Planet not found");
+            var source = resp.GetParsedSingle<OgamePageInfo>();
+            _planet = source.PlanetId;
 
             // Start scanner
-            _from = source.Coordinate;
+            _from = source.PlanetCoord;
             _from.System = (short)Math.Max(_from.System - _range, 1);
 
-            _to = source.Coordinate;
+            _to = source.PlanetCoord;
             _to.System = (short)Math.Min(_to.System + _range, 499);
 
             _scanner = new ScannerJob(_client, _from, _to);
@@ -111,14 +104,9 @@ namespace OgameBot.Engine.Tasks.Farming
 
         private void SendProbes(IEnumerable<Planet> farms)
         {
-            HttpRequestMessage req = RequestBuilder.GetPage(PageType.Galaxy);
+            HttpRequestMessage req = RequestBuilder.GetPage(PageType.Galaxy, _planet);
             ResponseContainer resp = _client.IssueRequest(req);
-
             var info = resp.GetParsedSingle<OgamePageInfo>();
-            if (info.PlanetName != _planet)
-            {
-                throw new ApplicationException("Not where we should be");
-            }
 
             string token = info.MiniFleetToken;
             bool wasSuccessful = false;
@@ -203,12 +191,8 @@ namespace OgameBot.Engine.Tasks.Farming
         private Resources Attack(IEnumerable<EspionageReport> messages)
         {
             //Check if the planet wasn't changed in the meantime (ie. by user action), we'd be sending cargos for a long trip
-            ResponseContainer resp = _client.IssueRequest(RequestBuilder.GetPage(PageType.Fleet));
+            ResponseContainer resp = _client.IssueRequest(RequestBuilder.GetPage(PageType.Fleet, _planet));
             OgamePageInfo info = resp.GetParsedSingle<OgamePageInfo>();
-            if (info.PlanetName != _planet)
-            {
-                throw new ApplicationException("Not where we should be when sending fleets");
-            }
 
             Resources totalPlunder = new Resources();
             foreach (var farm in _strategy.GetTargets(messages))

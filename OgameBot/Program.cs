@@ -102,9 +102,7 @@ namespace OgameBot
             //ScannerJob s = new ScannerJob(client, new SystemCoordinate(1, 1), new SystemCoordinate(6, 499));
             //s.Start();
 
-
-            // Farming bot
-            if (config.ShouldStartFarm)
+            proxy.AddCommand("farm", (parameters) =>
             {
                 IFarmingStrategy strategy = new InactiveFarmingStrategy(client)
                 {
@@ -115,9 +113,22 @@ namespace OgameBot
                     MinimumRanking = config.FarmMinimumRanking
                 };
 
-                FarmingBot bot = new FarmingBot(client, config.Username, config.FarmPlanet, config.FarmRange, strategy);
+                int range;
+                if (!int.TryParse(parameters["range"], out range))
+                    range = config.FarmRange;
+
+                int planetId = 0;
+                if (parameters["cp"] != null)
+                {
+                    if (!int.TryParse(parameters["cp"], out planetId))
+                    {
+                        planetId = 0;
+                    }
+                }
+                
+                FarmingBot bot = new FarmingBot(client, planetId, range, strategy);
                 bot.Start();
-            }
+            });
 
             // Work
             Console.ReadLine();

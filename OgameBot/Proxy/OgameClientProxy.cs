@@ -9,6 +9,8 @@ using System.Text;
 using ScraperClientLib.Engine;
 using ScraperClientLib.Utilities;
 using OgameBot.Logging;
+using System.Collections.Specialized;
+using System.Threading.Tasks;
 
 namespace OgameBot.Proxy
 {
@@ -20,6 +22,8 @@ namespace OgameBot.Proxy
         private readonly HttpListener _listener;
         private bool _isRunning;
 
+        private readonly Dictionary<string, Action<NameValueCollection>> _commands;
+
         public Uri SubstituteRoot { get; set; }
 
         public OgameClientProxy(string listenHost, int listenPort, ClientBase client)
@@ -28,10 +32,11 @@ namespace OgameBot.Proxy
             _listenPort = listenPort;
             _client = client;
             _listener = new HttpListener();
-
+            _commands = new Dictionary<string, Action<NameValueCollection>>();
             ListenPrefix = $"http://{listenHost}:{listenPort}/";
             _listener.Prefixes.Add(ListenPrefix);
         }
+        public static string CommandPrefix { get; set; } = "ogbcmd";
 
         public string ListenPrefix { get; }
 
@@ -95,9 +100,9 @@ namespace OgameBot.Proxy
                 Redirect(overview);
                 return;
             }
-            else if (ctx.Request.Url.PathAndQuery.StartsWith("/ogbcmd"))
+            else if (ctx.Request.Url.PathAndQuery.StartsWith($"/{CommandPrefix}/"))
             {
-                Logger.Instance.Log(LogLevel.Warning, "Received command!");
+                ParseAndRunCommand(ctx.Request.Url.AbsolutePath, ctx.Request.QueryString);
                 Redirect(referer != null ? referer : overview);
                 return;
             }
@@ -207,6 +212,30 @@ namespace OgameBot.Proxy
             {
                 Logging.Logger.Instance.LogException(ex);
             }
+        }
+
+        private void ParseAndRunCommand(string commandPath, NameValueCollection parameters)
+        {
+            string[] parts = commandPath.Split('/');
+            if (parts.Length != 3 || parts[1] != CommandPrefix)
+            {
+                throw new ArgumentException($"Invalid command path: {commandPath}!", nameof(commandPath));
+            }
+
+            string command = parts[2];
+
+            if (!_commands.ContainsKey(command))
+            {
+                Logger.Instance.Log(LogLevel.Error, $"No such command - {command}");
+                return;
+            }
+
+            Task.Factory.StartNew(() => _commands[command](parameters));
+        }
+
+        public void AddCommand(string name, Action<NameValueCollection> command)
+        {
+            _commands[name] = command;
         }
     }
 }
