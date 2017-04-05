@@ -28,6 +28,10 @@ namespace OgameBot.Engine.Tasks
         private string _planet;
         private Random _sleepTime = new Random();
 
+        public Resources Priority { get; set; } = new Resources(1, 1, 1);
+        public int ProbeCount { get; set; } = 3;
+        public int LeaveRemainingFleetSlots { get; set; } = 1;
+
         public FarmingBot(OGameClient client, string player, string planet, int range, int minRanking)
         {
             _client = client;
@@ -97,6 +101,7 @@ namespace OgameBot.Engine.Tasks
                      && !s.Player.Status.HasFlag(PlayerStatus.Vacation)
                      && !s.Player.Status.HasFlag(PlayerStatus.Admin)
                      && s.Player.Ranking < _minRanking
+                     && (s.Buildings.LastUpdated == null || s.Buildings.MetalStorage + s.Buildings.CrystalMine + s.Buildings.DeuteriumTank > 5)
                 ).ToList();
 
                 return farms;
@@ -142,7 +147,7 @@ namespace OgameBot.Engine.Tasks
 
                 while (!wasSuccessful && retry < 5)
                 {
-                    req = RequestBuilder.GetMiniFleetSendMessage(MissionType.Espionage, farm.Coordinate, 2, token);
+                    req = RequestBuilder.GetMiniFleetSendMessage(MissionType.Espionage, farm.Coordinate, ProbeCount, token);
                     resp = _client.IssueRequest(req);
 
                     //#todo parse to class instead of jobject
@@ -226,7 +231,7 @@ namespace OgameBot.Engine.Tasks
                 return new Resources();
             }
 
-            int slotsAvailable = slotCount.Max - slotCount.Current - 1;
+            int slotsAvailable = slotCount.Max - slotCount.Current - LeaveRemainingFleetSlots;
             if (slotsAvailable <= 0)
             {
                 Logger.Instance.Log(LogLevel.Error, "No slots available");
@@ -238,7 +243,7 @@ namespace OgameBot.Engine.Tasks
             var farmsToAttack = messages.Where(m =>
                                                m.Details.HasFlag(ReportDetails.Defense) && m.DetectedDefence == null &&
                                                m.Details.HasFlag(ReportDetails.Ships) && m.DetectedShips == null)
-                                        .OrderByDescending(m => m.Resources.Total);
+                                        .OrderByDescending(m => m.Resources.TotalWithPriority(Priority));
 
             Resources totalPlunder = new Resources();
             foreach (var farm in farmsToAttack)

@@ -92,6 +92,16 @@ namespace OgameBot.Objects
         [NotMapped]
         public int Total => Metal + Crystal + Deuterium;
 
+        public int TotalWithPriority()
+        {
+            return Total;
+        }
+
+        public int TotalWithPriority(Resources priority)
+        {
+            return Metal * priority.Metal + Crystal * priority.Crystal + Deuterium * priority.Deuterium;
+        }
+
         public int GetResource(ResourceType type)
         {
             switch (type)
