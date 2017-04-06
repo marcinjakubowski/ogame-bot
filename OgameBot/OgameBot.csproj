@@ -93,10 +93,13 @@
     <Compile Include="Engine\Injects\IInject.cs" />
     <Compile Include="Engine\Injects\CargosForTransportInject.cs" />
     <Compile Include="Engine\Interventions\RetryIntervention.cs" />
+    <Compile Include="Engine\Parsing\EventListParser.cs" />
     <Compile Include="Engine\Parsing\FleetPageParser.cs" />
     <Compile Include="Engine\Parsing\Objects\DetectedOngoingConstruction.cs" />
     <Compile Include="Engine\Parsing\Objects\DetectedOngoingResearch.cs" />
     <Compile Include="Engine\Parsing\Objects\EspionageReport.cs" />
+    <Compile Include="Engine\Parsing\Objects\EventInfo.cs" />
+    <Compile Include="Engine\Parsing\Objects\EventType.cs" />
     <Compile Include="Engine\Parsing\Objects\FleetSlotCount.cs" />
     <Compile Include="Engine\Parsing\Objects\MessageBase.cs" />
     <Compile Include="Engine\Parsing\MessageCountParser.cs" />
