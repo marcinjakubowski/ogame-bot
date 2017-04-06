@@ -17,17 +17,10 @@ namespace OgameBot.Engine.Interventions
 
         public bool DoIntervention(ResponseContainer offendingTask)
         {
-            if (offendingTask.StatusCode == HttpStatusCode.Redirect && offendingTask.ResponseMessage.Headers.Location != null)
+            Uri requestUri = offendingTask.RequestMessage.RequestUri;
+            if (requestUri.DnsSafeHost != _client.BaseUri.DnsSafeHost)
             {
-                Uri requestUri = offendingTask.RequestMessage.RequestUri;
-                Uri responseRedirectLocation = offendingTask.ResponseMessage.Headers.Location;
-
-                if (responseRedirectLocation.DnsSafeHost != requestUri.DnsSafeHost &&
-                    requestUri.DnsSafeHost.EndsWith(responseRedirectLocation.DnsSafeHost))
-                {
-                    // All but the first part of the DNS name matches, we've been sent to the frontpage
-                    return true;
-                }
+                return true;
             }
 
             return false;

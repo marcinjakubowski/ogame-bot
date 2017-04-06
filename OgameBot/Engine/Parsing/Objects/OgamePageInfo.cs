@@ -37,6 +37,8 @@ namespace OgameBot.Engine.Parsing.Objects
                 string coords = TryGet("ogame-planet-coordinates", string.Empty);
                 string type = TryGet("ogame-planet-type", string.Empty);
 
+                if (coords.Length == 0) return new Coordinate();
+
                 if (type == "planet")
                     return Coordinate.Parse(coords, CoordinateType.Planet);
 

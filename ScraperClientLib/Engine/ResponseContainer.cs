@@ -24,7 +24,7 @@ namespace ScraperClientLib.Engine
 
         public bool WasSuccess => ResponseMessage.IsSuccessStatusCode;
 
-        public bool IsHtmlResponse => ResponseHtml.Value != null;
+        public bool IsHtmlResponse => ResponseMessage.Content.Headers.ContentType.MediaType == "text/html";
 
 
         public List<DataObject> ParsedObjects { get; set; }
