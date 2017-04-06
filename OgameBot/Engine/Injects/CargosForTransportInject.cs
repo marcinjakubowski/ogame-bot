@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ScraperClientLib.Engine;
+﻿using ScraperClientLib.Engine;
 using OgameBot.Engine.Parsing.Objects;
 using OgameBot.Objects.Types;
 using System.Text.RegularExpressions;
@@ -11,7 +6,7 @@ using OgameBot.Objects;
 
 namespace OgameBot.Engine.Injects
 {
-    public class TransportInject : IInject
+    public class CargosForTransportInject : IInject
     {
         private static Regex largeCargo = new Regex(@"(<span class=""level""><span class=""textlabel"">Large Cargo </span>)(\d+</span>)");
         public string Inject(OgamePageInfo info, string body, ResponseContainer response)
