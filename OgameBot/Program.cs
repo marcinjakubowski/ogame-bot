@@ -13,6 +13,8 @@ using OgameBot.Engine.Tasks.Farming;
 using OgameBot.Engine.Tasks.Farming.Strategies;
 using OgameBot.Engine.Injects;
 using OgameBot.Proxy;
+using OgameBot.Engine.Commands;
+using System.Collections.Specialized;
 
 namespace OgameBot
 {
@@ -58,7 +60,7 @@ namespace OgameBot
 
             // Injects
             client.RegisterInject(new CommandsInject());
-
+            client.RegisterInject(new TransportInject());
             // UA stuff
             client.RegisterDefaultHeader("Accept-Language", "en-GB,en;q=0.8,da;q=0.6");
             client.RegisterDefaultHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
@@ -102,32 +104,29 @@ namespace OgameBot
             //ScannerJob s = new ScannerJob(client, new SystemCoordinate(1, 1), new SystemCoordinate(6, 499));
             //s.Start();
 
+            proxy.AddCommand("transport", (parameters) =>
+            {
+                TransportAllCommand transportAll = new TransportAllCommand(client, int.Parse(parameters["from"]), int.Parse(parameters["to"]));
+                transportAll.Run();
+            });
+            
+            proxy.AddCommand("hunt", (parameters) =>
+            {
+                IFarmingStrategy strategy = new FleetFinderStrategy();
+                Farm(client, config, strategy, parameters);
+            });
+
             proxy.AddCommand("farm", (parameters) =>
             {
                 IFarmingStrategy strategy = new InactiveFarmingStrategy(client)
                 {
                     MinimumCargosToSend = 2,
-                    SlotsLeaveRemaining = 1,
+                    SlotsLeaveRemaining = parameters["slots"] == null ? 1 : int.Parse(parameters["slots"]),
                     MinimumTotalStorageLevel = 5,
                     ResourcePriority = new Resources(1, 2, 1),
                     MinimumRanking = config.FarmMinimumRanking
                 };
-
-                int range;
-                if (!int.TryParse(parameters["range"], out range))
-                    range = config.FarmRange;
-
-                int planetId = 0;
-                if (parameters["cp"] != null)
-                {
-                    if (!int.TryParse(parameters["cp"], out planetId))
-                    {
-                        planetId = 0;
-                    }
-                }
-                
-                FarmingBot bot = new FarmingBot(client, planetId, range, strategy);
-                bot.Start();
+                Farm(client, config, strategy, parameters);
             });
 
             // Work
@@ -137,6 +136,25 @@ namespace OgameBot
         public static bool IsRunningOnMono()
         {
             return Type.GetType("Mono.Runtime") != null;
+        }
+
+        private static void Farm(OGameClient client, Config config, IFarmingStrategy strategy, NameValueCollection parameters)
+        {
+            int range;
+            if (!int.TryParse(parameters["range"], out range))
+                range = config.FarmRange;
+
+            int planetId = 0;
+            if (parameters["cp"] != null)
+            {
+                if (!int.TryParse(parameters["cp"], out planetId))
+                {
+                    planetId = 0;
+                }
+            }
+
+            FarmingBot bot = new FarmingBot(client, planetId, range, strategy);
+            bot.Start();
         }
     }
 }

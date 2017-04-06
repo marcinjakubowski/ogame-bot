@@ -91,6 +91,7 @@
     <Compile Include="Engine\Commands\TransportAllCommand.cs" />
     <Compile Include="Engine\Injects\IInject.cs" />
     <Compile Include="Engine\Injects\InjectCommands.cs" />
+    <Compile Include="Engine\Injects\TransportInject.cs" />
     <Compile Include="Engine\Interventions\RetryIntervention.cs" />
     <Compile Include="Engine\Parsing\FleetPageParser.cs" />
     <Compile Include="Engine\Parsing\Objects\DetectedOngoingConstruction.cs" />
@@ -121,6 +122,7 @@
     <Compile Include="Engine\Tasks\Builder.cs" />
     <Compile Include="Engine\Tasks\Farming\AttackTarget.cs" />
     <Compile Include="Engine\Tasks\Farming\FarmingBot.cs" />
+    <Compile Include="Engine\Tasks\Farming\Strategies\FleetFinderStrategy.cs" />
     <Compile Include="Engine\Tasks\Farming\Strategies\IFarmingStrategy.cs" />
     <Compile Include="Engine\Tasks\Farming\Strategies\InactiveFarmingStrategy.cs" />
     <Compile Include="Engine\Tasks\MessageReaderJob.cs" />

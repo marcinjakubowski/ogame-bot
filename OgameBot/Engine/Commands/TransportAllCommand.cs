@@ -14,19 +14,35 @@ namespace OgameBot.Engine.Commands
         public int Speed { get; set; } = 10;
         public bool UseDeployment { get; set; } = false;
 
+
+        private int _from;
+
         public TransportAllCommand(OGameClient client) : base(client)
         {
         }
 
-        public override void Run()
+        public TransportAllCommand(OGameClient client, int fromId, int toId) : base(client)
         {
-            int planetId;
+            _from = fromId;
+
             using (BotDb db = new BotDb())
             {
-                planetId = (int)db.Planets.Where(s => s.LocationId == Source.Id).Select(s => s.PlanetId).First();
+                Destination = db.Planets.Where(p => p.PlanetId == toId).Select(p => p.LocationId).First();
+                Source = db.Planets.Where(p => p.PlanetId == fromId).Select(p => p.LocationId).First();
+            }
+        }
+
+        public override void Run()
+        {
+            if (_from == 0)
+            {
+                using (BotDb db = new BotDb())
+                {
+                    _from = (int)db.Planets.Where(s => s.LocationId == Source.Id).Select(s => s.PlanetId).First();
+                }
             }
 
-            var resp = Client.IssueRequest(Client.RequestBuilder.GetPage(PageType.Fleet, planetId));
+            var resp = Client.IssueRequest(Client.RequestBuilder.GetPage(PageType.Fleet, _from));
             PlanetResources resources = resp.GetParsedSingle<PlanetResources>();
             DetectedShip cargo = resp.GetParsed<DetectedShip>().Where(s => s.Ship == ShipType.LargeCargo).FirstOrDefault();
 

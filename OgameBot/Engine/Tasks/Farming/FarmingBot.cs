@@ -28,8 +28,6 @@ namespace OgameBot.Engine.Tasks.Farming
         private Random _sleepTime = new Random();
         private IFarmingStrategy _strategy;
 
-        public int ProbeCount { get; set; } = 3;
-
         public FarmingBot(OGameClient client, int planet, int range, IFarmingStrategy strategy)
         {
             _client = client;
@@ -86,19 +84,7 @@ namespace OgameBot.Engine.Tasks.Farming
         /* Extract to IFarmingStrategy
         private IEnumerable<Planet> GetFarmsToScanForFleet()
         {
-            using (BotDb db = new BotDb())
-            {
-                var farms = db.Planets.Where(s =>
-                                        s.LocationId >= _from.Id && s.LocationId <= _to.Id
-                                     && !((s.Player.Status.HasFlag(PlayerStatus.Inactive) || s.Player.Status.HasFlag(PlayerStatus.LongInactive)))
-                                     && !s.Player.Status.HasFlag(PlayerStatus.Vacation)
-                                     && !s.Player.Status.HasFlag(PlayerStatus.Admin)
-                                     && !s.Player.Status.HasFlag(PlayerStatus.Noob)
-                                     && (!s.Player.Status.HasFlag(PlayerStatus.Strong) || s.Player.Status.HasFlag(PlayerStatus.Outlaw))
-                                ).ToList();
 
-                return farms;
-            }
         }
         */
 
@@ -119,10 +105,11 @@ namespace OgameBot.Engine.Tasks.Farming
                 
                 wasSuccessful = false;
                 retry = 0;
+                JObject result = null;
 
                 while (!wasSuccessful && retry < 5)
                 {
-                    req = RequestBuilder.GetMiniFleetSendMessage(MissionType.Espionage, farm.Coordinate, ProbeCount, token);
+                    req = RequestBuilder.GetMiniFleetSendMessage(MissionType.Espionage, farm.Coordinate, _strategy.GetProbeCountForTarget(farm), token);
                     resp = _client.IssueRequest(req);
 
                     //#todo parse to class instead of jobject
@@ -146,12 +133,12 @@ namespace OgameBot.Engine.Tasks.Farming
                     //"newToken":"fb74477ff26fd4ba9c41c110aa295baf"
                     //}
 
-                    JObject result = JObject.Parse(resp.Raw.Value);
+                    result = JObject.Parse(resp.Raw.Value);
                     wasSuccessful = (bool)result["response"]["success"];
                     if (!wasSuccessful)
                     {
                         retry++;
-                        Thread.Sleep(2000 + _sleepTime.Next(4000));
+                        Thread.Sleep(retry * 1000 + _sleepTime.Next(4000));
                     }
                     token = result["newToken"].ToString();
 
@@ -165,7 +152,7 @@ namespace OgameBot.Engine.Tasks.Farming
 
                 if (!wasSuccessful)
                 {
-                    Logger.Instance.Log(LogLevel.Error, $"Sending probes to {farm.Coordinate} failed.");
+                    Logger.Instance.Log(LogLevel.Error, $"Sending probes to {farm.Coordinate} failed, last error: {result["message"]}");
                 }
             }
         }

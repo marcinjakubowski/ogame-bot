@@ -125,8 +125,9 @@ namespace OgameBot.Engine
 
         public override string Inject(string body, ResponseContainer response)
         {
+            OgamePageInfo info = response.GetParsedSingle<OgamePageInfo>(false);
             foreach (IInject inject in _injects)
-                body = inject.Inject(body, response);
+                body = inject.Inject(info, body, response);
 
             return base.Inject(body, response);
         }
