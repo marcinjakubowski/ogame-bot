@@ -22,7 +22,7 @@ namespace OgameBot.Engine.Parsing
         public override IEnumerable<DataObject> ProcessInternal(ClientBase client, ResponseContainer container)
         {
             HtmlDocument doc = container.ResponseHtml.Value;
-            HtmlNodeCollection worldNodes = doc.DocumentNode.SelectNodes("//div[@id='myWorlds']/div[@id='planetList']/div[starts-with(@id, 'planet-')]");
+            HtmlNodeCollection worldNodes = doc.DocumentNode.SelectNodes("//div[@id='planetList']/div[starts-with(@id, 'planet-')]");
 
             if (worldNodes == null)
                 yield break;
