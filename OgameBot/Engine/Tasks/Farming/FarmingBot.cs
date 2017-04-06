@@ -144,10 +144,10 @@ namespace OgameBot.Engine.Tasks.Farming
 
                     Thread.Sleep(1000 + _sleepTime.Next(1000));
 
-                    if (--count % 10 == 0 && count > 0)
-                    {
-                        Logger.Instance.Log(LogLevel.Info, $"{count} remaining to scan...");
-                    }
+                }
+                if (--count % 10 == 0 && count > 0)
+                {
+                    Logger.Instance.Log(LogLevel.Info, $"{count} remaining to scan...");
                 }
 
                 if (!wasSuccessful)

@@ -16,7 +16,7 @@ namespace OgameBot.Engine.Tasks.Farming.Strategies
         public int MinimumTotalStorageLevel { get; set; } = 5;
         public int SlotsLeaveRemaining { get; set; } = 1;
         public int MinimumCargosToSend { get; set; } = 2;
-        public int ProbeCount { get; set; } = 3;
+        public int ProbeCount { get; set; } = 4;
         public Resources ResourcePriority { get; set; } = new Resources(1, 1, 1);
 
         private OGameClient _client;
