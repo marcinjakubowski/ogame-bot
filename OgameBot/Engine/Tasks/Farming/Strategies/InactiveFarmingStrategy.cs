@@ -6,6 +6,7 @@ using OgameBot.Db;
 using OgameBot.Objects;
 using OgameBot.Objects.Types;
 using OgameBot.Logging;
+using OgameBot.Db.Parts;
 
 namespace OgameBot.Engine.Tasks.Farming.Strategies
 {
@@ -55,7 +56,7 @@ namespace OgameBot.Engine.Tasks.Farming.Strategies
         public IEnumerable<AttackTarget> GetTargets(IEnumerable<EspionageReport> reports)
         {
             var farmsToAttack = reports.Where(m =>
-                                   m.Details.HasFlag(ReportDetails.Defense) && m.DetectedDefence == null &&
+                                   m.Details.HasFlag(ReportDetails.Defense) && (m.DetectedDefence == null || ((PlanetDefences)m.DetectedDefence).TotalValue == 0) &&
                                    m.Details.HasFlag(ReportDetails.Ships) && m.DetectedShips == null)
                             .OrderByDescending(m => m.Resources.TotalWithPriority(ResourcePriority));
 
