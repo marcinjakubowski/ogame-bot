@@ -61,7 +61,7 @@ namespace OgameBot.Engine.Parsing
                 fleetComposition.LoadHtml(detailsHtml);
                 info.Composition = FleetUtilityParser.ParseFleetInfoTable((OGameClient)client, fleetComposition.DocumentNode);
 
-                string playerOther = node.SelectSingleNode("./td[@class='sendMail']/a").GetAttributeValue("title", string.Empty);
+                string playerOther = node.SelectSingleNode("./td[@class='sendMail']/a")?.GetAttributeValue("title", string.Empty) ?? string.Empty;
 
                 info.Origin = new FleetEndpointInfo()
                 {
