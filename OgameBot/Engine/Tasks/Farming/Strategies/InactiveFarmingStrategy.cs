@@ -54,7 +54,7 @@ namespace OgameBot.Engine.Tasks.Farming.Strategies
                 
         }
 
-        public IEnumerable<AttackTarget> GetTargets(IEnumerable<EspionageReport> reports)
+        public IEnumerable<Target> GetTargets(IEnumerable<EspionageReport> reports)
         {
             var farmsToAttack = reports.Where(m =>
                                    m.Details.HasFlag(ReportDetails.Defense) && (m.DetectedDefence == null || ((PlanetDefences)m.DetectedDefence).TotalValue == 0) &&
@@ -66,7 +66,7 @@ namespace OgameBot.Engine.Tasks.Farming.Strategies
                 if (!AreSlotsAvailable() || !AreCargosAvailable()) yield break;
 
 
-                AttackTarget target = new AttackTarget()
+                Target target = new Target()
                 {
                     Destination = farm.Coordinate,
                     Fleet = FleetComposition.ToPlunder(farm.Resources, _cargo),

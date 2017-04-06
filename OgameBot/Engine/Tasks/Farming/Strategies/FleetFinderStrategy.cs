@@ -35,7 +35,7 @@ namespace OgameBot.Engine.Tasks.Farming.Strategies
             return ProbeCount;
         }
 
-        public IEnumerable<AttackTarget> GetTargets(IEnumerable<EspionageReport> reports)
+        public IEnumerable<Target> GetTargets(IEnumerable<EspionageReport> reports)
         {
             // We don't attack here, just gather information
             yield break;

@@ -12,7 +12,7 @@ namespace OgameBot.Engine.Tasks.Farming.Strategies
         void OnAfterAttack(); // launch monitoring?
 
         IEnumerable<Planet> GetFarms(SystemCoordinate from, SystemCoordinate to); // query
-        IEnumerable<AttackTarget> GetTargets(IEnumerable<EspionageReport> reports); // decide on the targets
+        IEnumerable<Target> GetTargets(IEnumerable<EspionageReport> reports); // decide on the targets
 
         int GetProbeCountForTarget(Planet target);
     }

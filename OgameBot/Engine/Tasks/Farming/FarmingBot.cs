@@ -190,7 +190,7 @@ namespace OgameBot.Engine.Tasks.Farming
 
                 SendFleetCommand attack = new SendFleetCommand(_client)
                 {
-                    Mission = MissionType.Attack,
+                    Mission = farm.Mission,
                     Destination = farm.Destination,
                     Source = info.PlanetCoord,
                     Fleet = farm.Fleet
