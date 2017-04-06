@@ -15,6 +15,7 @@ using OgameBot.Engine.Injects;
 using OgameBot.Proxy;
 using OgameBot.Engine.Commands;
 using System.Collections.Specialized;
+using System.Threading;
 
 namespace OgameBot
 {
@@ -104,6 +105,12 @@ namespace OgameBot
             //ScannerJob s = new ScannerJob(client, new SystemCoordinate(1, 1), new SystemCoordinate(6, 499));
             //s.Start();
 
+            Action<int> recallAction = (fleet) =>
+            {
+                RecallFleetCommand recall = new RecallFleetCommand(client, fleet);
+                recall.Run();
+            };
+
             proxy.AddCommand("transport", (parameters) =>
             {
                 TransportAllCommand transportAll = new TransportAllCommand(client, int.Parse(parameters["from"]), int.Parse(parameters["to"]));
@@ -128,6 +135,18 @@ namespace OgameBot
                 };
                 Farm(client, config, strategy, parameters);
             });
+
+            proxy.AddCommand("recall", (parameters) =>
+            {
+                recallAction(int.Parse(parameters["fleet"]));
+            });
+
+            if (config.FleetToRecall > 0)
+            {
+                recallAction(config.FleetToRecall);
+                Thread.Sleep(5000);
+                return;
+            }
 
             // Work
             Console.ReadLine();

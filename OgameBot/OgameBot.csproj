@@ -87,6 +87,7 @@
     <Compile Include="Db\DebrisField.cs" />
     <Compile Include="Engine\Commands\FindAllMessagesCommand.cs" />
     <Compile Include="Engine\Commands\ReadAllMessagesCommand.cs" />
+    <Compile Include="Engine\Commands\RecallFleetCommand.cs" />
     <Compile Include="Engine\Commands\SendFleetCommand.cs" />
     <Compile Include="Engine\Commands\TransportAllCommand.cs" />
     <Compile Include="Engine\Injects\CommandsInject.cs" />
