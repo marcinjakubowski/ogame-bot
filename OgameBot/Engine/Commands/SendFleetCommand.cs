@@ -54,13 +54,13 @@ namespace OgameBot.Engine.Commands
 
 
             // 1
-            postParams = GetHiddenFields(resp.ResponseHtml.Value);
+            postParams = resp.GetHiddenFields();
             postParams.Merge(Fleet.Ships.ToDictionary(s => "am" + (int)s.Key, s => s.Value.ToString()));
             req = Client.RequestBuilder.PostPage(PageType.FleetDestination, postParams.ToArray());
             resp = Client.IssueRequest(req);
 
             // 2
-            postParams = GetHiddenFields(resp.ResponseHtml.Value);
+            postParams = resp.GetHiddenFields();
             postParams["galaxy"] = Destination.Galaxy.ToString();
             postParams["system"] = Destination.System.ToString();
             postParams["position"] = Destination.Planet.ToString();
@@ -71,7 +71,7 @@ namespace OgameBot.Engine.Commands
 
 
             // 3
-            postParams = GetHiddenFields(resp.ResponseHtml.Value);
+            postParams = resp.GetHiddenFields();
             postParams["metal"] = Fleet.Resources.Metal.ToString();
             postParams["crystal"] = Fleet.Resources.Crystal.ToString();
             postParams["deuterium"] = Fleet.Resources.Deuterium.ToString();
@@ -98,12 +98,6 @@ namespace OgameBot.Engine.Commands
 
         }
 
-        private Dictionary<string, string> GetHiddenFields(HtmlDocument doc)
-        {
-            return doc.DocumentNode
-                      .SelectNodes("//input[@type='hidden']")
-                      .ToDictionary(s => s.GetAttributeValue("name", string.Empty),
-                                    s => s.GetAttributeValue("value", string.Empty));
-        }
+
     }
 }

@@ -68,5 +68,20 @@ namespace ScraperClientLib.Engine
         {
             return ParsedObjects.OfType<T>();
         }
+
+        public Dictionary<string, string> GetInputFields(string ofType = null)
+        {
+            string selector = ofType == null ? string.Empty : $"[@type='{ofType}']";
+
+            return ResponseHtml.Value.DocumentNode
+                      .SelectNodes($"//input{selector}")
+                      .ToDictionary(s => s.GetAttributeValue("name", string.Empty),
+                                    s => s.GetAttributeValue("value", string.Empty));
+        }
+
+        public Dictionary<string, string> GetHiddenFields()
+        {
+            return GetInputFields("hidden");
+        }
     }
 }
