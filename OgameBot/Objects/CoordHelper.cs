@@ -55,16 +55,12 @@ namespace OgameBot.Objects
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            CoordinateType coordType = CoordinateType.Planet;
+            Coordinate coord = (Coordinate?)existingValue ?? new Coordinate();
             JObject obj = JObject.Load(reader);
-            // Need to get this right, no idea what I'm doing and how to read the token next to the one this converted is responsible for
-            //reader.Read();
-            //if (reader.Path == "response.planetType")
-            //{
-            //coordType = (CoordinateType)reader.ReadAsInt32().Value;
-            //}
-
-            return new Coordinate(obj["galaxy"].Value<byte>(), obj["system"].Value<short>(), obj["position"].Value<byte>(), coordType);
+            coord.Galaxy = obj["galaxy"].Value<byte>();
+            coord.System = obj["system"].Value<short>();
+            coord.Planet = obj["position"].Value<byte>();
+            return coord;
         }
 
         public override bool CanConvert(Type objectType)
