@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using OgameBot.Engine.Parsing.Objects;
 using OgameBot.Objects;
+using OgameBot.Objects.Types;
 
 public class MinifleetResponseBody
 {
@@ -14,6 +15,12 @@ public class MinifleetResponseBody
 
     [JsonConverter(typeof(CoordHelper))]
     public Coordinate Coordinates;
+
+    public CoordinateType PlanetType
+    {
+        set => Coordinates.Type = value;
+        get => Coordinates.Type;
+    }
 
     [JsonProperty("success")]
     public bool IsSuccess { get; set; }
