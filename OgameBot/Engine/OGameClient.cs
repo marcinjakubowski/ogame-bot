@@ -64,6 +64,7 @@ namespace OgameBot.Engine
             RegisterParser(new MessageCountParser());
             RegisterParser(new OngoingActivityParser());
             RegisterParser(new EventListParser());
+            RegisterParser(new MinifleetParser());
 
             RegisterIntervention(new OGameAutoLoginner(this));
         }

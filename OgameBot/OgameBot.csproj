@@ -96,6 +96,7 @@
     <Compile Include="Engine\Interventions\RetryIntervention.cs" />
     <Compile Include="Engine\Parsing\EventListParser.cs" />
     <Compile Include="Engine\Parsing\FleetPageParser.cs" />
+    <Compile Include="Engine\Parsing\MinifleetParser.cs" />
     <Compile Include="Engine\Parsing\Objects\DetectedOngoingConstruction.cs" />
     <Compile Include="Engine\Parsing\Objects\DetectedOngoingResearch.cs" />
     <Compile Include="Engine\Parsing\Objects\EspionageReport.cs" />
@@ -106,6 +107,9 @@
     <Compile Include="Engine\Parsing\MessageCountParser.cs" />
     <Compile Include="Engine\Parsing\Objects\MessageType.cs" />
     <Compile Include="Engine\Parsing\Objects\MessageCountObject.cs" />
+    <Compile Include="Engine\Parsing\Objects\MinifleetResponse.cs" />
+    <Compile Include="Engine\Parsing\Objects\MinifleetResponseBody.cs" />
+    <Compile Include="Engine\Parsing\Objects\MinifleetType.cs" />
     <Compile Include="Engine\Parsing\Objects\OgamePageInfo.cs" />
     <Compile Include="Engine\Parsing\Objects\SendShipsInfo.cs" />
     <Compile Include="Engine\Parsing\OngoingActivityParser.cs" />

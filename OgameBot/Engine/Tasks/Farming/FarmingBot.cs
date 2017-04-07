@@ -27,6 +27,7 @@ namespace OgameBot.Engine.Tasks.Farming
         private int _planet;
         private Random _sleepTime = new Random();
         private IFarmingStrategy _strategy;
+        private string _token;
 
         public FarmingBot(OGameClient client, int planet, int range, IFarmingStrategy strategy)
         {
@@ -34,6 +35,17 @@ namespace OgameBot.Engine.Tasks.Farming
             _planet = planet;
             _range = range;
             _strategy = strategy;
+
+            client.OnResponseReceived += PageChanged;
+        }
+
+        private void PageChanged(ResponseContainer resp)
+        {
+            string minifleetToken = resp.GetParsedSingle<OgamePageInfo>(false)?.MiniFleetToken;
+            if (minifleetToken != null)
+            {
+                _token = minifleetToken;
+            }
         }
 
         public void Start()
@@ -92,67 +104,45 @@ namespace OgameBot.Engine.Tasks.Farming
         {
             HttpRequestMessage req = RequestBuilder.GetPage(PageType.Galaxy, _planet);
             ResponseContainer resp = _client.IssueRequest(req);
-            var info = resp.GetParsedSingle<OgamePageInfo>();
-
-            string token = info.MiniFleetToken;
-            bool wasSuccessful = false;
-            int retry = 0;
 
             int count = farms.Count();
+            int retry = 0;
+            int failedInARow = 0;
 
             foreach (Planet farm in farms)
             {
-                
-                wasSuccessful = false;
+                MinifleetResponse minifleet;
                 retry = 0;
-                JObject result = null;
-
-                while (!wasSuccessful && retry < 5)
+                do
                 {
-                    req = RequestBuilder.GetMiniFleetSendMessage(MissionType.Espionage, farm.Coordinate, _strategy.GetProbeCountForTarget(farm), token);
+                    req = RequestBuilder.GetMiniFleetSendMessage(MissionType.Espionage, farm.Coordinate, _strategy.GetProbeCountForTarget(farm), _token);
                     resp = _client.IssueRequest(req);
-
-                    //#todo parse to class instead of jobject
-                    //{  
-                    //"response":{  
-                    //"message":"Send espionage probe to:",
-                    //"type":1,
-                    //"slots":8,
-                    //"probes":18,
-                    //"recyclers":0,
-                    //"missiles":0,
-                    //"shipsSent":2,
-                    //"coordinates":{  
-                    //"galaxy":3,
-                    //"system":55,
-                    //"position":8
-                    //},
-                    //"planetType":1,
-                    //"success":true
-                    //},
-                    //"newToken":"fb74477ff26fd4ba9c41c110aa295baf"
-                    //}
-
-                    result = JObject.Parse(resp.Raw.Value);
-                    wasSuccessful = (bool)result["response"]["success"];
-                    if (!wasSuccessful)
-                    {
-                        retry++;
-                        Thread.Sleep(retry * 1000 + _sleepTime.Next(4000));
-                    }
-                    token = result["newToken"].ToString();
-
-                    Thread.Sleep(1000 + _sleepTime.Next(1000));
-
+                    minifleet = resp.GetParsedSingle<MinifleetResponse>();
+                    _token = minifleet.NewToken;
+                    
+                    // If there are no probes (or error), wait for 5s, otherwise 1s
+                    Thread.Sleep((minifleet.Response.Probes > 0 ? 1000 : 5000) + _sleepTime.Next(1000));
+                    retry++;
                 }
+                while (!minifleet.Response.IsSuccess && retry < 5);
+
+                if (minifleet.Response.IsSuccess)
+                {
+                    failedInARow = 0;
+                }
+                else
+                {
+                    Logger.Instance.Log(LogLevel.Error, $"Sending probes to {farm.Coordinate} failed, last error: {minifleet.Response.Message}");
+                    if (++failedInARow == 3)
+                    {
+                        Logger.Instance.Log(LogLevel.Error, $"Failed to send probe {failedInARow} times in a row, aborting further scan");
+                        break;
+                    }
+                }
+
                 if (--count % 10 == 0 && count > 0)
                 {
                     Logger.Instance.Log(LogLevel.Info, $"{count} remaining to scan...");
-                }
-
-                if (!wasSuccessful)
-                {
-                    Logger.Instance.Log(LogLevel.Error, $"Sending probes to {farm.Coordinate} failed, last error: {result["message"]}");
                 }
             }
         }

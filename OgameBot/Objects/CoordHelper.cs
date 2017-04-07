@@ -1,8 +1,11 @@
-﻿using OgameBot.Objects.Types;
+﻿using System;
+using Newtonsoft.Json;
+using OgameBot.Objects.Types;
+using Newtonsoft.Json.Linq;
 
 namespace OgameBot.Objects
 {
-    public static class CoordHelper
+    public class CoordHelper : JsonConverter
     {
         public static long ToNumber(Coordinate coord)
         {
@@ -43,6 +46,30 @@ namespace OgameBot.Objects
             short sys = (short)(id & 0xFFFF);
 
             return new SystemCoordinate(gal, sys);
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            CoordinateType coordType = CoordinateType.Planet;
+            JObject obj = JObject.Load(reader);
+            // Need to get this right, no idea what I'm doing and how to read the token next to the one this converted is responsible for
+            //reader.Read();
+            //if (reader.Path == "response.planetType")
+            //{
+            //coordType = (CoordinateType)reader.ReadAsInt32().Value;
+            //}
+
+            return new Coordinate(obj["galaxy"].Value<byte>(), obj["system"].Value<short>(), obj["position"].Value<byte>(), coordType);
+        }
+
+        public override bool CanConvert(Type objectType)
+        {
+            throw new NotImplementedException();
         }
     }
 }
