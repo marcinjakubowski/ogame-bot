@@ -89,7 +89,7 @@ namespace OgameBot.Engine.Tasks.Farming.Strategies
         {
         }
 
-        public void OnBeforeAttack()
+        public bool OnBeforeAttack()
         {
             var resp = _client.IssueRequest(_client.RequestBuilder.GetPage(PageType.Fleet));
 
@@ -98,13 +98,17 @@ namespace OgameBot.Engine.Tasks.Farming.Strategies
             if (!AreCargosAvailable())
             {
                 Logger.Instance.Log(LogLevel.Error, "There are no cargos on the planet");
+                return false;
             }
 
             _slots = resp.GetParsedSingle<FleetSlotCount>();
             if (!AreSlotsAvailable())
             {
                 Logger.Instance.Log(LogLevel.Error, "There are no fleet slots available");
+                return false;
             }
+
+            return true;
         }
 
         private bool AreSlotsAvailable()
@@ -115,11 +119,6 @@ namespace OgameBot.Engine.Tasks.Farming.Strategies
         private bool AreCargosAvailable()
         {
             return _cargoCount > 0;
-        }
-
-        public int GetProbeCountForTarget(Planet target)
-        {
-            return ProbeCount;
         }
     }
 }

@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 using OgameBot.Db;
 using OgameBot.Engine.Parsing.Objects;
 using OgameBot.Objects;
+using OgameBot.Db.Parts;
+using OgameBot.Objects.Types;
+using System.Threading;
+using OgameBot.Engine.Commands;
 
 namespace OgameBot.Engine.Tasks.Farming.Strategies
 {
@@ -13,6 +17,15 @@ namespace OgameBot.Engine.Tasks.Farming.Strategies
     {
         public int EspionageTechnologyLevel { get; set; } = 8;
         public int MaxRanking { get; set; } = 400;
+        public int MinValue { get; set; } = 500000;
+        public int ProbeCount { get; set; } = 2;
+
+        private OGameClient _client;
+
+        public FleetFinderStrategy(OGameClient client)
+        {
+            _client = client;
+        }
 
         public IEnumerable<Planet> GetFarms(SystemCoordinate from, SystemCoordinate to)
         {
@@ -41,25 +54,31 @@ namespace OgameBot.Engine.Tasks.Farming.Strategies
          *  5	Resources + Fleet + Defense + Buildings
          *  7	Resources + Fleet + Defense + Buildings + Research
         */
-        public int GetProbeCountForTarget(Planet target)
-        {
-            // Lets you see defenses for targets with EspionageTechnology +1 than your own
-            return 4;
-        }
 
         public IEnumerable<Target> GetTargets(IEnumerable<EspionageReport> reports)
         {
-            // We don't attack here, just gather information
-            yield break;
+            // Has ships but not defense, just one more probe away
+            return reports.Where(r => r.Details.HasFlag(ReportDetails.Ships) && !r.Details.HasFlag(ReportDetails.Defense) && ((PlanetShips)r.DetectedShips).TotalValue >= MinValue)
+                          .Select(r => new Target
+                          {
+                              Destination = r.Coordinate,
+                              Fleet = FleetComposition.ToSpy(ProbeCount + 1),
+                              Mission = MissionType.Espionage
+                          });
         }
 
         public void OnAfterAttack()
         {
-            // Schedule another farm bot for targets we have fleet for but not the defences
+            // Wait one minute for the probes to come back
+            // #todo extract method from FarmingBot
+            Thread.Sleep(60000);
+            ReadAllMessagesCommand cmd = new ReadAllMessagesCommand(_client);
+            cmd.Run();
         }
 
-        public void OnBeforeAttack()
+        public bool OnBeforeAttack()
         {
+            return true;
         }
     }
 }

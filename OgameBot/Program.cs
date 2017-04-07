@@ -119,7 +119,7 @@ namespace OgameBot
             
             proxy.AddCommand("hunt", (parameters) =>
             {
-                IFarmingStrategy strategy = new FleetFinderStrategy();
+                IFarmingStrategy strategy = new FleetFinderStrategy(client);
                 Farm(client, config, strategy, parameters);
             });
 

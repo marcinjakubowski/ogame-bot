@@ -38,6 +38,14 @@ namespace OgameBot.Objects
             return fleet;
         }
 
+        public static FleetComposition ToSpy(int probeCount)
+        {
+            FleetComposition fleet = new FleetComposition();
+            fleet.Ships[ShipType.EspionageProbe] = probeCount;
+
+            return fleet;
+        }
+
         public static Resources GetPlunder(Resources available)
         {
             Resources theoretical = available / 2;

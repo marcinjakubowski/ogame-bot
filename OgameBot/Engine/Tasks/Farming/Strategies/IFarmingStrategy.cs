@@ -8,12 +8,12 @@ namespace OgameBot.Engine.Tasks.Farming.Strategies
 {
     public interface IFarmingStrategy
     {
-        void OnBeforeAttack(); // check how many ships, slots
+        bool OnBeforeAttack(); // check how many ships, slots
         void OnAfterAttack(); // launch monitoring?
 
         IEnumerable<Planet> GetFarms(SystemCoordinate from, SystemCoordinate to); // query
         IEnumerable<Target> GetTargets(IEnumerable<EspionageReport> reports); // decide on the targets
 
-        int GetProbeCountForTarget(Planet target);
+        int ProbeCount { get; set; }
     }
 }

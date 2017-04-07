@@ -87,12 +87,19 @@ namespace OgameBot.Engine.Tasks.Farming
             var messages = cmd.ParsedObjects.OfType<EspionageReport>();
 
             Logger.Instance.Log(LogLevel.Info, $"{messages.Count()} Messages parsed, sending ships.");
-            _strategy.OnBeforeAttack();
-            Resources totalPlunder = Attack(messages);
-            _strategy.OnAfterAttack();
-            Logger.Instance.Log(LogLevel.Info, $"Job done, theoretical total plunder: {totalPlunder}");
+            if (_strategy.OnBeforeAttack())
+            {
+                Resources totalPlunder = Attack(messages);
+                _strategy.OnAfterAttack();
+                Logger.Instance.Log(LogLevel.Info, $"Job done, theoretical total plunder: {totalPlunder}");
+            }
+            else
+            {
+                Logger.Instance.Log(LogLevel.Info, $"Strategy decided not to attack, job done.");
+            }
+            
         }
-              
+
         /* Extract to IFarmingStrategy
         private IEnumerable<Planet> GetFarmsToScanForFleet()
         {
@@ -115,7 +122,7 @@ namespace OgameBot.Engine.Tasks.Farming
                 retry = 0;
                 do
                 {
-                    req = RequestBuilder.GetMiniFleetSendMessage(MissionType.Espionage, farm.Coordinate, _strategy.GetProbeCountForTarget(farm), _token);
+                    req = RequestBuilder.GetMiniFleetSendMessage(MissionType.Espionage, farm.Coordinate, _strategy.ProbeCount, _token);
                     resp = _client.IssueRequest(req);
                     minifleet = resp.GetParsedSingle<MinifleetResponse>();
                     _token = minifleet.NewToken;
