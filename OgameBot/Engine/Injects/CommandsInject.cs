@@ -14,21 +14,20 @@ namespace OgameBot.Engine.Injects
             if (current == null)
                 return body;
 
-            string[][] links = new string[][] {
-                new string[] {"farm?cp=$2", "Farm"},
-                new string[] {"hunt?cp=$2", "Hunt Fleets"},
-                new string[] {$"transport?from=$2&to={current.PlanetId}", "Transport All From"},
-                new string[] {$"transport?from={current.PlanetId}&to=$2", "Transport All To"}
-            };
-
             StringBuilder sb = new StringBuilder("$1&lt;hr/&gt;");
-            foreach (string[] link in links)
-            {
-                sb.Append($"&lt;a href=&quot;http://127.0.0.1:18000/ogbcmd/{link[0]}&quot;&gt;{link[1]}&lt;/a&gt;&lt;/br&gt;");
-            }
-            sb.Length -= 11;
+            
+            sb.Append(GetLink("farm?cp=$2", "Farm")).Append(" (").Append(GetLink("farm?cp=$2&slots=0", "0 slots")).Append(")").Append(NewLine);
+            sb.Append(GetLink("hunt?cp=$2", "Hunt")).Append(", range: ").Append(GetLink("hunt?cp=$2&range=40", "40")).Append(" ").Append(GetLink("hunt?cp=$2&range=20", "20")).Append(NewLine);
+            sb.Append("Transport All: ").Append(GetLink($"transport?from=$2&to={current.PlanetId}", "From")).Append(" / ").Append(GetLink($"transport?from={current.PlanetId}&to=$2", "To"));
             body = galaxysubmenuRegex.Replace(body, sb.ToString());
             return body;
         }
+
+        private static string GetLink(string command, string label)
+        {
+            return $"&lt;a href=&quot;http://127.0.0.1:18000/ogbcmd/{command}&quot;&gt;{label}&lt;/a&gt;";
+        }
+
+        private const string NewLine = "&lt;/br&gt;";
     }
 }
