@@ -151,7 +151,11 @@ namespace OgameBot.Proxy
                 ms.Seek(0, SeekOrigin.Begin);
 
                 proxyReq.Content = new StreamContent(ms);
-                proxyReq.Content.Headers.ContentType = MediaTypeHeaderValue.Parse(ctx.Request.ContentType);
+                if (ctx.Request.ContentType != null)
+                {
+                    proxyReq.Content.Headers.ContentType = MediaTypeHeaderValue.Parse(ctx.Request.ContentType);
+                }
+
             }
 
             // Issue
