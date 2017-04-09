@@ -36,7 +36,7 @@ namespace OgameBot.Db
                 if (_message == null)
                 {
                     Type type = Type.GetType(SerializedMessageType, true);
-                    _message = (MessageBase)SerializerHelper.DeserializeFromBytes(type, SerializedMessage, true);
+                    _message = (MessageBase)SerializerHelper.DeserializeFromBytes(type, SerializedMessage, null);
                 }
 
                 return _message;
@@ -48,7 +48,7 @@ namespace OgameBot.Db
 
         public void Update()
         {
-            SerializedMessage = SerializerHelper.SerializeToBytes(Body, true);
+            SerializedMessage = SerializerHelper.SerializeToBytes(Body, false);
             SerializedMessageType = Body.GetType().FullName;
         }
     }

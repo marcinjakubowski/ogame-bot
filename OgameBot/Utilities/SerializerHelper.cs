@@ -47,16 +47,22 @@ namespace OgameBot.Utilities
                 return Serializer.Deserialize(jr, type);
         }
 
-        public static object DeserializeFromBytes(Type type, byte[] data, bool decompress = false)
+        public static object DeserializeFromBytes(Type type, byte[] data, bool? decompress = false)
         {
             using (MemoryStream ms = new MemoryStream(data))
-                return DeserializeFromStream(type, ms, decompress);
+                return DeserializeFromStream(type, ms, decompress == null ? IsCompressed(data) : decompress.Value);
         }
 
         public static T DeserializeFromBytes<T>(byte[] data, bool decompress = false)
         {
             using (MemoryStream ms = new MemoryStream(data))
                 return (T)DeserializeFromStream(typeof(T), ms, decompress);
+        }
+
+        // gzip header 0x1F8B
+        public static bool IsCompressed(byte[] data)
+        {
+            return data.Length >= 2 && data[0] == 31 && data[1] == 139;
         }
     }
 }
