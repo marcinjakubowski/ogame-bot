@@ -112,12 +112,16 @@ namespace OgameBot.Engine.Tasks.Farming
             HttpRequestMessage req = RequestBuilder.GetPage(PageType.Galaxy, _planet);
             ResponseContainer resp = _client.IssueRequest(req);
 
+            Coordinate self = resp.GetParsedSingle<OgamePageInfo>().PlanetCoord;
+
             int count = farms.Count();
             int retry = 0;
             int failedInARow = 0;
 
             foreach (Planet farm in farms)
             {
+                if (farm.Coordinate == self) continue;
+
                 MinifleetResponse minifleet;
                 retry = 0;
                 do
