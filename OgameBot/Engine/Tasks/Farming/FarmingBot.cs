@@ -168,7 +168,7 @@ namespace OgameBot.Engine.Tasks.Farming
                 HttpRequestMessage req = RequestBuilder.GetPage(PageType.FleetMovement);
                 ResponseContainer resp = _client.IssueRequest(req);
 
-                probes = resp.GetParsed<FleetInfo>().Where(fi => fi.MissionType == MissionType.Espionage);
+                probes = resp.GetParsed<FleetInfo>().Where(fi => fi.MissionType == MissionType.Espionage && !fi.IsReturning);
                 if (probes.Any())
                 {
                     Thread.Sleep(3000 + _sleepTime.Next(2000));
