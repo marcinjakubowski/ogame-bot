@@ -26,6 +26,8 @@ namespace ScraperClientLib.Engine
 
         public DateTime LastRequestUtc { get; private set; }
 
+        private int _retry;
+
         protected ClientBase()
         {
             _httpClient = new HttpClient();
@@ -101,13 +103,28 @@ namespace ScraperClientLib.Engine
 
         private ResponseContainer IssueRequestInternal(HttpRequestMessage request, bool save = true)
         {
-            if (save) _original = CloneHttpRequestMessage(request);
-            HttpResponseMessage response = _httpClient.SendAsync(request).Sync();
-            LastRequestUtc = DateTime.UtcNow;
+            if (save && _retry == 0) _original = CloneHttpRequestMessage(request);
+            try
+            {
+                HttpResponseMessage response = _httpClient.SendAsync(request).Sync();
+                LastRequestUtc = DateTime.UtcNow;
 
-            ResponseContainer result = new ResponseContainer(request, response);
+                ResponseContainer result = new ResponseContainer(request, response);
+                _retry = 0;
+                return result;
+            }
+            catch (HttpRequestException ex)
+            {
+                if (_retry++ < 3)
+                {
+                    Console.WriteLine($"[!!!] Proxy request failed: {ex.Message}, retrying...");
+                    return IssueRequestInternal(CloneHttpRequestMessage(_original), false);
+                }
+                    
+                else throw ex.InnerException;
+            }
 
-            return result;
+            
         }
 
         public ResponseContainer IssueRequest(HttpRequestMessage request)
