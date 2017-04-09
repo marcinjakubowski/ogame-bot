@@ -191,7 +191,7 @@ namespace OgameBot.Proxy
                 str = str.Replace(SubstituteRoot.Host + ":" + SubstituteRoot.Port, $"{_listenHost}:{_listenPort}"); // Without scheme
                 str = str.Replace(SubstituteRoot.Host, $"{_listenHost}:{_listenPort}"); // Remainders
                 // To make overlays work, there is a check against ogameUrl in javascript
-                str = str.Replace(@"</body>", $@"<script type=""text/javascript"">ogameUrl = 'http://{_listenHost}:{_listenPort}'</script></body>");
+                str = str.Replace(@"</body>", $@"<script type=""text/javascript"">ogameUrl = 'http://{_listenHost}:{_listenPort}'; $('body').removeClass('no-commander');</script></body>");
                 str = _client.Inject(str, resp);
 
                 data = Encoding.UTF8.GetBytes(str);
