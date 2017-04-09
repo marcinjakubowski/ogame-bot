@@ -20,6 +20,7 @@ namespace OgameBot
         public int FarmRange { get; set; }
 
         public int FleetToRecall { get; set; }
+        public int HuntMaximumRanking { get; set; }
 
         public LogLevel LogLevel { get; set; }
     }
