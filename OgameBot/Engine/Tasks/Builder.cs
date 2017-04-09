@@ -15,7 +15,7 @@ namespace OgameBot.Engine.Tasks
         public Builder(OGameClient client) : base()
         {
             _client = client;
-            ExecutionInterval = TimeSpan.FromSeconds(15);
+            ExecutionInterval = TimeSpan.FromSeconds(30);
         }
 
         // testing, 1-2-3
@@ -23,13 +23,31 @@ namespace OgameBot.Engine.Tasks
         {
             using (BotDb db = new BotDb())
             {
-                /*
-                Planet p = db.Planets.Where(s => s.Name == "<insert>").FirstOrDefault();
-                BuildCommand cmd = new BuildCommand(_client, p, BuildingType.ResearchLab);
-                cmd.Run();
-                */
+                //foreach ()
             }
-            Stop();
+
+        }
+
+
+        public void Add(Planet planet, BuildingType building, int level)
+        {
+            Add(planet.LocationId, building, level);
+        }
+
+        public void Add(long locationId, BuildingType building, int level)
+        {
+            using (BotDb db = new BotDb())
+            {
+                BuildOrder order = new BuildOrder()
+                {
+                    LocationId = locationId,
+                    Building = building,
+                    Level = level
+                };
+
+                db.BuildOrder.Add(order);
+                db.SaveChanges();
+            }
         }
     }
 }

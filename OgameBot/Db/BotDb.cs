@@ -22,6 +22,8 @@ namespace OgameBot.Db
 
         public DbSet<PlanetShipLog> PlanetShipLog { get; set; }
 
+        public DbSet<BuildOrder> BuildOrder { get; set; }
+
         public override int SaveChanges()
         {
             HandleAuditing();
