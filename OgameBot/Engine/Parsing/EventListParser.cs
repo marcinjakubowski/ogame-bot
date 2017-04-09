@@ -55,11 +55,15 @@ namespace OgameBot.Engine.Parsing
                 {
                     throw new ApplicationException($"Fleet is neither own nor hostile: {@class}");
                 }
-
-                string detailsHtml = WebUtility.HtmlDecode(node.SelectSingleNode("./td[contains(@class, 'icon_movement')]").ChildNodes[1].GetAttributeValue("title", string.Empty));
-                HtmlDocument fleetComposition = new HtmlDocument();
-                fleetComposition.LoadHtml(detailsHtml);
-                info.Composition = FleetUtilityParser.ParseFleetInfoTable((OGameClient)client, fleetComposition.DocumentNode);
+                
+                // crashes on missle attack, need to get the html to parse correctly
+                string detailsHtml = WebUtility.HtmlDecode(node.SelectSingleNode("./td[contains(@class, 'icon_movement')]")?.ChildNodes[1].GetAttributeValue("title", string.Empty));
+                if (detailsHtml != null)
+                {
+                    HtmlDocument fleetComposition = new HtmlDocument();
+                    fleetComposition.LoadHtml(detailsHtml);
+                    info.Composition = FleetUtilityParser.ParseFleetInfoTable((OGameClient)client, fleetComposition.DocumentNode);
+                }
 
                 string playerOther = node.SelectSingleNode("./td[@class='sendMail']/a")?.GetAttributeValue("title", string.Empty) ?? string.Empty;
 
