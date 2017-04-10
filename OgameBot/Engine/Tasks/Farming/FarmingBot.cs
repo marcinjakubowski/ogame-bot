@@ -11,20 +11,33 @@ using OgameBot.Engine.Parsing.Objects;
 using OgameBot.Objects.Types;
 using System.Net.Http;
 using ScraperClientLib.Engine;
-using Newtonsoft.Json.Linq;
 using OgameBot.Engine.Tasks.Farming.Strategies;
 
 namespace OgameBot.Engine.Tasks.Farming
 {
-    public class FarmingBot
+    public class FarmingBot : IPlanetExclusiveOperation
     {
         private readonly OGameClient _client;
         private OGameRequestBuilder RequestBuilder => _client.RequestBuilder;
 
+        public string Name
+        {
+            get
+            {
+                using (BotDb db = new BotDb())
+                {
+                    Planet planet = db.Planets.Where(p => p.PlanetId == PlanetId).First();
+                    return $"Farming using {_strategy} in range {_range}";
+                }
+            }
+        }
+        public string Progress { get; private set; }
+
+        public int PlanetId { get; private set; }
+
         private SystemCoordinate _from, _to;
         private ScannerJob _scanner;
         private int _range;
-        private int _planet;
         private Random _sleepTime = new Random();
         private IFarmingStrategy _strategy;
         private string _token;
@@ -32,7 +45,7 @@ namespace OgameBot.Engine.Tasks.Farming
         public FarmingBot(OGameClient client, int planet, int range, IFarmingStrategy strategy)
         {
             _client = client;
-            _planet = planet;
+            PlanetId = planet;
             _range = range;
             _strategy = strategy;
 
@@ -50,11 +63,11 @@ namespace OgameBot.Engine.Tasks.Farming
 
         public void Start()
         {
-            var req = _client.RequestBuilder.GetPage(PageType.Galaxy, _planet == 0 ? null : (int?)_planet);
+            var req = _client.RequestBuilder.GetPage(PageType.Galaxy, PlanetId == 0 ? null : (int?)PlanetId);
             var resp = _client.IssueRequest(req);
 
             var source = resp.GetParsedSingle<OgamePageInfo>();
-            _planet = source.PlanetId;
+            PlanetId = source.PlanetId;
 
             // Start scanner
             _from = source.PlanetCoord;
@@ -73,29 +86,32 @@ namespace OgameBot.Engine.Tasks.Farming
 
         private void Worker()
         {
-            _scanner.Stop();
-            IEnumerable<Planet> farms = _strategy.GetFarms(_from, _to);
-            Logger.Instance.Log(LogLevel.Info, $"Got {farms.Count()} farms, probing...");
-
-            SendProbes(farms);
-            Logger.Instance.Log(LogLevel.Info, "Sending probes finished, waiting to come back and read messages");
-            WaitForProbes();
-            
-            // Read messages
-            ReadAllMessagesCommand cmd = new ReadAllMessagesCommand(_client);
-            cmd.Run();
-            var messages = cmd.ParsedObjects.OfType<EspionageReport>();
-
-            Logger.Instance.Log(LogLevel.Info, $"{messages.Count()} Messages parsed, sending ships.");
-            if (_strategy.OnBeforeAttack())
+            using (_client.EnterPlanetExclusive(this))
             {
-                Resources totalPlunder = Attack(messages);
-                _strategy.OnAfterAttack();
-                Logger.Instance.Log(LogLevel.Info, $"Job done, theoretical total plunder: {totalPlunder}");
-            }
-            else
-            {
-                Logger.Instance.Log(LogLevel.Info, $"Strategy decided not to attack, job done.");
+                _scanner.Stop();
+                IEnumerable<Planet> farms = _strategy.GetFarms(_from, _to);
+                Logger.Instance.Log(LogLevel.Info, $"Got {farms.Count()} farms, probing...");
+
+                SendProbes(farms);
+                Logger.Instance.Log(LogLevel.Info, "Sending probes finished, waiting to come back and read messages");
+                WaitForProbes();
+
+                // Read messages
+                ReadAllMessagesCommand cmd = new ReadAllMessagesCommand(_client);
+                cmd.Run();
+                var messages = cmd.ParsedObjects.OfType<EspionageReport>();
+
+                Logger.Instance.Log(LogLevel.Info, $"{messages.Count()} Messages parsed, sending ships.");
+                if (_strategy.OnBeforeAttack())
+                {
+                    Resources totalPlunder = Attack(messages);
+                    _strategy.OnAfterAttack();
+                    Logger.Instance.Log(LogLevel.Info, $"Job done, theoretical total plunder: {totalPlunder}");
+                }
+                else
+                {
+                    Logger.Instance.Log(LogLevel.Info, $"Strategy decided not to attack, job done.");
+                }
             }
             
         }
@@ -109,7 +125,8 @@ namespace OgameBot.Engine.Tasks.Farming
 
         private void SendProbes(IEnumerable<Planet> farms)
         {
-            HttpRequestMessage req = RequestBuilder.GetPage(PageType.Galaxy, _planet);
+            Progress = "Sending probes";
+            HttpRequestMessage req = RequestBuilder.GetPage(PageType.Galaxy, PlanetId);
             ResponseContainer resp = _client.IssueRequest(req);
 
             Coordinate self = resp.GetParsedSingle<OgamePageInfo>().PlanetCoord;
@@ -160,6 +177,7 @@ namespace OgameBot.Engine.Tasks.Farming
 
         private void WaitForProbes()
         {
+            Progress = "Waiting for probes";
             Thread.Sleep(5000 + _sleepTime.Next(2000));
 
             IEnumerable<FleetInfo> probes;
@@ -178,8 +196,9 @@ namespace OgameBot.Engine.Tasks.Farming
 
         private Resources Attack(IEnumerable<EspionageReport> messages)
         {
+            Progress = "Attacking";
             //Check if the planet wasn't changed in the meantime (ie. by user action), we'd be sending cargos for a long trip
-            ResponseContainer resp = _client.IssueRequest(RequestBuilder.GetPage(PageType.Fleet, _planet));
+            ResponseContainer resp = _client.IssueRequest(RequestBuilder.GetPage(PageType.Fleet, PlanetId));
             OgamePageInfo info = resp.GetParsedSingle<OgamePageInfo>();
 
             Resources totalPlunder = new Resources();
