@@ -145,6 +145,12 @@ namespace OgameBot
                 recallAction(int.Parse(parameters["fleet"]));
             });
 
+            proxy.AddCommand("fake", (parameters) =>
+            {
+                FakePlanetExclusive op = new FakePlanetExclusive(client);
+                op.Run();
+            });
+
             if (config.FleetToRecall > 0)
             {
                 recallAction(config.FleetToRecall);
