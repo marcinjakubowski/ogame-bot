@@ -12,6 +12,8 @@ using ScraperClientLib.Engine;
 using ScraperClientLib.Engine.Parsing;
 using OgameBot.Engine.Parsing.Objects;
 using OgameBot.Engine.Injects;
+using System.Threading;
+using OgameBot.Engine.RequestValidation;
 
 namespace OgameBot.Engine
 {
@@ -23,6 +25,10 @@ namespace OgameBot.Engine
 
         private readonly List<SaverBase> _savers;
         private readonly List<IInject> _injects;
+        private readonly List<IRequestValidator> _validators;
+
+        public PlanetExclusiveOperation CurrentPlanetExclusiveOperation { get; private set; } = null;
+        private object _lockPlanetExclusive = new object();
 
         public event Action<ResponseContainer> OnResponseReceived;
 
@@ -40,6 +46,7 @@ namespace OgameBot.Engine
 
             _savers = new List<SaverBase>();
             _injects = new List<IInject>();
+            _validators = new List<IRequestValidator>();
 
             RequestBuilder = new OGameRequestBuilder(this);
 
@@ -67,12 +74,19 @@ namespace OgameBot.Engine
             RegisterParser(new MinifleetParser());
 
             RegisterIntervention(new OGameAutoLoginner(this));
+            RegisterValidator(new PlanetExclusiveValidator(this));
+            
         }
 
         public void RegisterInject(IInject inject)
         {
             using (EnterExclusive())
                 _injects.Add(inject);
+        }
+        public void RegisterValidator(IRequestValidator validator)
+        {
+            using (EnterExclusive())
+                _validators.Add(validator);
         }
 
         public void RegisterSaver(SaverBase saver)
@@ -89,6 +103,15 @@ namespace OgameBot.Engine
         public IReadOnlyList<SaverBase> GetSavers()
         {
             return _savers.AsReadOnly();
+        }
+
+        public override ResponseContainer IssueRequest(HttpRequestMessage request)
+        {
+            foreach (var validator in _validators)
+            {
+                request = validator.Validate(request);
+            }
+            return base.IssueRequest(request);
         }
 
         protected override void PostRequest(ResponseContainer response)
@@ -132,6 +155,42 @@ namespace OgameBot.Engine
                 body = inject.Inject(info, body, response);
 
             return base.Inject(body, response);
+        }
+
+        public IDisposable EnterPlanetExclusive(IPlanetExclusiveOperation operation)
+        {
+            Monitor.Enter(_lockPlanetExclusive);
+            CurrentPlanetExclusiveOperation = new PlanetExclusiveOperation(this, operation);
+            return CurrentPlanetExclusiveOperation;
+        }
+
+        public void LeavePlanetExclusive(PlanetExclusiveOperation op)
+        {
+            if (op == CurrentPlanetExclusiveOperation)
+            {
+                op.Dispose();
+            }
+            else
+            {
+                throw new ArgumentException("Invalid planet exclusive token!");
+            }
+        }
+        public class PlanetExclusiveOperation : IDisposable
+        {
+            private OGameClient _client;
+            public IPlanetExclusiveOperation Operation { get; }
+
+            public PlanetExclusiveOperation(OGameClient client, IPlanetExclusiveOperation operation)
+            {
+                _client = client;
+                Operation = operation;
+            }
+
+            public void Dispose()
+            {
+                _client.CurrentPlanetExclusiveOperation = null;
+                Monitor.Exit(_client._lockPlanetExclusive);
+            }
         }
     }
 }

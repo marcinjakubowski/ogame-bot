@@ -127,7 +127,7 @@ namespace ScraperClientLib.Engine
             
         }
 
-        public ResponseContainer IssueRequest(HttpRequestMessage request)
+        public virtual ResponseContainer IssueRequest(HttpRequestMessage request)
         {
             using (EnterExclusive())
             {
