@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using OgameBot.Objects.Types;
 using System;
+using System.Text;
 
 namespace OgameBot.Objects
 {
@@ -17,6 +18,19 @@ namespace OgameBot.Objects
         {
             Ships = new Dictionary<ShipType, int>();
             Resources = new Resources();
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            Ships.ToList().ForEach(s => sb.Append($"{s.Value}x {s.Key}, "));
+            sb.Length -= 2;
+
+            if (Resources.Total > 0)
+            {
+                sb.Append($" carrying {Resources}");
+            }
+            return sb.ToString();
         }
 
         public static FleetComposition ToTransport(Resources resources, ShipType cargo = ShipType.LargeCargo)
