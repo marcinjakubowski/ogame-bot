@@ -91,7 +91,8 @@ namespace OgameBot.Engine.Savers
                             item.Player.Research.LastUpdated = DateTimeOffset.UtcNow;
                         }
                     }
-
+                    item.Name = playerPlanet.Name;
+                    item.PlayerId = current.PlayerId;
                     item.PlanetId = playerPlanet.Id;
                     db.SaveChanges();
                 }
