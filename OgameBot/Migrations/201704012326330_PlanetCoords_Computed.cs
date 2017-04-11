@@ -14,8 +14,8 @@ namespace OgameBot.Migrations
                             ,(LocationId / POWER(CAST(2 AS BIGINT), 8)) & 0xFF
                             ,CASE(LocationId & 0xFF)
                                    WHEN 1 THEN ''
-                                   WHEN 2 THEN ':M'
-                                   WHEN 3 THEN ':DF'
+                                   WHEN 2 THEN ':DF'
+                                   WHEN 3 THEN ':M'
                                    ELSE ':?'
                                  END)
                   )
