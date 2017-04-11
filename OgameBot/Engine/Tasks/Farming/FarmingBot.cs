@@ -33,6 +33,8 @@ namespace OgameBot.Engine.Tasks.Farming
         }
         public string Progress { get; private set; }
 
+        public int Delay { get; set; } = 0;
+
         public int PlanetId { get; private set; }
 
         private SystemCoordinate _from, _to;
@@ -63,6 +65,8 @@ namespace OgameBot.Engine.Tasks.Farming
 
         public void Start()
         {
+            Thread.Sleep(Delay * 1000);
+
             var req = _client.RequestBuilder.GetPage(PageType.Galaxy, PlanetId == 0 ? null : (int?)PlanetId);
             var resp = _client.IssueRequest(req);
 

@@ -182,8 +182,20 @@ namespace OgameBot
                 }
             }
 
-            FarmingBot bot = new FarmingBot(client, planetId, range, strategy);
-            bot.Start();
+            int delay = 0;
+
+            if (parameters["delay"] != null)
+            {
+                if (!int.TryParse(parameters["delay"], out delay))
+                {
+                    delay = 0;
+                }
+            }
+
+            FarmingBot bot = new FarmingBot(client, planetId, range, strategy)
+            {
+                Delay = delay
+            };
         }
     }
 }
