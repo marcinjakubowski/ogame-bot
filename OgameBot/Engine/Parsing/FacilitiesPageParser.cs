@@ -57,9 +57,18 @@ namespace OgameBot.Engine.Parsing
                     case "station33":
                         type = Building.Terraformer;
                         break;
-                    //case "station36":
-                    //    type = Building.SpaceDock;
-                    //    break;
+                    case "station41":
+                        type = Building.LunarBase;
+                        break;
+                    case "station42":
+                        type = Building.SensorPhalanx;
+                        break;
+                    case "station43":
+                        type = Building.JumpGate;
+                        break;
+                    case "station36":
+                        type = Building.SpaceDock;
+                        break;
                     default:
                         continue;
                 }

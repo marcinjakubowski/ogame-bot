@@ -20,7 +20,7 @@ namespace OgameBot.Objects.Types
         SensorPhalanx = 42,
         Shipyard = 21,
         SolarPlant = 4,
-        //SpaceDock,
-        Terraformer = 33
+        SpaceDock = 36,
+        Terraformer = 33,
     }
 }
