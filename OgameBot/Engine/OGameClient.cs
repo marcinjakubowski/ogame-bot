@@ -14,6 +14,9 @@ using OgameBot.Engine.Parsing.Objects;
 using OgameBot.Engine.Injects;
 using System.Threading;
 using OgameBot.Engine.RequestValidation;
+using System.Net;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace OgameBot.Engine
 {
@@ -27,8 +30,11 @@ namespace OgameBot.Engine
         private readonly List<IInject> _injects;
         private readonly List<IRequestValidator> _validators;
 
+        private const string _cookiePath = "temp/cookies.bin";
+
         public PlanetExclusiveOperation CurrentPlanetExclusiveOperation { get; private set; } = null;
         private object _lockPlanetExclusive = new object();
+        private CookieContainer _cookieContainer;
 
         public event Action<ResponseContainer> OnResponseReceived;
 
@@ -148,6 +154,32 @@ namespace OgameBot.Engine
             }
         }
 
+        protected override CookieContainer GetCookieContainer()
+        {
+            _cookieContainer = null;
+            FileInfo cookiesFile = new FileInfo(_cookiePath);
+
+            if (!cookiesFile.Exists)
+            {
+                _cookieContainer = base.GetCookieContainer();
+            }
+            else
+            {
+                BinaryFormatter formatter = new BinaryFormatter();
+                _cookieContainer = (CookieContainer)formatter.Deserialize(cookiesFile.OpenRead());
+            }
+
+            return _cookieContainer;
+        }
+
+        public void SaveCookies()
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            FileInfo fi = new FileInfo(_cookiePath);
+            using (var fs = fi.OpenWrite())
+                formatter.Serialize(fs, _cookieContainer);
+        }
+                
         public override string Inject(string body, ResponseContainer response)
         {
             OgamePageInfo info = response.GetParsedSingle<OgamePageInfo>(false);
@@ -175,6 +207,7 @@ namespace OgameBot.Engine
                 throw new ArgumentException("Invalid planet exclusive token!");
             }
         }
+
         public class PlanetExclusiveOperation : IDisposable
         {
             private OGameClient _client;

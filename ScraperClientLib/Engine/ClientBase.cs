@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.Net.Http;
+using System.Net;
 using System.Threading;
 using ScraperClientLib.Engine.Interventions;
 using ScraperClientLib.Engine.Parsing;
@@ -30,12 +31,21 @@ namespace ScraperClientLib.Engine
 
         protected ClientBase()
         {
-            _httpClient = new HttpClient();
+
+            _httpClient = new HttpClient(new HttpClientHandler()
+            {
+                CookieContainer = GetCookieContainer()
+            });
             _parsers = new List<BaseParser>();
             _interventionHandlers = new List<IInterventionHandler>();
             _defaultHeaders = new Dictionary<string, string>();
 
             RegisterDefaultHeader("Accept-Encoding", "gzip, deflate");
+        }
+
+        protected virtual CookieContainer GetCookieContainer()
+        {
+            return new CookieContainer();
         }
 
         public void RegisterDefaultHeader(string key, string value)
@@ -161,6 +171,7 @@ namespace ScraperClientLib.Engine
                             default:
                                 throw new ArgumentOutOfRangeException();
                         }
+                        interventionResult.Callback?.Invoke();
                     }
                 }
                 result.ParsedObjects.Clear();

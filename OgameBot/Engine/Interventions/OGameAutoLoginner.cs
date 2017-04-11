@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using ScraperClientLib.Engine;
 using ScraperClientLib.Engine.Interventions;
+using OgameBot.Logging;
 
 namespace OgameBot.Engine.Interventions
 {
@@ -29,9 +30,9 @@ namespace OgameBot.Engine.Interventions
         public InterventionResult Handle(ResponseContainer offendingTask)
         {
             // Build login request
+            Logger.Instance.Log(LogLevel.Warning, "Login necessary");
             HttpRequestMessage loginReq = _client.PrepareLogin();
-
-            return new InterventionResult(InterventionResultState.RetryCurrentTask, loginReq);
+            return new InterventionResult(InterventionResultState.RetryCurrentTask, loginReq, () => _client.SaveCookies());
         }
     }
 }

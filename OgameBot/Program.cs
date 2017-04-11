@@ -88,7 +88,7 @@ namespace OgameBot
             Logger.Instance.Log(LogLevel.Success, $"Prepared reverse proxy, visit: {proxy.ListenPrefix}");
 
             // Kick-off
-            client.PerformLogin();
+            client.IssueRequest(client.RequestBuilder.GetPage(Objects.Types.PageType.Overview));
 
             // Example job
             ApiImporterJob job1 = new ApiImporterJob(client, new DirectoryInfo("temp"));
