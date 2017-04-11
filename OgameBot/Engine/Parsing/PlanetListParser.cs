@@ -12,7 +12,7 @@ namespace OgameBot.Engine.Parsing
     public class PlanetListParser : BaseParser
     {
         private static readonly Regex PlanetIdRegex = new Regex(@"planet-([\d]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
+        private static readonly Regex MoonIdRegex = new Regex(@"cp=([\d]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         public override bool ShouldProcessInternal(ResponseContainer container)
         {
             // Always parse this (if it's html)
@@ -41,7 +41,22 @@ namespace OgameBot.Engine.Parsing
                 };
 
                 yield return item;
+
+                var moon = node.SelectSingleNode(".//a[contains(@class, 'moonlink')]");
+                if (moon != null)
+                {
+                    int moonId = int.Parse(MoonIdRegex.Match(moon.GetAttributeValue("href", string.Empty)).Groups[1].Value, client.ServerCulture);
+                    string moonName = moon.SelectSingleNode("./img").GetAttributeValue("alt", string.Empty);
+
+                    yield return new PlanetListItem
+                    {
+                        Id = moonId,
+                        Name = moonName,
+                        Coordinate = Coordinate.Parse(coordinate, CoordinateType.Moon)
+                    };
+                }
             }
+
         }
     }
 }

@@ -13,7 +13,7 @@ namespace OgameBot.Engine.Parsing.Objects
 
         public override string ToString()
         {
-            return $"Planet {Name}: {Coordinate}";
+            return $"{Coordinate.Type} {Name}: {Coordinate}";
         }
     }
 }
