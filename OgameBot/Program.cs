@@ -196,6 +196,7 @@ namespace OgameBot
             {
                 Delay = delay
             };
+            bot.Start();
         }
     }
 }
