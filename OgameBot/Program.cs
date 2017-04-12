@@ -63,6 +63,7 @@ namespace OgameBot
             client.RegisterInject(new CommandsInject());
             client.RegisterInject(new CargosForTransportInject());
             client.RegisterInject(new PlanetExclusiveInject(client));
+            client.RegisterInject(new OGameUrlInject());
             // UA stuff
             client.RegisterDefaultHeader("Accept-Language", "en-GB,en;q=0.8,da;q=0.6");
             client.RegisterDefaultHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
