@@ -23,6 +23,9 @@ namespace OgameBot.Engine.Tasks
 
             HttpRequestMessage req = _client.RequestBuilder.GetOverviewPage();
             _client.IssueRequest(req);
+
+            req = _client.RequestBuilder.GetPage(Objects.Types.PageType.EventList);
+            _client.IssueRequest(req);
         }
     }
 }

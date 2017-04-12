@@ -91,6 +91,7 @@
     <Compile Include="Db\DebrisField.cs" />
     <Compile Include="Engine\Commands\FakePlanetExclusive.cs" />
     <Compile Include="Engine\Commands\FindAllMessagesCommand.cs" />
+    <Compile Include="Engine\Injects\OGameUrlInject.cs" />
     <Compile Include="Engine\IPlanetExclusiveOperation.cs" />
     <Compile Include="Engine\Commands\ReadAllMessagesCommand.cs" />
     <Compile Include="Engine\Commands\RecallFleetCommand.cs" />
@@ -125,6 +126,7 @@
     <Compile Include="Engine\Parsing\UtilityParsers\SendShipsLinkParser.cs" />
     <Compile Include="Engine\RequestValidation\IRequestValidator.cs" />
     <Compile Include="Engine\RequestValidation\PlanetExclusiveValidator.cs" />
+    <Compile Include="Engine\Savers\HostileAttackEmailSender.cs" />
     <Compile Include="Engine\Savers\MessageSaver.cs" />
     <Compile Include="Engine\Savers\PlayerPlanetSaver.cs" />
     <Compile Include="Engine\Savers\SaverBase.cs" />
