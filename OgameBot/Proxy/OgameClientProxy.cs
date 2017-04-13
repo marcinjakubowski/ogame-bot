@@ -179,7 +179,7 @@ namespace OgameBot.Proxy
             }
 
             // Rewrite html/js
-            if (resp.IsHtmlResponse || resp.ResponseMessage.Content.Headers.ContentType.MediaType == "application/x-javascript")
+            if (resp.IsHtmlResponse || resp.ResponseMessage.Content?.Headers?.ContentType?.MediaType == "application/x-javascript")
             {
                 string str = Encoding.UTF8.GetString(data);
 
@@ -203,7 +203,7 @@ namespace OgameBot.Proxy
                 foreach (string value in header.Value)
                     ctx.Response.AddHeader(header.Key, value);
 
-            ctx.Response.ContentType = resp.ResponseMessage.Content.Headers.ContentType.ToString();
+            ctx.Response.ContentType = resp.ResponseMessage.Content?.Headers?.ContentType?.ToString();
 
             // Write content
             try
