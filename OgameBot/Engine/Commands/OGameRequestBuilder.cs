@@ -32,6 +32,11 @@ namespace OgameBot.Engine.Commands
             return _client.BuildPost(new Uri($"/game/index.php?page={link}", UriKind.Relative), postParameters);
         }
 
+        public HttpRequestMessage GetEventList()
+        {
+            return _client.BuildRequest(new Uri("/game/index.php?page=eventList&ajax=1", UriKind.Relative));
+        }
+
         public HttpRequestMessage GetBuildBuildingRequest(BuildingType type, string token)
         {
             PageType page;
