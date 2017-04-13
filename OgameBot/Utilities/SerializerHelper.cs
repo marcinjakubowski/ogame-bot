@@ -3,12 +3,18 @@ using System.IO;
 using System.IO.Compression;
 using System.Text;
 using Newtonsoft.Json;
+using System.Runtime.Serialization.Formatters;
 
 namespace OgameBot.Utilities
 {
     public static class SerializerHelper
     {
-        private static readonly JsonSerializer Serializer = new JsonSerializer();
+        private static readonly JsonSerializer Serializer = new JsonSerializer()
+        {
+            Formatting = Formatting.Indented,
+            TypeNameHandling = TypeNameHandling.Auto,
+            TypeNameAssemblyFormat = FormatterAssemblyStyle.Simple
+        };
         private static readonly Encoding Encoding = Encoding.UTF8;
 
         public static void SerializeToStream<T>(T obj, Stream target, bool compress = false)
@@ -29,6 +35,26 @@ namespace OgameBot.Utilities
                 SerializeToStream(obj, ms, compress);
                 return ms.ToArray();
             }
+        }
+
+        public static string SerializeToString<T>(T obj)
+        {
+            using (StringWriter sw = new StringWriter())
+            {
+                Serializer.Serialize(sw, obj);
+                return sw.ToString();
+            }
+        }
+
+        public static T DeserializeFromString<T>(string obj)
+        {
+            return (T)DeserializeFromString(typeof(T), obj);
+        }
+
+        public static object DeserializeFromString(Type type, string obj)
+        {
+            using (StringReader sr = new StringReader(obj))
+                return Serializer.Deserialize(sr, type);
         }
 
         public static T DeserializeFromStream<T>(Stream source, bool decompress = false)
