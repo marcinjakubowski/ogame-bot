@@ -74,6 +74,7 @@ namespace OgameBot.Engine.Commands.Farming
                 To = _to
             };
             scanner.Run();
+            Worker();
 
             // Start worker
             
