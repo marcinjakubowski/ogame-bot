@@ -102,10 +102,7 @@ namespace OgameBot
 
             SessionKeepAliveJob job3 = new SessionKeepAliveJob(client);
             job3.Start();
-
-            Builder buildJob = new Builder(client);
-            buildJob.Start();
-
+            
             //ScannerJob s = new ScannerJob(client, new SystemCoordinate(1, 1), new SystemCoordinate(6, 499));
             //s.Start();
 

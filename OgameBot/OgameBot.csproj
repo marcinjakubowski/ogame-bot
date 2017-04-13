@@ -73,7 +73,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Db\BuildOrder.cs" />
     <Compile Include="Db\DbHelper.cs" />
     <Compile Include="Db\Message.cs" />
     <Compile Include="Db\Parts\Asset.cs" />
@@ -140,7 +139,6 @@
     <Compile Include="Engine\Parsing\Objects\GalaxyPageSystem.cs" />
     <Compile Include="Engine\Parsing\Objects\PlayerStatus.cs" />
     <Compile Include="Engine\Tasks\ApiImporterJob.cs" />
-    <Compile Include="Engine\Tasks\Builder.cs" />
     <Compile Include="Engine\Commands\Farming\Target.cs" />
     <Compile Include="Engine\Commands\Farming\Strategies\FleetFinderStrategy.cs" />
     <Compile Include="Engine\Commands\Farming\Strategies\IFarmingStrategy.cs" />
@@ -160,10 +158,6 @@
     <Compile Include="Migrations\201704041624565_Add_PlanetShipLog.cs" />
     <Compile Include="Migrations\201704041624565_Add_PlanetShipLog.Designer.cs">
       <DependentUpon>201704041624565_Add_PlanetShipLog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201704092256145_BuildOrder.cs" />
-    <Compile Include="Migrations\201704092256145_BuildOrder.Designer.cs">
-      <DependentUpon>201704092256145_BuildOrder.cs</DependentUpon>
     </Compile>
     <Compile Include="Objects\Cost.cs" />
     <Compile Include="Objects\FleetMissionDetails.cs" />
@@ -265,9 +259,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201704041624565_Add_PlanetShipLog.resx">
       <DependentUpon>201704041624565_Add_PlanetShipLog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201704092256145_BuildOrder.resx">
-      <DependentUpon>201704092256145_BuildOrder.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

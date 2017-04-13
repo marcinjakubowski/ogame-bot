@@ -11,18 +11,11 @@ namespace OgameBot.Db
     public class BotDb : DbContext
     {
         public DbSet<GalaxyScan> Scans { get; set; }
-
         public DbSet<Planet> Planets { get; set; }
-
         public DbSet<Player> Players { get; set; }
-
         public DbSet<DebrisField> DebrisFields { get; set; }
-
         public DbSet<Message> Messages { get; set; }
-
         public DbSet<PlanetShipLog> PlanetShipLog { get; set; }
-
-        public DbSet<BuildOrder> BuildOrder { get; set; }
 
         public override int SaveChanges()
         {
