@@ -13,7 +13,7 @@ namespace OgameBot.Engine.Commands
         public int Speed { get; set; } = 10;
         public bool UseDeployment { get; set; } = false;
 
-        public override void Run()
+        protected override void RunInternal()
         {
             var resp = Client.IssueRequest(Client.RequestBuilder.GetPage(PageType.Fleet, PlanetId));
             PlanetResources resources = resp.GetParsedSingle<PlanetResources>();

@@ -3,6 +3,7 @@ using System.Net.Http;
 using ScraperClientLib.Engine;
 using ScraperClientLib.Engine.Parsing;
 using Newtonsoft.Json;
+using OgameBot.Db;
 
 namespace OgameBot.Engine.Commands
 {
@@ -28,6 +29,16 @@ namespace OgameBot.Engine.Commands
             return result;
         }
 
-        public abstract void Run();
+        public void Run()
+        {
+            using (BotDb db = new BotDb())
+            {
+                db.CommandQueue.Add(this);
+                db.SaveChanges();
+            }
+            RunInternal();
+        }
+
+        protected abstract void RunInternal();
     }
 }

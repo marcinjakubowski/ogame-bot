@@ -24,7 +24,7 @@ namespace OgameBot.Engine.Commands
             }
         }
 
-        public override void Run()
+        protected override void RunInternal()
         {
             // start a long running demo on the current planet, prevent anyone else from changing it
             PlanetId = Client.IssueRequest(Client.RequestBuilder.GetPage(Objects.Types.PageType.Overview)).GetParsedSingle<OgamePageInfo>().PlanetId;

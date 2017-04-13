@@ -11,7 +11,7 @@ namespace OgameBot.Engine.Commands
     {
         public int FleetId { get; set; }
 
-        public override void Run()
+        protected override void RunInternal()
         {
             var req = Client.RequestBuilder.PostPage(Objects.Types.PageType.FleetMovement, new [] 
             {

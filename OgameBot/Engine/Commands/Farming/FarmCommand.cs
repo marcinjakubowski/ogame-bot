@@ -187,7 +187,7 @@ namespace OgameBot.Engine.Commands.Farming
             return totalPlunder;
         }
 
-        public override void Run()
+        protected override void RunInternal()
         {
             Thread.Sleep(Delay * 1000);
 

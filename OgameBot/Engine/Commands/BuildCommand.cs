@@ -13,7 +13,7 @@ namespace OgameBot.Engine.Commands
     {
         public BuildingType BuildingToBuild { get; set; }
 
-        public override void Run()
+        protected override void RunInternal()
         {
             // Make the initial request to get a token
             HttpRequestMessage req = Client.RequestBuilder.GetPage(PageType.Resources, PlanetId);

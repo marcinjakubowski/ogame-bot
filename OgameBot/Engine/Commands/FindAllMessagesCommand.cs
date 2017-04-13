@@ -7,7 +7,7 @@ namespace OgameBot.Engine.Commands
 {
     public class FindAllMessagesCommand : CommandBase
     {
-        public override void Run()
+        protected override void RunInternal()
         {
             // Read first page of all message types
             MessageTabType[] types = { MessageTabType.FleetsEspionage };

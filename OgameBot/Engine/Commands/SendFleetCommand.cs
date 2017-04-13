@@ -37,7 +37,7 @@ namespace OgameBot.Engine.Commands
         public string Name => $"Sending " + ToString();
         public string Progress => $"{_step} / 3";
 
-        public override void Run()
+        protected override void RunInternal()
         {
             using (Client.EnterPlanetExclusive(this))
             {
