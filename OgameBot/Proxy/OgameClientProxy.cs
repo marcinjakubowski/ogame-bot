@@ -11,6 +11,7 @@ using ScraperClientLib.Utilities;
 using OgameBot.Logging;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace OgameBot.Proxy
 {
@@ -146,16 +147,11 @@ namespace OgameBot.Proxy
 
             if (requestedMethod == HttpMethod.Post)
             {
-                MemoryStream ms = new MemoryStream();
-                ctx.Request.InputStream.CopyTo(ms);
-                ms.Seek(0, SeekOrigin.Begin);
-
-                proxyReq.Content = new StreamContent(ms);
+                proxyReq.Content = CopyPostContent(ctx.Request.InputStream);
                 if (ctx.Request.ContentType != null)
                 {
                     proxyReq.Content.Headers.ContentType = MediaTypeHeaderValue.Parse(ctx.Request.ContentType);
                 }
-
             }
 
             // Issue
@@ -214,6 +210,28 @@ namespace OgameBot.Proxy
             catch (Exception ex)
             {
                 Logging.Logger.Instance.LogException(ex);
+            }
+        }
+
+        private HttpContent CopyPostContent(Stream inputStream)
+        {
+            // I don't know why, but the general method does not work on Mono. Yeah. HACKISH WORKAROUND INCOMING.
+            if (Program.IsRunningOnMono())
+            {
+                using (StreamReader sr = new StreamReader(inputStream))
+                {
+                    string content = sr.ReadToEnd();
+                    NameValueCollection nvc = HttpUtility.ParseQueryString(content);
+                    return new FormUrlEncodedContent(nvc.AsKeyValues());
+                }
+            }
+            else
+            {
+                MemoryStream ms = new MemoryStream();
+                inputStream.CopyTo(ms);
+                ms.Seek(0, SeekOrigin.Begin);
+
+                return new StreamContent(ms);
             }
         }
 
