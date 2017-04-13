@@ -66,6 +66,17 @@ namespace OgameBot.Engine.Parsing
             HtmlNode coordsNode = node.SelectSingleNode(".//span[contains(@class, 'originCoords') or contains(@class, 'destinationCoords')]");
             HtmlNode planetNode = node.SelectSingleNode(".//span[contains(@class, 'originPlanet') or contains(@class, 'destinationPlanet')]");
 
+            HtmlNode typeNode = node.SelectSingleNode(".//figure");
+            string typeClass = typeNode.GetAttributeValue("class", string.Empty);
+
+            CoordinateType type;
+
+            if (typeClass.Contains(" planet ")) type = CoordinateType.Planet;
+            else if (typeClass.Contains("moon")) type = CoordinateType.Moon;
+            else if (typeClass.Contains("debris")) type = CoordinateType.DebrisField;
+            else type = CoordinateType.Unknown;
+
+
             string coordsText = coordsNode.InnerText;
             string playerName = coordsNode.GetAttributeValue("title", "");
             string planetName = planetNode.InnerText;
@@ -73,7 +84,7 @@ namespace OgameBot.Engine.Parsing
             return new FleetEndpointInfo
             {
                 // TODO: planet always
-                Coordinate = Coordinate.Parse(coordsText, CoordinateType.Planet),
+                Coordinate = Coordinate.Parse(coordsText, type),
                 EndpointName = planetName,
                 Playername = playerName
             };
