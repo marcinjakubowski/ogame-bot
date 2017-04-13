@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using OgameBot.Engine.Parsing.Objects;
 using OgameBot.Db;
@@ -8,7 +7,7 @@ using OgameBot.Objects.Types;
 using OgameBot.Logging;
 using OgameBot.Db.Parts;
 
-namespace OgameBot.Engine.Tasks.Farming.Strategies
+namespace OgameBot.Engine.Commands.Farming.Strategies
 {
     public class InactiveFarmingStrategy : IFarmingStrategy
     {

@@ -1,21 +1,19 @@
 ﻿using System.Threading;
-using System.Threading.Tasks;
 using System.Linq;
 using OgameBot.Db;
 using System;
 using OgameBot.Objects;
-using OgameBot.Engine.Commands;
 using System.Collections.Generic;
 using OgameBot.Logging;
 using OgameBot.Engine.Parsing.Objects;
 using OgameBot.Objects.Types;
 using System.Net.Http;
 using ScraperClientLib.Engine;
-using OgameBot.Engine.Tasks.Farming.Strategies;
+using OgameBot.Engine.Commands.Farming.Strategies;
 
-namespace OgameBot.Engine.Tasks.Farming
+namespace OgameBot.Engine.Commands.Farming
 {
-    public class FarmingBot : CommandBase, IPlanetExclusiveOperation
+    public class FarmCommand : CommandBase, IPlanetExclusiveOperation
     {
         private OGameRequestBuilder RequestBuilder => Client.RequestBuilder;
 
@@ -36,11 +34,10 @@ namespace OgameBot.Engine.Tasks.Farming
         public IFarmingStrategy Strategy { get; set; }
 
         private SystemCoordinate _from, _to;
-        private ScannerJob _scanner;
         private Random _sleepTime = new Random();
         private string _token;
 
-        public FarmingBot()
+        public FarmCommand()
         {
             Client.OnResponseReceived += PageChanged;
         }
@@ -71,9 +68,12 @@ namespace OgameBot.Engine.Tasks.Farming
             _to = source.PlanetCoord;
             _to.System = (short)Math.Min(_to.System + Range, 499);
 
-            _scanner = new ScannerJob(Client, _from, _to);
-            _scanner.OnJobFinished += () => Task.Factory.StartNew(Worker);
-            _scanner.Start();
+            var scanner = new ScanCommand()
+            {
+                From = _from,
+                To = _to
+            };
+            scanner.Run();
 
             // Start worker
             
@@ -83,7 +83,6 @@ namespace OgameBot.Engine.Tasks.Farming
         {
             using (Client.EnterPlanetExclusive(this))
             {
-                _scanner.Stop();
                 IEnumerable<Planet> farms = Strategy.GetFarms(_from, _to);
                 Logger.Instance.Log(LogLevel.Info, $"Got {farms.Count()} farms, probing...");
 

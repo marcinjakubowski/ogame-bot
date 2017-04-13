@@ -1,7 +1,7 @@
 ﻿using OgameBot.Objects;
 using OgameBot.Objects.Types;
 
-namespace OgameBot.Engine.Tasks.Farming
+namespace OgameBot.Engine.Commands.Farming
 {
     public class Target
     {

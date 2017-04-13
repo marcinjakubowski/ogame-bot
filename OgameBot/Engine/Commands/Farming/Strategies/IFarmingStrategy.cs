@@ -2,9 +2,8 @@
 using OgameBot.Engine.Parsing.Objects;
 using OgameBot.Objects;
 using System.Collections.Generic;
-using System.Linq;
 
-namespace OgameBot.Engine.Tasks.Farming.Strategies
+namespace OgameBot.Engine.Commands.Farming.Strategies
 {
     public interface IFarmingStrategy
     {

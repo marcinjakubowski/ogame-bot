@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OgameBot.Db;
 using OgameBot.Engine.Parsing.Objects;
 using OgameBot.Objects;
 using OgameBot.Db.Parts;
 using OgameBot.Objects.Types;
 using System.Threading;
-using OgameBot.Engine.Commands;
 
-namespace OgameBot.Engine.Tasks.Farming.Strategies
+namespace OgameBot.Engine.Commands.Farming.Strategies
 {
     public class FleetFinderStrategy : IFarmingStrategy
     {

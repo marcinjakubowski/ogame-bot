@@ -140,11 +140,11 @@
     <Compile Include="Engine\Parsing\Objects\PlayerStatus.cs" />
     <Compile Include="Engine\Tasks\ApiImporterJob.cs" />
     <Compile Include="Engine\Tasks\Builder.cs" />
-    <Compile Include="Engine\Tasks\Farming\Target.cs" />
-    <Compile Include="Engine\Tasks\Farming\FarmingBot.cs" />
-    <Compile Include="Engine\Tasks\Farming\Strategies\FleetFinderStrategy.cs" />
-    <Compile Include="Engine\Tasks\Farming\Strategies\IFarmingStrategy.cs" />
-    <Compile Include="Engine\Tasks\Farming\Strategies\InactiveFarmingStrategy.cs" />
+    <Compile Include="Engine\Commands\Farming\Target.cs" />
+    <Compile Include="Engine\Commands\Farming\FarmingBot.cs" />
+    <Compile Include="Engine\Commands\Farming\Strategies\FleetFinderStrategy.cs" />
+    <Compile Include="Engine\Commands\Farming\Strategies\IFarmingStrategy.cs" />
+    <Compile Include="Engine\Commands\Farming\Strategies\InactiveFarmingStrategy.cs" />
     <Compile Include="Engine\Tasks\MessageReaderJob.cs" />
     <Compile Include="Engine\Tasks\SessionKeepAliveJob.cs" />
     <Compile Include="Logging\Logger.cs" />
@@ -226,7 +226,7 @@
     <Compile Include="Engine\Parsing\ShipyardPageParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Engine\Tasks\Farming\ScannerJob.cs" />
+    <Compile Include="Engine\Commands\Farming\ScanCommand.cs" />
     <Compile Include="Engine\Tasks\WorkerBase.cs" />
     <Compile Include="Utilities\DictionaryExtensions.cs" />
     <Compile Include="Utilities\HtmlNodeExtensions.cs" />

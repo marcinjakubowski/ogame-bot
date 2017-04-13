@@ -4,20 +4,20 @@ using System.IO;
 using Newtonsoft.Json;
 using OgameBot.Engine;
 using OgameBot.Engine.Savers;
-using OgameBot.Engine.Tasks;
+using OgameBot.Engine.Commands;
 using OgameBot.Logging;
 using OgameBot.Objects;
 using ScraperClientLib.Engine.Interventions;
 using ScraperClientLib.Engine.Parsing;
-using OgameBot.Engine.Tasks.Farming;
-using OgameBot.Engine.Tasks.Farming.Strategies;
+using OgameBot.Engine.Commands.Farming;
+using OgameBot.Engine.Commands.Farming.Strategies;
 using OgameBot.Engine.Injects;
 using OgameBot.Proxy;
-using OgameBot.Engine.Commands;
 using System.Collections.Specialized;
 using System.Threading;
 using System.Runtime.Serialization;
 using OgameBot.Db;
+using OgameBot.Engine.Tasks;
 
 namespace OgameBot
 {
@@ -254,7 +254,7 @@ namespace OgameBot
                 }
             }
 
-            FarmingBot bot = new FarmingBot()
+            FarmCommand bot = new FarmCommand()
             {
                 PlanetId = planetId,
                 Range = range,
