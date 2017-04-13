@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +9,11 @@ namespace OgameBot.Engine
 {
     public interface IPlanetExclusiveOperation
     {
+        [JsonIgnore]
         int PlanetId { get; }
+        [JsonIgnore]
         string Name { get; }
+        [JsonIgnore]
         string Progress { get; }
     }
 }

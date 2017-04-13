@@ -2,15 +2,18 @@
 using System.Net.Http;
 using ScraperClientLib.Engine;
 using ScraperClientLib.Engine.Parsing;
+using Newtonsoft.Json;
 
 namespace OgameBot.Engine.Commands
 {
     public abstract class CommandBase
     {
-        protected OGameClient Client => OGameClient.Instance;
-
-        public List<DataObject> ParsedObjects { get; }
         public int PlanetId { get; set; }
+
+        [JsonIgnore]
+        public List<DataObject> ParsedObjects { get; }
+
+        protected OGameClient Client => OGameClient.Instance;
 
         protected CommandBase()
         {
