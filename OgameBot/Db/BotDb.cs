@@ -16,6 +16,7 @@ namespace OgameBot.Db
         public DbSet<DebrisField> DebrisFields { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<PlanetShipLog> PlanetShipLog { get; set; }
+        public DbSet<CommandQueueElement> CommandQueue { get; set; }
 
         public override int SaveChanges()
         {
