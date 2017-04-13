@@ -17,24 +17,13 @@ namespace OgameBot.Engine.Tasks.Farming.Strategies
         public int SlotsLeaveRemaining { get; set; } = 1;
         public int MinimumCargosToSend { get; set; } = 2;
         public int ProbeCount { get; set; } = 4;
+        public ShipType Cargo { get; set; } = ShipType.LargeCargo;
         public Resources ResourcePriority { get; set; } = new Resources(1, 1, 1);
 
-        private OGameClient _client;
-        private ShipType _cargo;
+        private OGameClient _client => OGameClient.Instance;
 
         private int _cargoCount = 0;
         private FleetSlotCount _slots;
-
-        public InactiveFarmingStrategy(OGameClient client) : this(client, ShipType.LargeCargo)
-        {
-        }
-
-        public InactiveFarmingStrategy(OGameClient client, ShipType cargo)
-        {
-            _client = client;
-            _cargo = cargo;
-        }
-
 
         public IEnumerable<Planet> GetFarms(SystemCoordinate from, SystemCoordinate to)
         {
@@ -69,11 +58,11 @@ namespace OgameBot.Engine.Tasks.Farming.Strategies
                 Target target = new Target()
                 {
                     Destination = farm.Coordinate,
-                    Fleet = FleetComposition.ToPlunder(farm.Resources, _cargo),
+                    Fleet = FleetComposition.ToPlunder(farm.Resources, Cargo),
                     ExpectedPlunder = FleetComposition.GetPlunder(farm.Resources)
                 };
 
-                int ships = target.Fleet.Ships[_cargo];
+                int ships = target.Fleet.Ships[Cargo];
                 if (ships < MinimumCargosToSend) yield break;
 
                 _cargoCount -= ships;

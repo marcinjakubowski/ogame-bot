@@ -38,6 +38,8 @@ namespace OgameBot.Engine
 
         public event Action<ResponseContainer> OnResponseReceived;
 
+        public static OGameClient Instance { get; private set; }
+
         public OGameStringProvider StringProvider { get; }
 
         public OGameSettings Settings { get; }
@@ -81,6 +83,13 @@ namespace OgameBot.Engine
 
             RegisterIntervention(new OGameAutoLoginner(this));
             RegisterValidator(new PlanetExclusiveValidator(this));
+
+            if (Instance != null)
+            {
+                throw new ApplicationException($"Only one {nameof(OGameClient)} instance can exist.");
+            }
+
+            Instance = this;
             
         }
 

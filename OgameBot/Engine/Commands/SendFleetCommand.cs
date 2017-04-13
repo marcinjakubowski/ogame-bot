@@ -18,7 +18,6 @@ namespace OgameBot.Engine.Commands
     {
         private int _speed = 10;
 
-        public Coordinate Source { get; set; }
         public Coordinate Destination { get; set; }
         public FleetComposition Fleet { get; set; }
         public MissionType Mission { get; set; }
@@ -33,32 +32,22 @@ namespace OgameBot.Engine.Commands
         }
 
         private int _step;
+        private Coordinate _source;
 
-        public int PlanetId { get; private set; }
         public string Name => $"Sending " + ToString();
         public string Progress => $"{_step} / 3";
 
-        public SendFleetCommand(OGameClient client) : base(client)
-        {
-        }
-
         public override void Run()
         {
-            using (BotDb db = new BotDb())
-            {
-                 PlanetId = (int)db.Planets.Where(s => s.LocationId == Source.Id).Select(s => s.PlanetId).First();
-            }
-
             using (Client.EnterPlanetExclusive(this))
             {
                 HttpRequestMessage req;
                 ResponseContainer resp;
                 Dictionary<string, string> postParams = new Dictionary<string, string>();
 
-
                 req = Client.RequestBuilder.GetPage(PageType.Fleet, PlanetId);
                 resp = Client.IssueRequest(req);
-
+                _source = resp.GetParsedSingle<OgamePageInfo>().PlanetCoord;
 
                 // 1
                 _step = 1;
@@ -92,7 +81,7 @@ namespace OgameBot.Engine.Commands
 
                 resp = Client.IssueRequest(Client.RequestBuilder.GetPage(PageType.FleetMovement));
                 var fleets = resp.GetParsed<FleetInfo>();
-                FleetInfo fi = fleets.Where(s => s.Origin.Coordinate == Source && s.Destination.Coordinate == Destination).FirstOrDefault();
+                FleetInfo fi = fleets.Where(s => s.Origin.Coordinate == _source && s.Destination.Coordinate == Destination).FirstOrDefault();
 
                 if (fi != null)
                 {
@@ -108,7 +97,7 @@ namespace OgameBot.Engine.Commands
 
         public override string ToString()
         {
-            return $"{Mission} Fleet from {Source} to {Destination}: {Fleet}";
+            return $"{Mission} Fleet from {_source} to {Destination}: {Fleet}";
         }
 
 

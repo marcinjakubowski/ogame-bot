@@ -1,8 +1,7 @@
 ﻿using System.Net.Http;
 using OgameBot.Objects;
 using OgameBot.Objects.Types;
-using OgameBot.Db;
-using System;
+using System.Linq;
 using ScraperClientLib.Engine;
 using OgameBot.Engine.Parsing.Objects;
 using System.Collections.Generic;
@@ -12,43 +11,38 @@ namespace OgameBot.Engine.Commands
 {
     public class BuildCommand : CommandBase
     {
-        public Planet Where { get; }
-        public BuildingType BuildingToBuild { get; }
-
-        public BuildCommand(OGameClient client, Planet where, BuildingType building)
-            : base(client)
-        {
-            if (!where.PlanetId.HasValue)
-            {
-                throw new ArgumentException("Planet must have planetid", nameof(where));
-            }
-
-            Where = where;
-            BuildingToBuild = building;
-        }
+        public BuildingType BuildingToBuild { get; set; }
 
         public override void Run()
         {
             // Make the initial request to get a token
-            HttpRequestMessage req = Client.RequestBuilder.GetPage(PageType.Resources, Where.PlanetId);
+            HttpRequestMessage req = Client.RequestBuilder.GetPage(PageType.Resources, PlanetId);
             ResponseContainer res = AssistedIssue(req);
-            string token = res.GetParsedSingle<OgamePageInfo>().OrderToken;
+
+            OgamePageInfo info = res.GetParsedSingle<OgamePageInfo>();
+            string token = info.OrderToken;
 
             // validate resources
-            Dictionary<BuildingType, int> currentBuildings = Where.Buildings;
-            Resources cost = Building.Get(BuildingToBuild).Cost.ForLevel(currentBuildings[BuildingToBuild] + 1);
+            int currentBuildingLevel = res.GetParsed<DetectedBuilding>()
+                                          .Where(b => b.Building == BuildingToBuild)
+                                          .Select(b => b.Level)
+                                          .FirstOrDefault();
+
+            PlanetResources resources = res.GetParsedSingle<PlanetResources>();
+
+            Resources cost = Building.Get(BuildingToBuild).Cost.ForLevel(currentBuildingLevel + 1);
             DetectedOngoingConstruction underConstruction = res.GetParsedSingle<DetectedOngoingConstruction>(false);
 
             bool cannotContinue = false;
 
             if (underConstruction != null)
             {
-                Logger.Instance.Log(LogLevel.Warning, $"Building {underConstruction.Building} already under construction on planet {Where.Name}, will finish at {underConstruction.FinishingAt}");
+                Logger.Instance.Log(LogLevel.Warning, $"Building {underConstruction.Building} already under construction on planet {info.PlanetName}, will finish at {underConstruction.FinishingAt}");
                 cannotContinue = true;
             }
-            else if (cost.Metal > Where.Resources.Metal || cost.Crystal > Where.Resources.Crystal || cost.Deuterium > Where.Resources.Deuterium)
+            else if (cost.Metal > resources.Resources.Metal || cost.Crystal > resources.Resources.Crystal || cost.Deuterium > resources.Resources.Deuterium)
             {
-                Logger.Instance.Log(LogLevel.Warning, $"Not enough resources! It would cost {cost} to build {BuildingToBuild}, planet {Where.Name} only has {Where.Resources}");
+                Logger.Instance.Log(LogLevel.Warning, $"Not enough resources! It would cost {cost} to build {BuildingToBuild} level {currentBuildingLevel + 1}, planet {info.PlanetName} only has {resources.Resources}");
                 cannotContinue = true;
             }
 

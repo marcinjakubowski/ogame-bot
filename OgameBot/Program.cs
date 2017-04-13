@@ -16,6 +16,8 @@ using OgameBot.Proxy;
 using OgameBot.Engine.Commands;
 using System.Collections.Specialized;
 using System.Threading;
+using System.Runtime.Serialization;
+using OgameBot.Db;
 
 namespace OgameBot
 {
@@ -109,19 +111,26 @@ namespace OgameBot
 
             Action<int> recallAction = (fleet) =>
             {
-                RecallFleetCommand recall = new RecallFleetCommand(client, fleet);
+                RecallFleetCommand recall = new RecallFleetCommand()
+                {
+                    FleetId = fleet
+                };
                 recall.Run();
             };
 
             proxy.AddCommand("transport", (parameters) =>
             {
-                TransportAllCommand transportAll = new TransportAllCommand(client, int.Parse(parameters["from"]), int.Parse(parameters["to"]));
+                TransportAllCommand transportAll = new TransportAllCommand()
+                {
+                    PlanetId = int.Parse(parameters["from"]),
+                    Destination = DbHelper.GetPlanetCoordinateByCp(int.Parse(parameters["to"]))
+                };
                 transportAll.Run();
             });
             
             proxy.AddCommand("hunt", (parameters) =>
             {
-                IFarmingStrategy strategy = new FleetFinderStrategy(client)
+                IFarmingStrategy strategy = new FleetFinderStrategy()
                 {
                     MaxRanking = config.HuntMaximumRanking > 0 ? config.HuntMaximumRanking : 400
                 };
@@ -130,7 +139,7 @@ namespace OgameBot
 
             proxy.AddCommand("farm", (parameters) =>
             {
-                IFarmingStrategy strategy = new InactiveFarmingStrategy(client)
+                IFarmingStrategy strategy = new InactiveFarmingStrategy()
                 {
                     MinimumCargosToSend = 2,
                     SlotsLeaveRemaining = parameters["slots"] == null ? 1 : int.Parse(parameters["slots"]),
@@ -148,7 +157,7 @@ namespace OgameBot
 
             proxy.AddCommand("fake", (parameters) =>
             {
-                FakePlanetExclusive op = new FakePlanetExclusive(client);
+                FakePlanetExclusive op = new FakePlanetExclusive();
                 op.Run();
             });
 
@@ -157,10 +166,62 @@ namespace OgameBot
                 recallAction(config.FleetToRecall);
                 Thread.Sleep(5000);
                 return;
+            }/*
+
+            FarmingBot zzz = new FarmingBot(client, 33661520, 60, new InactiveFarmingStrategy(client)
+            {
+                MinimumCargosToSend = 2,
+                MinimumRanking = 1500,
+                MinimumTotalStorageLevel = 5,
+                ProbeCount = 2,
+                SlotsLeaveRemaining = 1
+            });
+
+
+            var json = JsonConvert.SerializeObject(zzz, Formatting.Indented, new JsonSerializerSettings()
+            {
+                TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple,
+                TypeNameHandling = TypeNameHandling.Auto
             }
+            );
+
+
+            FarmingBot q = JsonConvert.DeserializeObject<FarmingBot>(json, new JsonSerializerSettings()
+            {
+                TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple,
+                TypeNameHandling = TypeNameHandling.Auto
+            });
+
+
+
+            Console.WriteLine(json);
+            Console.WriteLine(q.Strategy);*/
 
             // Work
             Console.ReadLine();
+        }
+
+        public class TypeNameSerializationBinder : SerializationBinder
+        {
+            public string TypeFormat { get; private set; }
+
+            public TypeNameSerializationBinder(string typeFormat)
+            {
+                TypeFormat = typeFormat;
+            }
+
+            public override void BindToName(Type serializedType, out string assemblyName, out string typeName)
+            {
+                assemblyName = null;
+                typeName = serializedType.Name;
+            }
+
+            public override Type BindToType(string assemblyName, string typeName)
+            {
+                string resolvedTypeName = string.Format(TypeFormat, typeName);
+
+                return Type.GetType(resolvedTypeName, true);
+            }
         }
 
         public static bool IsRunningOnMono()
@@ -193,8 +254,11 @@ namespace OgameBot
                 }
             }
 
-            FarmingBot bot = new FarmingBot(client, planetId, range, strategy)
+            FarmingBot bot = new FarmingBot()
             {
+                PlanetId = planetId,
+                Range = range,
+                Strategy = strategy,
                 Delay = delay
             };
             bot.Start();

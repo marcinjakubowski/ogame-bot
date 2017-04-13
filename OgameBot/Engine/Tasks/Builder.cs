@@ -12,10 +12,17 @@ namespace OgameBot.Engine.Tasks
     public class Builder : WorkerBase
     {
         private readonly OGameClient _client;
+        public List<BuildOrder> Orders { get; set; }
+
         public Builder(OGameClient client) : base()
         {
             _client = client;
             ExecutionInterval = TimeSpan.FromSeconds(30);
+            Orders = new List<BuildOrder>();
+            Orders.Add(new BuildOrder()
+            {
+
+            });
         }
 
         // testing, 1-2-3

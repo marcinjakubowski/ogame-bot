@@ -11,11 +11,6 @@ namespace OgameBot.Engine.Commands
     {
         public int FleetId { get; set; }
 
-        public RecallFleetCommand(OGameClient client, int fleetId) : base(client)
-        {
-            FleetId = fleetId;
-        }
-
         public override void Run()
         {
             var req = Client.RequestBuilder.PostPage(Objects.Types.PageType.FleetMovement, new [] 

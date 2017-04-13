@@ -7,20 +7,19 @@ namespace OgameBot.Engine.Commands
 {
     public abstract class CommandBase
     {
-        protected OGameClient Client { get; }
+        protected OGameClient Client => OGameClient.Instance;
 
         public List<DataObject> ParsedObjects { get; }
+        public int PlanetId { get; set; }
 
-        protected CommandBase(OGameClient client)
+        protected CommandBase()
         {
-            Client = client;
             ParsedObjects = new List<DataObject>();
         }
 
         protected ResponseContainer AssistedIssue(HttpRequestMessage request)
         {
             ResponseContainer result = Client.IssueRequest(request);
-
             ParsedObjects.AddRange(result.ParsedObjects);
 
             return result;

@@ -7,11 +7,6 @@ namespace OgameBot.Engine.Commands
 {
     public class FindAllMessagesCommand : CommandBase
     {
-        public FindAllMessagesCommand(OGameClient client)
-            : base(client)
-        {
-        }
-
         public override void Run()
         {
             // Read first page of all message types

@@ -10,13 +10,7 @@ namespace OgameBot.Engine.Commands
 {
     public class FakePlanetExclusive : CommandBase, IPlanetExclusiveOperation
     {
-        public DateTimeOffset _startedAt;
-
-        public FakePlanetExclusive(OGameClient client) : base(client)
-        {
-        }
-
-        public int PlanetId { get; private set; }
+        private DateTimeOffset _startedAt;
 
         public string Name => "Fake operation";
 

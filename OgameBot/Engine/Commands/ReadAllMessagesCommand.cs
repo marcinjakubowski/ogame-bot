@@ -11,14 +11,10 @@ namespace OgameBot.Engine.Commands
 {
     public class ReadAllMessagesCommand : CommandBase
     {
-        public ReadAllMessagesCommand(OGameClient client) : base(client)
-        {
-        }
-
         public override void Run()
         {
             // Read all messages
-            FindAllMessagesCommand cmd = new FindAllMessagesCommand(Client);
+            FindAllMessagesCommand cmd = new FindAllMessagesCommand();
             cmd.Run();
 
             List<MessagesPage> messagePages = cmd.ParsedObjects.OfType<MessagesPage>().ToList();

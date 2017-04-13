@@ -52,7 +52,7 @@ namespace OgameBot.Engine.Tasks
 
             Logger.Instance.Log(LogLevel.Debug, $"Checking for new messages, {_lastCount.NewMessages:N0} reported at {_lastCountTime}");
 
-            ReadAllMessagesCommand cmd = new ReadAllMessagesCommand(_client);
+            ReadAllMessagesCommand cmd = new ReadAllMessagesCommand();
             cmd.Run();
         }
     }

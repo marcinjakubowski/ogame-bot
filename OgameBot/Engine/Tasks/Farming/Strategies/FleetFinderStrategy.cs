@@ -20,12 +20,7 @@ namespace OgameBot.Engine.Tasks.Farming.Strategies
         public int MinValue { get; set; } = 500000;
         public int ProbeCount { get; set; } = 2;
 
-        private OGameClient _client;
-
-        public FleetFinderStrategy(OGameClient client)
-        {
-            _client = client;
-        }
+        private OGameClient _client => OGameClient.Instance;
 
         public IEnumerable<Planet> GetFarms(SystemCoordinate from, SystemCoordinate to)
         {
@@ -72,7 +67,7 @@ namespace OgameBot.Engine.Tasks.Farming.Strategies
             // Wait one minute for the probes to come back
             // #todo extract method from FarmingBot
             Thread.Sleep(60000);
-            ReadAllMessagesCommand cmd = new ReadAllMessagesCommand(_client);
+            ReadAllMessagesCommand cmd = new ReadAllMessagesCommand();
             cmd.Run();
         }
 

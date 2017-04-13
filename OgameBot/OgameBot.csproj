@@ -74,6 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Db\BuildOrder.cs" />
+    <Compile Include="Db\DbHelper.cs" />
     <Compile Include="Db\Message.cs" />
     <Compile Include="Db\Parts\Asset.cs" />
     <Compile Include="Db\Parts\PlayerResearch.cs" />
