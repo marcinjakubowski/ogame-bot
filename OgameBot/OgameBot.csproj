@@ -91,6 +91,7 @@
     <Compile Include="Config.cs" />
     <Compile Include="Db\DebrisField.cs" />
     <Compile Include="Engine\Commands\FakePlanetExclusive.cs" />
+    <Compile Include="Engine\Commands\Farming\FarmCommand.cs" />
     <Compile Include="Engine\Commands\FindAllMessagesCommand.cs" />
     <Compile Include="Engine\Injects\OGameUrlInject.cs" />
     <Compile Include="Engine\IPlanetExclusiveOperation.cs" />
@@ -141,7 +142,6 @@
     <Compile Include="Engine\Tasks\ApiImporterJob.cs" />
     <Compile Include="Engine\Tasks\Builder.cs" />
     <Compile Include="Engine\Commands\Farming\Target.cs" />
-    <Compile Include="Engine\Commands\Farming\FarmingBot.cs" />
     <Compile Include="Engine\Commands\Farming\Strategies\FleetFinderStrategy.cs" />
     <Compile Include="Engine\Commands\Farming\Strategies\IFarmingStrategy.cs" />
     <Compile Include="Engine\Commands\Farming\Strategies\InactiveFarmingStrategy.cs" />

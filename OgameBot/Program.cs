@@ -166,37 +166,7 @@ namespace OgameBot
                 recallAction(config.FleetToRecall);
                 Thread.Sleep(5000);
                 return;
-            }/*
-
-            FarmingBot zzz = new FarmingBot(client, 33661520, 60, new InactiveFarmingStrategy(client)
-            {
-                MinimumCargosToSend = 2,
-                MinimumRanking = 1500,
-                MinimumTotalStorageLevel = 5,
-                ProbeCount = 2,
-                SlotsLeaveRemaining = 1
-            });
-
-
-            var json = JsonConvert.SerializeObject(zzz, Formatting.Indented, new JsonSerializerSettings()
-            {
-                TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple,
-                TypeNameHandling = TypeNameHandling.Auto
             }
-            );
-
-
-            FarmingBot q = JsonConvert.DeserializeObject<FarmingBot>(json, new JsonSerializerSettings()
-            {
-                TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple,
-                TypeNameHandling = TypeNameHandling.Auto
-            });
-
-
-
-            Console.WriteLine(json);
-            Console.WriteLine(q.Strategy);*/
-
             // Work
             Console.ReadLine();
         }
@@ -261,7 +231,7 @@ namespace OgameBot
                 Strategy = strategy,
                 Delay = delay
             };
-            bot.Start();
+            bot.Run();
         }
     }
 }

@@ -51,36 +51,7 @@ namespace OgameBot.Engine.Commands.Farming
             }
         }
 
-        public void Start()
-        {
-            Thread.Sleep(Delay * 1000);
-
-            var req = Client.RequestBuilder.GetPage(PageType.Galaxy, PlanetId == 0 ? null : (int?)PlanetId);
-            var resp = Client.IssueRequest(req);
-
-            var source = resp.GetParsedSingle<OgamePageInfo>();
-            PlanetId = source.PlanetId;
-
-            // Start scanner
-            _from = source.PlanetCoord;
-            _from.System = (short)Math.Max(_from.System - Range, 1);
-
-            _to = source.PlanetCoord;
-            _to.System = (short)Math.Min(_to.System + Range, 499);
-
-            var scanner = new ScanCommand()
-            {
-                From = _from,
-                To = _to
-            };
-            scanner.Run();
-            Worker();
-
-            // Start worker
-            
-        }
-
-        private void Worker()
+        private void Farm()
         {
             using (Client.EnterPlanetExclusive(this))
             {
@@ -218,7 +189,27 @@ namespace OgameBot.Engine.Commands.Farming
 
         public override void Run()
         {
-            throw new NotImplementedException();
+            Thread.Sleep(Delay * 1000);
+
+            var req = Client.RequestBuilder.GetPage(PageType.Galaxy, PlanetId);
+            var resp = Client.IssueRequest(req);
+            var source = resp.GetParsedSingle<OgamePageInfo>();
+
+            // Start scanner
+            _from = source.PlanetCoord;
+            _from.System = (short)Math.Max(_from.System - Range, 1);
+
+            _to = source.PlanetCoord;
+            _to.System = (short)Math.Min(_to.System + Range, 499);
+
+            var scanner = new ScanCommand()
+            {
+                PlanetId = PlanetId,
+                From = _from,
+                To = _to
+            };
+            scanner.Run();
+            Farm();
         }
     }
 }
