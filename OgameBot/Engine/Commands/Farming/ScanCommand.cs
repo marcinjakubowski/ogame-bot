@@ -31,7 +31,7 @@ namespace OgameBot.Engine.Commands.Farming
             Dictionary<int, GalaxyScan> existing;
             using (BotDb db = new BotDb())
             {
-                existing = db.Scans.Where(s => From <= s.LocationId && s.LocationId <= To).ToDictionary(s => s.LocationId);
+                existing = db.Scans.Where(s => From.Id <= s.LocationId && s.LocationId <= To.Id).ToDictionary(s => s.LocationId);
             }
 
             int count = (To.Galaxy - From.Galaxy + 1) * (To.System - From.System + 1);
