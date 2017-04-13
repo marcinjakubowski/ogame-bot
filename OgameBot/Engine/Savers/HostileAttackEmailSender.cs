@@ -9,6 +9,7 @@ using OgameBot.Objects.Types;
 using OgameBot.Db;
 using System.Net.Mail;
 using System.Net;
+using OgameBot.Logging;
 
 namespace OgameBot.Engine.Savers
 {
@@ -70,7 +71,12 @@ namespace OgameBot.Engine.Savers
                     ids.Add(attack.Fleet.Id);
                 }
 
-                Task.Factory.StartNew(() => SendEmail(subject, body.ToString()));
+                // Something new added
+                if (body.Length > 0)
+                {
+                    Task.Factory.StartNew(() => SendEmail(subject, body.ToString()));
+                }
+                    
 
             }
 

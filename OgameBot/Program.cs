@@ -60,6 +60,7 @@ namespace OgameBot
             client.RegisterSaver(new GalaxyPageDebrisSaver());
             client.RegisterSaver(new MessageSaver());
             client.RegisterSaver(new PlayerPlanetSaver());
+            client.RegisterSaver(new HostileAttackEmailSender(config.HostileWarning.From, config.HostileWarning.To, config.HostileWarning.Server, config.HostileWarning.Login, config.HostileWarning.Password));
 
             // Injects
             client.RegisterInject(new CommandsInject());
