@@ -67,15 +67,13 @@ namespace OgameBot.Engine.Parsing
             HtmlNode planetNode = node.SelectSingleNode(".//span[contains(@class, 'originPlanet') or contains(@class, 'destinationPlanet')]");
 
             HtmlNode typeNode = node.SelectSingleNode(".//figure");
-            string typeClass = typeNode.GetAttributeValue("class", string.Empty);
+            string typeClass = typeNode?.GetAttributeValue("class", string.Empty) ?? string.Empty;
 
-            CoordinateType type;
+            CoordinateType type = CoordinateType.Unknown;
 
             if (typeClass.Contains(" planet ")) type = CoordinateType.Planet;
             else if (typeClass.Contains("moon")) type = CoordinateType.Moon;
             else if (typeClass.Contains("debris")) type = CoordinateType.DebrisField;
-            else type = CoordinateType.Unknown;
-
 
             string coordsText = coordsNode.InnerText;
             string playerName = coordsNode.GetAttributeValue("title", "");
