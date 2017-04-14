@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using OgameBot.Engine.Commands;
 using OgameBot.Utilities;
-using System.Text;
 
 namespace OgameBot.Db
 {
@@ -39,6 +38,13 @@ namespace OgameBot.Db
             }
             set { _command = value; }
         }
+
+        [ForeignKey(nameof(ScheduledById))]
+        public virtual CommandQueueElement ScheduledBy { get; set; }
+
+        public int? ScheduledById{ get; set; }
+
+        [Index]
         public DateTimeOffset? ScheduledAt { get; set; }
 
         public DateTimeOffset CreatedOn { get; set; }
