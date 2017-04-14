@@ -26,6 +26,7 @@ namespace OgameBot.Proxy
         private readonly Dictionary<string, Action<NameValueCollection>> _commands;
 
         public Uri SubstituteRoot { get; set; }
+        public static OgameClientProxy Instance { get; private set; }
 
         public OgameClientProxy(string listenHost, int listenPort, ClientBase client)
         {
@@ -36,6 +37,7 @@ namespace OgameBot.Proxy
             _commands = new Dictionary<string, Action<NameValueCollection>>();
             ListenPrefix = $"http://{listenHost}:{listenPort}/";
             _listener.Prefixes.Add(ListenPrefix);
+            Instance = this;
         }
         public static string CommandPrefix { get; set; } = "ogbcmd";
 
@@ -238,6 +240,11 @@ namespace OgameBot.Proxy
             }
         }
 
+        public void RunCommand(string command, NameValueCollection parameters)
+        {
+            Task.Factory.StartNew(() => _commands[command](parameters));
+        }
+
         private void ParseAndRunCommand(string commandPath, NameValueCollection parameters)
         {
             string[] parts = commandPath.Split('/');
@@ -247,14 +254,12 @@ namespace OgameBot.Proxy
             }
 
             string command = parts[2];
-
             if (!_commands.ContainsKey(command))
             {
                 Logger.Instance.Log(LogLevel.Error, $"No such command - {command}");
                 return;
             }
-
-            Task.Factory.StartNew(() => _commands[command](parameters));
+            RunCommand(command, parameters);
         }
 
         public void AddCommand(string name, Action<NameValueCollection> command)

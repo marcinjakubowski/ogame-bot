@@ -17,20 +17,21 @@ namespace OgameBot.Engine.Commands
 
         protected override void RunInternal()
         {
+            CommandQueueElement next = null;
             using (BotDb db = new BotDb())
             {
-                var next = db.CommandQueue.Where(q => q.ScheduledAt != null).OrderBy(q => q.ScheduledAt).FirstOrDefault();
-
+                next = db.CommandQueue.Where(q => q.ScheduledAt != null).OrderBy(q => q.ScheduledAt).FirstOrDefault();
                 if (next == null) return;
-
-                Run(next);
             }
+            Run(next);
+
         }
 
         public void Run(CommandQueueElement next)
         {
             lock (_lock)
             {
+                bool rerun = false;
                 using (BotDb db = new BotDb())
                 {
                     if (next.Id == 0)
@@ -38,11 +39,16 @@ namespace OgameBot.Engine.Commands
                         db.CommandQueue.Add(next);
                         db.SaveChanges();
                     }
+                    else
+                    {
+                        db.CommandQueue.Attach(next);
+                    }
 
                     // Execute
-                    if ((next.ScheduledAt ?? DateTimeOffset.Now) <= DateTimeOffset.Now)
+                    if ((next.ScheduledAt ?? DateTimeOffset.Now) < DateTimeOffset.Now)
                     {
                         CommandQueueElement following = next.Command.Run();
+                        
                         next.ScheduledAt = null;
 
                         if (following != null)
@@ -50,9 +56,8 @@ namespace OgameBot.Engine.Commands
                             following.ScheduledBy = next;
                             db.CommandQueue.Add(following);
                         }
-
                         db.SaveChanges();
-                        RunInternal();
+                        rerun = true;
                     }
                     else
                     {
@@ -62,6 +67,9 @@ namespace OgameBot.Engine.Commands
                         ExecutionInterval = (_next.ScheduledAt.Value - DateTimeOffset.Now).Add(TimeSpan.FromSeconds(1));
                     }
                 }
+
+
+                if (rerun) RunInternal();
             }
 
         }

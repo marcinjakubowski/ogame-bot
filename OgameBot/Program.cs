@@ -113,7 +113,27 @@ namespace OgameBot
                 };
                 recall.Run();
             };
+                       
 
+            if (config.FleetToRecall > 0)
+            {
+                recallAction(config.FleetToRecall);
+                Thread.Sleep(5000);
+                return;
+            }
+
+            SetupProxyCommands(client, config, proxy);
+            // Work
+            Console.ReadLine();
+        }
+
+        public static bool IsRunningOnMono()
+        {
+            return Type.GetType("Mono.Runtime") != null;
+        }
+
+        private static void SetupProxyCommands(OGameClient client, Config config, OgameClientProxy proxy)
+        {
             proxy.AddCommand("transport", (parameters) =>
             {
                 TransportAllCommand transportAll = new TransportAllCommand()
@@ -123,7 +143,7 @@ namespace OgameBot
                 };
                 transportAll.Run();
             });
-            
+
             proxy.AddCommand("hunt", (parameters) =>
             {
                 IFarmingStrategy strategy = new FleetFinderStrategy()
@@ -146,38 +166,31 @@ namespace OgameBot
                 Farm(client, config, strategy, parameters).Run();
             });
 
-            proxy.AddCommand("recall", (parameters) =>
-            {
-                recallAction(int.Parse(parameters["fleet"]));
-            });
-
             proxy.AddCommand("schedule", (parameters) =>
             {
                 long unixTime = long.Parse(parameters["at"]);
                 string cmd = parameters["cmd"];
 
-                
+                parameters.Remove("cmd");
+                parameters.Remove("at");
+
+                var command = new RunProxyCommand()
+                {
+                    Command = cmd,
+                    Parameters = parameters
+                };
+
+                client.Commander.Run(command, DateTimeOffset.FromUnixTimeSeconds(unixTime));
             });
 
             proxy.AddCommand("fake", (parameters) =>
             {
-                FakePlanetExclusive op = new FakePlanetExclusive();
+                FakePlanetExclusive op = new FakePlanetExclusive()
+                {
+                    PlanetId = int.Parse(parameters["cp"])
+                };
                 op.Run();
             });
-
-            if (config.FleetToRecall > 0)
-            {
-                recallAction(config.FleetToRecall);
-                Thread.Sleep(5000);
-                return;
-            }
-            // Work
-            Console.ReadLine();
-        }
-
-        public static bool IsRunningOnMono()
-        {
-            return Type.GetType("Mono.Runtime") != null;
         }
 
         private static FarmCommand Farm(OGameClient client, Config config, IFarmingStrategy strategy, NameValueCollection parameters)

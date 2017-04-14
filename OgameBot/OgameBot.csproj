@@ -95,6 +95,7 @@
     <Compile Include="Engine\Commands\FakePlanetExclusive.cs" />
     <Compile Include="Engine\Commands\Farming\FarmCommand.cs" />
     <Compile Include="Engine\Commands\FindAllMessagesCommand.cs" />
+    <Compile Include="Engine\Commands\RunProxyCommand.cs" />
     <Compile Include="Engine\Injects\OGameUrlInject.cs" />
     <Compile Include="Engine\IPlanetExclusiveOperation.cs" />
     <Compile Include="Engine\Commands\ReadAllMessagesCommand.cs" />
@@ -182,6 +183,7 @@
     <Compile Include="Db\BotDb.cs" />
     <Compile Include="Db\Planet.cs" />
     <Compile Include="Db\GalaxyScan.cs" />
+    <Compile Include="Utilities\NameValueCollectionConverter.cs" />
     <Compile Include="Utilities\SerializerHelper.cs" />
     <Compile Include="Engine\Interventions\OGameAutoLoginner.cs" />
     <Compile Include="Engine\OGameClient.cs" />

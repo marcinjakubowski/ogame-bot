@@ -9,12 +9,18 @@ namespace OgameBot.Utilities
 {
     public static class SerializerHelper
     {
-        private static readonly JsonSerializer Serializer = new JsonSerializer()
+        static SerializerHelper()
         {
-            Formatting = Formatting.Indented,
-            TypeNameHandling = TypeNameHandling.Auto,
-            TypeNameAssemblyFormat = FormatterAssemblyStyle.Simple
-        };
+            Serializer = new JsonSerializer()
+            {
+                Formatting = Formatting.Indented,
+                TypeNameHandling = TypeNameHandling.Auto,
+                TypeNameAssemblyFormat = FormatterAssemblyStyle.Simple,
+            };
+            Serializer.Converters.Add(new NameValueCollectionConverter());
+            
+        }
+        private static readonly JsonSerializer Serializer;
         private static readonly Encoding Encoding = Encoding.UTF8;
 
         public static void SerializeToStream<T>(T obj, Stream target, bool compress = false)
