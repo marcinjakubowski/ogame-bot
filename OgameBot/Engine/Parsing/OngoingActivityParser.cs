@@ -44,7 +44,7 @@ namespace OgameBot.Engine.Parsing
                         {
                             string type = match.Groups[1].Value;
                             int remainingDuration = int.Parse(match.Groups[2].Value);
-                            DateTime finishingAt = DateTime.Now.AddSeconds(remainingDuration);
+                            DateTimeOffset finishingAt = DateTimeOffset.Now.AddSeconds(remainingDuration);
 
                             if (type == "research")
                             {

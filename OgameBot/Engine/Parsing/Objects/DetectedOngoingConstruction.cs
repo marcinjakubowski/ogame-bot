@@ -8,7 +8,7 @@ namespace OgameBot.Engine.Parsing.Objects
     {
         public BuildingType Building { get; set; }
         public int Level { get; set; }
-        public DateTime FinishingAt { get; set; }
+        public DateTimeOffset FinishingAt { get; set; } = DateTimeOffset.Now.AddSeconds(5);
         public override string ToString()
         {
             return $"{Building}, lvl {Level:N0}, finishing at {FinishingAt}";
