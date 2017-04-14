@@ -10,7 +10,7 @@ namespace OgameBot.Engine.Commands
         public string Command { get; set; }
         public NameValueCollection Parameters { get; set; }
 
-        public override CommandQueueElement Run()
+        protected override CommandQueueElement RunInternal()
         {
             OgameClientProxy.Instance.RunCommand(Command, Parameters);
             return null;

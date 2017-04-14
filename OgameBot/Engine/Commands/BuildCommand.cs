@@ -14,7 +14,7 @@ namespace OgameBot.Engine.Commands
     {
         public BuildingType BuildingToBuild { get; set; }
 
-        public override CommandQueueElement Run()
+        protected override CommandQueueElement RunInternal()
         {
             // Make the initial request to get a token
             HttpRequestMessage req = Client.RequestBuilder.GetPage(PageType.Resources, PlanetId);

@@ -5,82 +5,86 @@ using System.Linq;
 
 namespace OgameBot.Engine.Commands
 {
-    public class Commander : WorkerBase
+    public partial class CommandBase
     {
-        private object _lock = new object();
-        CommandQueueElement _next;
 
-        public Commander()
+        public class Commander : WorkerBase
         {
-            ExecutionInterval = TimeSpan.FromSeconds(10);
-        }
+            private object _lock = new object();
+            CommandQueueElement _next;
 
-        protected override void RunInternal()
-        {
-            CommandQueueElement next = null;
-            using (BotDb db = new BotDb())
+            public Commander()
             {
-                next = db.CommandQueue.Where(q => q.ScheduledAt != null).OrderBy(q => q.ScheduledAt).FirstOrDefault();
-                if (next == null) return;
+                ExecutionInterval = TimeSpan.FromSeconds(10);
             }
-            Run(next);
 
-        }
-
-        public void Run(CommandQueueElement next)
-        {
-            lock (_lock)
+            protected override void RunInternal()
             {
-                bool rerun = false;
+                CommandQueueElement next = null;
                 using (BotDb db = new BotDb())
                 {
-                    if (next.Id == 0)
-                    {
-                        db.CommandQueue.Add(next);
-                        db.SaveChanges();
-                    }
-                    else
-                    {
-                        db.CommandQueue.Attach(next);
-                    }
-
-                    // Execute
-                    if ((next.ScheduledAt ?? DateTimeOffset.Now) < DateTimeOffset.Now)
-                    {
-                        CommandQueueElement following = next.Command.Run();
-                        
-                        next.ScheduledAt = null;
-
-                        if (following != null)
-                        {
-                            following.ScheduledBy = next;
-                            db.CommandQueue.Add(following);
-                        }
-                        db.SaveChanges();
-                        rerun = true;
-                    }
-                    else
-                    {
-                        if (_next == null || _next.ScheduledAt > next.ScheduledAt)
-                            _next = next;
-
-                        ExecutionInterval = (_next.ScheduledAt.Value - DateTimeOffset.Now).Add(TimeSpan.FromSeconds(1));
-                    }
+                    next = db.CommandQueue.Where(q => q.ScheduledAt != null).OrderBy(q => q.ScheduledAt).FirstOrDefault();
+                    if (next == null) return;
                 }
+                Run(next);
 
-
-                if (rerun) RunInternal();
             }
 
-        }
-
-        public void Run(CommandBase command, DateTimeOffset? at)
-        {
-            Run(new CommandQueueElement()
+            public void Run(CommandQueueElement next)
             {
-                Command = command,
-                ScheduledAt = at
-            });
+                lock (_lock)
+                {
+                    bool rerun = false;
+                    using (BotDb db = new BotDb())
+                    {
+                        if (next.Id == 0)
+                        {
+                            db.CommandQueue.Add(next);
+                            db.SaveChanges();
+                        }
+                        else
+                        {
+                            db.CommandQueue.Attach(next);
+                        }
+
+                        // Execute
+                        if ((next.ScheduledAt ?? DateTimeOffset.Now) <= DateTimeOffset.Now)
+                        {
+                            CommandQueueElement following = next.Command.RunInternal();
+
+                            next.ScheduledAt = null;
+
+                            if (following != null)
+                            {
+                                following.ScheduledBy = next;
+                                db.CommandQueue.Add(following);
+                            }
+                            db.SaveChanges();
+                            rerun = true;
+                        }
+                        else
+                        {
+                            if (_next == null || _next.ScheduledAt > next.ScheduledAt)
+                                _next = next;
+
+                            ExecutionInterval = (_next.ScheduledAt.Value - DateTimeOffset.Now).Add(TimeSpan.FromSeconds(1));
+                        }
+                    }
+
+
+                    if (rerun) RunInternal();
+                }
+
+            }
+
+            public void Run(CommandBase command, DateTimeOffset? at)
+            {
+                Run(new CommandQueueElement()
+                {
+                    Command = command,
+                    ScheduledAt = at
+                });
+            }
         }
     }
 }

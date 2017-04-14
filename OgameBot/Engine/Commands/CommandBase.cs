@@ -7,7 +7,7 @@ using OgameBot.Db;
 
 namespace OgameBot.Engine.Commands
 {
-    public abstract class CommandBase
+    public abstract partial class CommandBase
     {
         public int PlanetId { get; set; }
 
@@ -29,6 +29,11 @@ namespace OgameBot.Engine.Commands
             return result;
         }
 
-        public abstract CommandQueueElement Run();
+        public void Run()
+        {
+            Client.Commander.Run(this);
+        }
+
+        protected abstract CommandQueueElement RunInternal();
     }
 }

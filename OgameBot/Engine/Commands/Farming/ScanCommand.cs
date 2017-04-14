@@ -25,7 +25,7 @@ namespace OgameBot.Engine.Commands.Farming
             }
         }
 
-        public override CommandQueueElement Run()
+        protected override CommandQueueElement RunInternal()
         {
             // Get existing scan infoes
             Dictionary<int, GalaxyScan> existing;

@@ -47,9 +47,9 @@ namespace OgameBot.Engine
 
         public OGameRequestBuilder RequestBuilder { get; }
 
-        public Commander Commander { get; }
+        public CommandBase.Commander Commander { get; }
 
-        public OGameClient(string server, OGameStringProvider stringProvider, string username, string password, Commander commander)
+        public OGameClient(string server, OGameStringProvider stringProvider, string username, string password, CommandBase.Commander commander)
         {
             _server = server;
             _username = username;

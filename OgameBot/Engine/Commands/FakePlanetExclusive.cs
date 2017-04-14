@@ -25,10 +25,12 @@ namespace OgameBot.Engine.Commands
             }
         }
 
-        public override CommandQueueElement Run()
+        protected override CommandQueueElement RunInternal()
         {
+            Console.WriteLine("Wszedlem");
             // start a long running demo on the current planet, prevent anyone else from changing it
             PlanetId = Client.IssueRequest(Client.RequestBuilder.GetPage(Objects.Types.PageType.Overview)).GetParsedSingle<OgamePageInfo>().PlanetId;
+            Console.WriteLine("Jestem poza");
             using (Client.EnterPlanetExclusive(this))
             {
                 _startedAt = DateTimeOffset.Now;

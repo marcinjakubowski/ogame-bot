@@ -44,7 +44,7 @@ namespace OgameBot
             // Setup
             OGameStringProvider stringProvider = OGameStringProvider.Load(@"Resources/strings-en.json");
             CultureInfo clientServerCulture = CultureInfo.GetCultureInfo("da-DK");
-            var commander = new Commander();
+            var commander = new CommandBase.Commander();
 
             // Processing
             OGameClient client = new OGameClient(config.Server, stringProvider, config.Username, config.Password, commander);
@@ -168,11 +168,14 @@ namespace OgameBot
 
             proxy.AddCommand("schedule", (parameters) =>
             {
-                long unixTime = long.Parse(parameters["at"]);
+                long unixTime = 0;
+                if (parameters["at"] != null) unixTime = long.Parse(parameters["at"]);
+                else if (parameters["in"] != null) unixTime = DateTimeOffset.Now.AddSeconds(int.Parse(parameters["in"])).ToUnixTimeSeconds();
                 string cmd = parameters["cmd"];
 
                 parameters.Remove("cmd");
                 parameters.Remove("at");
+                parameters.Remove("in");
 
                 var command = new RunProxyCommand()
                 {

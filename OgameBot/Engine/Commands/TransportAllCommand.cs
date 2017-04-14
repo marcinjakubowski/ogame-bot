@@ -13,7 +13,7 @@ namespace OgameBot.Engine.Commands
         public int Speed { get; set; } = 10;
         public bool UseDeployment { get; set; } = false;
 
-        public override CommandQueueElement Run()
+        protected override CommandQueueElement RunInternal()
         {
             var resp = Client.IssueRequest(Client.RequestBuilder.GetPage(PageType.Fleet, PlanetId));
             PlanetResources resources = resp.GetParsedSingle<PlanetResources>();
@@ -37,7 +37,8 @@ namespace OgameBot.Engine.Commands
                 Destination = Destination,
                 Fleet = fleet
             };
-            return sendFleet.Run();
+            sendFleet.Run();
+            return null;
         }
     }
 }

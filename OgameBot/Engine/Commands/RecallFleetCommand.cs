@@ -12,7 +12,7 @@ namespace OgameBot.Engine.Commands
     {
         public int FleetId { get; set; }
 
-        public override CommandQueueElement Run()
+        protected override CommandQueueElement RunInternal()
         {
             var req = Client.RequestBuilder.PostPage(Objects.Types.PageType.FleetMovement, new [] 
             {

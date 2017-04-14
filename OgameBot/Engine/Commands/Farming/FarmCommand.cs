@@ -187,7 +187,7 @@ namespace OgameBot.Engine.Commands.Farming
             return totalPlunder;
         }
 
-        public override CommandQueueElement Run()
+        protected override CommandQueueElement RunInternal()
         {
             var req = Client.RequestBuilder.GetPage(PageType.Galaxy, PlanetId);
             var resp = Client.IssueRequest(req);
