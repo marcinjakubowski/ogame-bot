@@ -18,7 +18,7 @@ namespace OgameBot.Engine.Injects
         {
             _client = client;
         }
-        public string Inject(OgamePageInfo info, string body, ResponseContainer response)
+        public string Inject(OgamePageInfo info, string body, ResponseContainer response, string host, int port)
         {
             if (!response.RequestMessage.RequestUri.PathAndQuery.Contains("ogpe=1"))
                 return body;

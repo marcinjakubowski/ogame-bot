@@ -11,10 +11,10 @@ namespace OgameBot.Engine.Injects
 {
     public class OGameUrlInject : IInject
     {
-        public string Inject(OgamePageInfo info, string body, ResponseContainer response)
+        public string Inject(OgamePageInfo info, string body, ResponseContainer response, string host, int port)
         {
             if (info?.Page != null)
-                body = body.Replace(@"</body>", $@"<script type=""text/javascript"">ogameUrl = 'http://{OgameClientProxy.ListenHost}:{OgameClientProxy.ListenPort}';</script></body>");
+                body = body.Replace(@"</body>", $@"<script type=""text/javascript"">ogameUrl = 'http://{host}:{port}';</script></body>");
 
             body = body.Replace("no-commander", "");
 

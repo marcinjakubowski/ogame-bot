@@ -17,8 +17,8 @@ namespace OgameBot.Proxy
 {
     public class OgameClientProxy
     {
-        public static string ListenHost { get; private set; }
-        public static int ListenPort { get; private set; }
+        public string ListenHost { get; }
+        public int ListenPort { get; }
         private readonly ClientBase _client;
         private readonly HttpListener _listener;
         private bool _isRunning;
@@ -73,6 +73,9 @@ namespace OgameBot.Proxy
             if (ctx == null)
                 return;
 
+            string host = ctx.Request.Url.DnsSafeHost;
+            int port = ctx.Request.Url.Port;
+
             string referer = ctx.Request.Headers.Get("Referer");
             // Process the current context
             HttpMethod requestedMethod = new HttpMethod(ctx.Request.HttpMethod);
@@ -112,7 +115,7 @@ namespace OgameBot.Proxy
             var pathAndQuery = ctx.Request.Url.PathAndQuery;
             if (pathAndQuery.Contains("redir.php"))
             {
-                pathAndQuery = pathAndQuery.Replace(Uri.EscapeDataString($"http://{ListenHost}:{ListenPort}/"), Uri.EscapeDataString(SubstituteRoot.ToString()));
+                pathAndQuery = pathAndQuery.Replace(Uri.EscapeDataString($"http://{host}:{port}/"), Uri.EscapeDataString(SubstituteRoot.ToString()));
             }
             
             Uri targetUri = new Uri(SubstituteRoot, pathAndQuery);
@@ -135,7 +138,7 @@ namespace OgameBot.Proxy
             
             if (referer != null)
             {
-                referer = referer.Replace($"http://{ListenHost}:{ListenPort}/", SubstituteRoot.ToString());
+                referer = referer.Replace($"http://{host}:{port}/", SubstituteRoot.ToString());
                 proxyReq.Headers.TryAddWithoutValidation("Referer", referer);
             }
 
@@ -182,12 +185,12 @@ namespace OgameBot.Proxy
                 // NOTE: Enable this to load external ressources through proxy
                 //str = Regex.Replace(str, @"(https://gf[\d]+.geo.gfsrv.net/)", $"http://{_listenHost}:{_listenPort}/SPECIAL/$0", RegexOptions.Compiled);
 
-                str = str.Replace(SubstituteRoot.ToString().Replace("/", "\\/"), $@"http:\/\/{ListenHost}:{ListenPort}\/");   // In JS strings
-                str = str.Replace(SubstituteRoot.ToString(), $"http://{ListenHost}:{ListenPort}/");   // In links
-                str = str.Replace(SubstituteRoot.Host + ":" + SubstituteRoot.Port, $"{ListenHost}:{ListenPort}"); // Without scheme
-                str = str.Replace(SubstituteRoot.Host, $"{ListenHost}:{ListenPort}"); // Remainders
+                str = str.Replace(SubstituteRoot.ToString().Replace("/", "\\/"), $@"http:\/\/{host}:{port}\/");   // In JS strings
+                str = str.Replace(SubstituteRoot.ToString(), $"http://{host}:{port}/");   // In links
+                str = str.Replace(SubstituteRoot.Host + ":" + SubstituteRoot.Port, $"{host}:{port}"); // Without scheme
+                str = str.Replace(SubstituteRoot.Host, $"{host}:{port}"); // Remainders
                 // To make overlays work, there is a check against ogameUrl in javascript
-                str = _client.Inject(str, resp);
+                str = _client.Inject(str, resp, host, port);
 
                 data = Encoding.UTF8.GetBytes(str);
             }

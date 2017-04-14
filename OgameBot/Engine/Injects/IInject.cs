@@ -5,6 +5,6 @@ namespace OgameBot.Engine.Injects
 {
     public interface IInject
     {
-        string Inject(OgamePageInfo info, string body, ResponseContainer response);
+        string Inject(OgamePageInfo info, string body, ResponseContainer response, string host, int port);
     }
 }

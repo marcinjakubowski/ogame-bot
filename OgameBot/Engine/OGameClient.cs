@@ -30,11 +30,12 @@ namespace OgameBot.Engine
         private readonly List<IInject> _injects;
         private readonly List<IRequestValidator> _validators;
 
+        private object _lockPlanetExclusive = new object();
+        private CookieContainer _cookieContainer;
+
         private const string _cookiePath = "temp/cookies.bin";
 
         public PlanetExclusiveOperation CurrentPlanetExclusiveOperation { get; private set; } = null;
-        private object _lockPlanetExclusive = new object();
-        private CookieContainer _cookieContainer;
 
         public event Action<ResponseContainer> OnResponseReceived;
 
@@ -189,13 +190,13 @@ namespace OgameBot.Engine
                 formatter.Serialize(fs, _cookieContainer);
         }
                 
-        public override string Inject(string body, ResponseContainer response)
+        public override string Inject(string body, ResponseContainer response, string host, int port)
         {
             OgamePageInfo info = response.GetParsedSingle<OgamePageInfo>(false);
             foreach (IInject inject in _injects)
-                body = inject.Inject(info, body, response);
+                body = inject.Inject(info, body, response, host, port);
 
-            return base.Inject(body, response);
+            return base.Inject(body, response, host, port);
         }
 
         public IDisposable EnterPlanetExclusive(IPlanetExclusiveOperation operation)

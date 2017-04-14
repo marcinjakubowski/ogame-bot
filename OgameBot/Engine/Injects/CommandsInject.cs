@@ -10,10 +10,16 @@ namespace OgameBot.Engine.Injects
     {
         private static Regex submenuRegex = new Regex(@"(title=""&lt.*cp=(\d+).*galaxy&amp;.*&gt;)", RegexOptions.Compiled);
 
-        public string Inject(OgamePageInfo current, string body, ResponseContainer response)
+        private int _port;
+        private string _host;
+
+        public string Inject(OgamePageInfo current, string body, ResponseContainer response, string host, int port)
         {
             if (current == null)
                 return body;
+
+            _port = port;
+            _host = host;
 
             StringBuilder sb = new StringBuilder("$1&lt;hr/&gt;");
             
@@ -24,9 +30,9 @@ namespace OgameBot.Engine.Injects
             return body;
         }
 
-        private static string GetLink(string command, string label)
+        private string GetLink(string command, string label)
         {
-            return $"&lt;a href=&quot;http://{OgameClientProxy.ListenHost}:{OgameClientProxy.ListenPort}/ogbcmd/{command}&quot;&gt;{label}&lt;/a&gt;";
+            return $"&lt;a href=&quot;http://{_host}:{_port}/ogbcmd/{command}&quot;&gt;{label}&lt;/a&gt;";
         }
 
         private const string NewLine = "&lt;/br&gt;";

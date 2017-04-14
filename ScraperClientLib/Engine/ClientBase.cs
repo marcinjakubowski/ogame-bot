@@ -228,7 +228,7 @@ namespace ScraperClientLib.Engine
             }
         }
 
-        public virtual string Inject(string body, ResponseContainer container)
+        public virtual string Inject(string body, ResponseContainer container, string host, int port)
         {
             return body;
         }

@@ -9,7 +9,7 @@ namespace OgameBot.Engine.Injects
     public class CargosForTransportInject : IInject
     {
         private static Regex largeCargo = new Regex(@"(<span class=""level""><span class=""textlabel"">Large Cargo </span>)(\d+</span>)");
-        public string Inject(OgamePageInfo info, string body, ResponseContainer response)
+        public string Inject(OgamePageInfo info, string body, ResponseContainer response, string host, int port)
         {
             if (info?.Page != PageType.Fleet) return body;
 
