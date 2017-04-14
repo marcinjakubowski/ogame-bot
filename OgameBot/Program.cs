@@ -18,6 +18,7 @@ using System.Threading;
 using System.Runtime.Serialization;
 using OgameBot.Db;
 using OgameBot.Engine.Tasks;
+using OgameBot.Objects.Types;
 
 namespace OgameBot
 {
@@ -68,6 +69,7 @@ namespace OgameBot
             client.RegisterInject(new CargosForTransportInject());
             client.RegisterInject(new PlanetExclusiveInject(client));
             client.RegisterInject(new OGameUrlInject());
+            client.RegisterInject(new BuildQueueInject());
             // UA stuff
             client.RegisterDefaultHeader("Accept-Language", "en-GB,en;q=0.8,da;q=0.6");
             client.RegisterDefaultHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
@@ -151,6 +153,16 @@ namespace OgameBot
                     MaxRanking = config.HuntMaximumRanking > 0 ? config.HuntMaximumRanking : 400
                 };
                 Farm(client, config, strategy, parameters).Run();
+            });
+
+            proxy.AddCommand("build", (parameters) =>
+            {
+                BuildCommand cmd = new BuildCommand()
+                {
+                    PlanetId = int.Parse(parameters["cp"]),
+                    BuildingToBuild = (BuildingType)int.Parse(parameters["id"])
+                };
+                cmd.Run();
             });
 
             proxy.AddCommand("farm", (parameters) =>
