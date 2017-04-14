@@ -68,6 +68,7 @@ namespace OgameBot.Engine.Commands
                                 _next = next;
 
                             ExecutionInterval = (_next.ScheduledAt.Value - DateTimeOffset.Now).Add(TimeSpan.FromSeconds(1));
+                            if (ExecutionInterval.TotalSeconds < 0) ExecutionInterval = TimeSpan.FromSeconds(10);
                         }
                     }
 
