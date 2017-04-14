@@ -2,12 +2,13 @@
 using OgameBot.Objects;
 using System.Linq;
 using OgameBot.Engine.Parsing.Objects;
+using OgameBot.Db;
 
 namespace OgameBot.Engine.Commands
 {
     public class FindAllMessagesCommand : CommandBase
     {
-        protected override void RunInternal()
+        public override CommandQueueElement Run()
         {
             // Read first page of all message types
             MessageTabType[] types = { MessageTabType.FleetsEspionage };
@@ -28,6 +29,7 @@ namespace OgameBot.Engine.Commands
                     }
                 }
             }
+            return null;
         }
     }
 }

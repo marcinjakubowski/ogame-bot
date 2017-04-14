@@ -1,4 +1,5 @@
-﻿using OgameBot.Engine.Parsing.Objects;
+﻿using OgameBot.Db;
+using OgameBot.Engine.Parsing.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,7 @@ namespace OgameBot.Engine.Commands
             }
         }
 
-        protected override void RunInternal()
+        public override CommandQueueElement Run()
         {
             // start a long running demo on the current planet, prevent anyone else from changing it
             PlanetId = Client.IssueRequest(Client.RequestBuilder.GetPage(Objects.Types.PageType.Overview)).GetParsedSingle<OgamePageInfo>().PlanetId;
@@ -33,6 +34,8 @@ namespace OgameBot.Engine.Commands
                 _startedAt = DateTimeOffset.Now;
                 Thread.Sleep(30000);
             }
+
+            return null;
         }
     }
 }

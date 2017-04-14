@@ -6,6 +6,7 @@ using ScraperClientLib.Engine;
 using OgameBot.Engine.Parsing.Objects;
 using System.Collections.Generic;
 using OgameBot.Logging;
+using OgameBot.Db;
 
 namespace OgameBot.Engine.Commands
 {
@@ -13,7 +14,7 @@ namespace OgameBot.Engine.Commands
     {
         public BuildingType BuildingToBuild { get; set; }
 
-        protected override void RunInternal()
+        public override CommandQueueElement Run()
         {
             // Make the initial request to get a token
             HttpRequestMessage req = Client.RequestBuilder.GetPage(PageType.Resources, PlanetId);
@@ -51,6 +52,8 @@ namespace OgameBot.Engine.Commands
                 HttpRequestMessage buildReq = Client.RequestBuilder.GetBuildBuildingRequest(BuildingToBuild, token);
                 AssistedIssue(buildReq);
             }
+
+            return null;
         }
     }
 }

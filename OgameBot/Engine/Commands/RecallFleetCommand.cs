@@ -1,4 +1,5 @@
-﻿using OgameBot.Utilities;
+﻿using OgameBot.Db;
+using OgameBot.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace OgameBot.Engine.Commands
     {
         public int FleetId { get; set; }
 
-        protected override void RunInternal()
+        public override CommandQueueElement Run()
         {
             var req = Client.RequestBuilder.PostPage(Objects.Types.PageType.FleetMovement, new [] 
             {
@@ -19,6 +20,8 @@ namespace OgameBot.Engine.Commands
             });
 
             Client.IssueRequest(req);
+
+            return null;
         }
     }
 }

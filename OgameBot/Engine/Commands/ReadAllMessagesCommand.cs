@@ -11,7 +11,7 @@ namespace OgameBot.Engine.Commands
 {
     public class ReadAllMessagesCommand : CommandBase
     {
-        protected override void RunInternal()
+        public override CommandQueueElement Run()
         {
             // Read all messages
             FindAllMessagesCommand cmd = new FindAllMessagesCommand();
@@ -40,6 +40,7 @@ namespace OgameBot.Engine.Commands
                     }
                 }
             }
+            return null;
         }
     }
 }

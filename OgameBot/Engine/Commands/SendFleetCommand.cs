@@ -37,7 +37,7 @@ namespace OgameBot.Engine.Commands
         public string Name => $"Sending " + ToString();
         public string Progress => $"{_step} / 3";
 
-        protected override void RunInternal()
+        public override CommandQueueElement Run()
         {
             using (Client.EnterPlanetExclusive(this))
             {
@@ -92,6 +92,8 @@ namespace OgameBot.Engine.Commands
                     Logger.Instance.Log(LogLevel.Error, $"Could not send {this}");
                 }
             }
+
+            return null;
 
         }
 

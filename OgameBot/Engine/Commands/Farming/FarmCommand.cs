@@ -29,7 +29,6 @@ namespace OgameBot.Engine.Commands.Farming
             }
         }
         public string Progress { get; private set; }
-        public int Delay { get; set; } = 0;
         public int Range { get; set; }
         public IFarmingStrategy Strategy { get; set; }
 
@@ -51,7 +50,7 @@ namespace OgameBot.Engine.Commands.Farming
             }
         }
 
-        private void Farm()
+        private CommandQueueElement Farm()
         {
             using (Client.EnterPlanetExclusive(this))
             {
@@ -79,6 +78,7 @@ namespace OgameBot.Engine.Commands.Farming
                     Logger.Instance.Log(LogLevel.Info, $"Strategy decided not to attack, job done.");
                 }
             }
+            return null;
             
         }
 
@@ -187,10 +187,8 @@ namespace OgameBot.Engine.Commands.Farming
             return totalPlunder;
         }
 
-        protected override void RunInternal()
+        public override CommandQueueElement Run()
         {
-            Thread.Sleep(Delay * 1000);
-
             var req = Client.RequestBuilder.GetPage(PageType.Galaxy, PlanetId);
             var resp = Client.IssueRequest(req);
             var source = resp.GetParsedSingle<OgamePageInfo>();
@@ -209,7 +207,7 @@ namespace OgameBot.Engine.Commands.Farming
                 To = _to
             };
             scanner.Run();
-            Farm();
+            return Farm();
         }
     }
 }

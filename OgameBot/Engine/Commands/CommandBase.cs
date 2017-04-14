@@ -29,16 +29,6 @@ namespace OgameBot.Engine.Commands
             return result;
         }
 
-        public void Run()
-        {
-            using (BotDb db = new BotDb())
-            {
-                db.CommandQueue.Add(this);
-                db.SaveChanges();
-            }
-            RunInternal();
-        }
-
-        protected abstract void RunInternal();
+        public abstract CommandQueueElement Run();
     }
 }

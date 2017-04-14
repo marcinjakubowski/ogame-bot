@@ -44,9 +44,10 @@ namespace OgameBot
             // Setup
             OGameStringProvider stringProvider = OGameStringProvider.Load(@"Resources/strings-en.json");
             CultureInfo clientServerCulture = CultureInfo.GetCultureInfo("da-DK");
+            var commander = new Commander();
 
             // Processing
-            OGameClient client = new OGameClient(config.Server, stringProvider, config.Username, config.Password);
+            OGameClient client = new OGameClient(config.Server, stringProvider, config.Username, config.Password, commander);
             client.Settings.ServerUtcOffset = TimeSpan.FromHours(1);
             client.Settings.Galaxies = 8;
             client.Settings.Systems = 499;
@@ -98,15 +99,12 @@ namespace OgameBot
             ApiImporterJob job1 = new ApiImporterJob(client, new DirectoryInfo("temp"));
             job1.Start();
 
-            /*MessageReaderJob job2 = new MessageReaderJob(client);
-            job2.Start();*/
-
+            
             SessionKeepAliveJob job3 = new SessionKeepAliveJob(client);
             job3.Start();
-            
-            //ScannerJob s = new ScannerJob(client, new SystemCoordinate(1, 1), new SystemCoordinate(6, 499));
-            //s.Start();
 
+            commander.Start();
+            
             Action<int> recallAction = (fleet) =>
             {
                 RecallFleetCommand recall = new RecallFleetCommand()
@@ -132,7 +130,7 @@ namespace OgameBot
                 {
                     MaxRanking = config.HuntMaximumRanking > 0 ? config.HuntMaximumRanking : 400
                 };
-                Farm(client, config, strategy, parameters);
+                Farm(client, config, strategy, parameters).Run();
             });
 
             proxy.AddCommand("farm", (parameters) =>
@@ -145,12 +143,20 @@ namespace OgameBot
                     ResourcePriority = new Resources(1, 2, 1),
                     MinimumRanking = config.FarmMinimumRanking
                 };
-                Farm(client, config, strategy, parameters);
+                Farm(client, config, strategy, parameters).Run();
             });
 
             proxy.AddCommand("recall", (parameters) =>
             {
                 recallAction(int.Parse(parameters["fleet"]));
+            });
+
+            proxy.AddCommand("schedule", (parameters) =>
+            {
+                long unixTime = long.Parse(parameters["at"]);
+                string cmd = parameters["cmd"];
+
+                
             });
 
             proxy.AddCommand("fake", (parameters) =>
@@ -169,35 +175,12 @@ namespace OgameBot
             Console.ReadLine();
         }
 
-        public class TypeNameSerializationBinder : SerializationBinder
-        {
-            public string TypeFormat { get; private set; }
-
-            public TypeNameSerializationBinder(string typeFormat)
-            {
-                TypeFormat = typeFormat;
-            }
-
-            public override void BindToName(Type serializedType, out string assemblyName, out string typeName)
-            {
-                assemblyName = null;
-                typeName = serializedType.Name;
-            }
-
-            public override Type BindToType(string assemblyName, string typeName)
-            {
-                string resolvedTypeName = string.Format(TypeFormat, typeName);
-
-                return Type.GetType(resolvedTypeName, true);
-            }
-        }
-
         public static bool IsRunningOnMono()
         {
             return Type.GetType("Mono.Runtime") != null;
         }
 
-        private static void Farm(OGameClient client, Config config, IFarmingStrategy strategy, NameValueCollection parameters)
+        private static FarmCommand Farm(OGameClient client, Config config, IFarmingStrategy strategy, NameValueCollection parameters)
         {
             int range;
             if (!int.TryParse(parameters["range"], out range))
@@ -212,24 +195,13 @@ namespace OgameBot
                 }
             }
 
-            int delay = 0;
-
-            if (parameters["delay"] != null)
-            {
-                if (!int.TryParse(parameters["delay"], out delay))
-                {
-                    delay = 0;
-                }
-            }
-
             FarmCommand bot = new FarmCommand()
             {
                 PlanetId = planetId,
                 Range = range,
                 Strategy = strategy,
-                Delay = delay
             };
-            bot.Run();
+            return bot;
         }
     }
 }

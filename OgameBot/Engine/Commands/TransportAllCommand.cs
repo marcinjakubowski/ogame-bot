@@ -13,7 +13,7 @@ namespace OgameBot.Engine.Commands
         public int Speed { get; set; } = 10;
         public bool UseDeployment { get; set; } = false;
 
-        protected override void RunInternal()
+        public override CommandQueueElement Run()
         {
             var resp = Client.IssueRequest(Client.RequestBuilder.GetPage(PageType.Fleet, PlanetId));
             PlanetResources resources = resp.GetParsedSingle<PlanetResources>();
@@ -26,7 +26,7 @@ namespace OgameBot.Engine.Commands
             if (cargo == null || needed > cargo.Count)
             {
                 Logger.Instance.Log(LogLevel.Error, $"Not enough Large Cargos on planet: needed {needed}, only {available} available.");
-                return;
+                return null;
             }
 
             SendFleetCommand sendFleet = new SendFleetCommand()
@@ -37,8 +37,7 @@ namespace OgameBot.Engine.Commands
                 Destination = Destination,
                 Fleet = fleet
             };
-            sendFleet.Run();
-
+            return sendFleet.Run();
         }
     }
 }
