@@ -4,6 +4,7 @@ using ScraperClientLib.Engine;
 using ScraperClientLib.Engine.Parsing;
 using Newtonsoft.Json;
 using OgameBot.Db;
+using System.Threading.Tasks;
 
 namespace OgameBot.Engine.Commands
 {
@@ -30,5 +31,10 @@ namespace OgameBot.Engine.Commands
         }
 
         public abstract CommandQueueElement Run();
+
+        public async Task<CommandQueueElement> RunAsync()
+        {
+            return await Task.Factory.StartNew(Run);
+        }
     }
 }

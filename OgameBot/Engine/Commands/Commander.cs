@@ -2,6 +2,7 @@
 using OgameBot.Engine.Tasks;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace OgameBot.Engine.Commands
 {
@@ -74,13 +75,18 @@ namespace OgameBot.Engine.Commands
 
         }
 
-        public void Run(CommandBase command, DateTimeOffset? at)
+        public void Run(CommandBase command, DateTimeOffset? at = null)
         {
             Run(new CommandQueueElement()
             {
                 Command = command,
                 ScheduledAt = at
             });
+        }
+
+        public async Task RunAsync(CommandBase op)
+        {
+            await Task.Factory.StartNew(() => Run(op));
         }
     }
 }

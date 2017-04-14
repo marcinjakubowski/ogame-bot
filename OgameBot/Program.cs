@@ -18,6 +18,7 @@ using System.Threading;
 using System.Runtime.Serialization;
 using OgameBot.Db;
 using OgameBot.Engine.Tasks;
+using System.Threading.Tasks;
 
 namespace OgameBot
 {
@@ -134,26 +135,26 @@ namespace OgameBot
 
         private static void SetupProxyCommands(OGameClient client, Config config, OgameClientProxy proxy)
         {
-            proxy.AddCommand("transport", (parameters) =>
+            proxy.AddCommand("transport", async (parameters) =>
             {
                 TransportAllCommand transportAll = new TransportAllCommand()
                 {
                     PlanetId = int.Parse(parameters["from"]),
                     Destination = DbHelper.GetPlanetCoordinateByCp(int.Parse(parameters["to"]))
                 };
-                transportAll.Run();
+                await transportAll.RunAsync();
             });
 
-            proxy.AddCommand("hunt", (parameters) =>
+            proxy.AddCommand("hunt", async (parameters) =>
             {
                 IFarmingStrategy strategy = new FleetFinderStrategy()
                 {
                     MaxRanking = config.HuntMaximumRanking > 0 ? config.HuntMaximumRanking : 400
                 };
-                Farm(client, config, strategy, parameters).Run();
+                await Farm(client, config, strategy, parameters).RunAsync();
             });
 
-            proxy.AddCommand("farm", (parameters) =>
+            proxy.AddCommand("farm", async (parameters) =>
             {
                 IFarmingStrategy strategy = new InactiveFarmingStrategy()
                 {
@@ -163,10 +164,10 @@ namespace OgameBot
                     ResourcePriority = new Resources(1, 2, 1),
                     MinimumRanking = config.FarmMinimumRanking
                 };
-                Farm(client, config, strategy, parameters).Run();
+                await Farm(client, config, strategy, parameters).RunAsync();
             });
 
-            proxy.AddCommand("schedule", (parameters) =>
+            proxy.AddCommand("schedule", async (parameters) =>
             {
                 long unixTime = long.Parse(parameters["at"]);
                 string cmd = parameters["cmd"];
@@ -180,16 +181,16 @@ namespace OgameBot
                     Parameters = parameters
                 };
 
-                client.Commander.Run(command, DateTimeOffset.FromUnixTimeSeconds(unixTime));
+                await Task.Factory.StartNew( () => client.Commander.Run(command, DateTimeOffset.FromUnixTimeSeconds(unixTime)));
             });
 
-            proxy.AddCommand("fake", (parameters) =>
+            proxy.AddCommand("fake", async (parameters) =>
             {
                 FakePlanetExclusive op = new FakePlanetExclusive()
                 {
                     PlanetId = int.Parse(parameters["cp"])
                 };
-                op.Run();
+                await client.Commander.RunAsync(op);
             });
         }
 

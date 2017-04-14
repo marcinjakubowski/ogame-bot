@@ -23,10 +23,10 @@ namespace OgameBot.Proxy
         private readonly HttpListener _listener;
         private bool _isRunning;
 
-        private readonly Dictionary<string, Action<NameValueCollection>> _commands;
+        private readonly Dictionary<string, Func<NameValueCollection, Task>> _commands;
 
         public Uri SubstituteRoot { get; set; }
-        public static OgameClientProxy Instance { get; private set; }
+        public static OgameClientProxy Instance { get; private set;}
 
         public OgameClientProxy(string listenHost, int listenPort, ClientBase client)
         {
@@ -34,7 +34,7 @@ namespace OgameBot.Proxy
             ListenPort = listenPort;
             _client = client;
             _listener = new HttpListener();
-            _commands = new Dictionary<string, Action<NameValueCollection>>();
+            _commands = new Dictionary<string, Func<NameValueCollection, Task>>();
             ListenPrefix = $"http://{listenHost}:{listenPort}/";
             _listener.Prefixes.Add(ListenPrefix);
             Instance = this;
@@ -262,7 +262,7 @@ namespace OgameBot.Proxy
             RunCommand(command, parameters);
         }
 
-        public void AddCommand(string name, Action<NameValueCollection> command)
+        public void AddCommand(string name, Func<NameValueCollection, Task> command)
         {
             _commands[name] = command;
         }
