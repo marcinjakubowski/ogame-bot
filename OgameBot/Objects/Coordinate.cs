@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using OgameBot.Objects.Types;
+using Newtonsoft.Json;
 
 namespace OgameBot.Objects
 {
@@ -101,6 +102,7 @@ namespace OgameBot.Objects
             return obj is Coordinate && Equals((Coordinate)obj);
         }
 
+        [JsonIgnore]
         public long Id => this;
 
         public static implicit operator long(Coordinate coord)

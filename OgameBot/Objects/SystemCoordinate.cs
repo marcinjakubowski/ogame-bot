@@ -1,4 +1,6 @@
-﻿namespace OgameBot.Objects
+﻿using Newtonsoft.Json;
+
+namespace OgameBot.Objects
 {
     public struct SystemCoordinate
     {
@@ -40,10 +42,13 @@
             }
         }
 
+        [JsonIgnore]
         public int Id => this;
 
+        [JsonIgnore]
         public long LowerCoordinate => (long)Id << 16;
 
+        [JsonIgnore]
         public long UpperCoordinate => LowerCoordinate | 0xFFFF;
 
         public static implicit operator int(SystemCoordinate coord)
