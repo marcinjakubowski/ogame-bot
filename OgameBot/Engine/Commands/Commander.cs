@@ -1,5 +1,6 @@
 ﻿using OgameBot.Db;
 using OgameBot.Engine.Tasks;
+using OgameBot.Logging;
 using System;
 using System.Linq;
 
@@ -50,14 +51,15 @@ namespace OgameBot.Engine.Commands
                         // Execute
                         if ((next.ScheduledAt ?? DateTimeOffset.Now) <= DateTimeOffset.Now)
                         {
+                            Logger.Instance.Log(LogLevel.Debug, $"Running {next.Command} (id: {next.Id})");
                             CommandQueueElement following = next.Command.RunInternal();
-
                             next.ScheduledAt = null;
-
+                            Logger.Instance.Log(LogLevel.Debug, $"Finished {next.Command} (id: {next.Id})");
                             if (following != null)
                             {
                                 following.ScheduledBy = next;
                                 db.CommandQueue.Add(following);
+                                Logger.Instance.Log(LogLevel.Debug, $"Queueing {following.Command} (id: {following.Id}, by: {next.Id})");
                             }
                             db.SaveChanges();
                             rerun = true;
