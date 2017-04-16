@@ -10,53 +10,60 @@ using System;
 
 namespace OgameBot.Engine.Commands
 {
-    public class BuildCommand : CommandBase
+    public class BuildCommand : CommandBase, IPlanetExclusiveOperation
     {
         private const int MaxRescheduleTimeInMinutes = 15;
 
         public BuildingType BuildingToBuild { get; set; }
 
+        public string Name => "Build {BuildingToBuild}";
+
+        public string Progress => "Done";
+
         protected override CommandQueueElement RunInternal()
         {
-            // Make the initial request to get a token
-            HttpRequestMessage req = Client.RequestBuilder.GetPage(PageType.Resources, PlanetId);
-            ResponseContainer res = AssistedIssue(req);
-
-            OgamePageInfo info = res.GetParsedSingle<OgamePageInfo>();
-            string token = info.OrderToken;
-
-            // validate resources
-            int currentBuildingLevel = res.GetParsed<DetectedBuilding>()
-                                          .Where(b => b.Building == BuildingToBuild)
-                                          .Select(b => b.Level)
-                                          .FirstOrDefault();
-
-            PlanetResources resources = res.GetParsedSingle<PlanetResources>();
-
-            Resources cost = Building.Get(BuildingToBuild).Cost.ForLevel(currentBuildingLevel + 1);
-            DetectedOngoingConstruction underConstruction = res.GetParsedSingle<DetectedOngoingConstruction>(false);
-
-            if (underConstruction != null)
+            using (Client.EnterPlanetExclusive(this))
             {
-                Logger.Instance.Log(LogLevel.Debug, $"Building {underConstruction.Building} already under construction on planet {info.PlanetName}, will finish at {underConstruction.FinishingAt}");
-                return Reschedule(underConstruction.FinishingAt);
-            }
-            else if (cost.Metal > resources.Resources.Metal || cost.Crystal > resources.Resources.Crystal || cost.Deuterium > resources.Resources.Deuterium)
-            {
-                double maxTimeToGetEnoughResources = new double[] {
+                // Make the initial request to get a token
+                HttpRequestMessage req = Client.RequestBuilder.GetPage(PageType.Resources, PlanetId);
+                ResponseContainer res = AssistedIssue(req);
+
+                OgamePageInfo info = res.GetParsedSingle<OgamePageInfo>();
+                string token = info.OrderToken;
+
+                // validate resources
+                int currentBuildingLevel = res.GetParsed<DetectedBuilding>()
+                                              .Where(b => b.Building == BuildingToBuild)
+                                              .Select(b => b.Level)
+                                              .FirstOrDefault();
+
+                PlanetResources resources = res.GetParsedSingle<PlanetResources>();
+
+                Resources cost = Building.Get(BuildingToBuild).Cost.ForLevel(currentBuildingLevel + 1);
+                DetectedOngoingConstruction underConstruction = res.GetParsedSingle<DetectedOngoingConstruction>(false);
+
+                if (underConstruction != null)
+                {
+                    Logger.Instance.Log(LogLevel.Debug, $"Building {underConstruction.Building} already under construction on planet {info.PlanetName}, will finish at {underConstruction.FinishingAt}");
+                    return Reschedule(underConstruction.FinishingAt);
+                }
+                else if (cost.Metal > resources.Resources.Metal || cost.Crystal > resources.Resources.Crystal || cost.Deuterium > resources.Resources.Deuterium)
+                {
+                    double maxTimeToGetEnoughResources = new double[] {
                     (cost.Metal - resources.Resources.Metal) / (resources.ProductionPerHour.Metal / 3600.0),
                     (cost.Crystal - resources.Resources.Crystal) / (resources.ProductionPerHour.Deuterium / 3600.0),
                     (cost.Deuterium - resources.Resources.Deuterium) / (resources.ProductionPerHour.Deuterium / 3600.0)
                 }.Max();
-                Logger.Instance.Log(LogLevel.Debug, $"Not enough resources! It would cost {cost} to build {BuildingToBuild} level {currentBuildingLevel + 1}, planet {info.PlanetName} only has {resources.Resources}; will have enough in {maxTimeToGetEnoughResources} seconds");
-                return Reschedule(DateTimeOffset.Now.AddSeconds(maxTimeToGetEnoughResources));
+                    Logger.Instance.Log(LogLevel.Debug, $"Not enough resources! It would cost {cost} to build {BuildingToBuild} level {currentBuildingLevel + 1}, planet {info.PlanetName} only has {resources.Resources}; will have enough in {maxTimeToGetEnoughResources} seconds");
+                    return Reschedule(DateTimeOffset.Now.AddSeconds(maxTimeToGetEnoughResources));
+                }
+
+
+                HttpRequestMessage buildReq = Client.RequestBuilder.GetBuildBuildingRequest(BuildingToBuild, token);
+                AssistedIssue(buildReq);
+
+                return null;
             }
-
-            
-            HttpRequestMessage buildReq = Client.RequestBuilder.GetBuildBuildingRequest(BuildingToBuild, token);
-            AssistedIssue(buildReq);
-
-            return null;
         }
 
         private CommandQueueElement Reschedule(DateTimeOffset finishingAt)
