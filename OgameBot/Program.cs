@@ -102,7 +102,7 @@ namespace OgameBot
             job1.Start();
 
             
-            SessionKeepAliveJob job3 = new SessionKeepAliveJob(client);
+            SessionKeepAliveJob job3 = new SessionKeepAliveJob(client, SessionKeepAliveMode.All);
             job3.Start();
 
             commander.Start();

@@ -150,6 +150,7 @@
     <Compile Include="Engine\Commands\Farming\Strategies\InactiveFarmingStrategy.cs" />
     <Compile Include="Engine\Tasks\MessageReaderJob.cs" />
     <Compile Include="Engine\Tasks\SessionKeepAliveJob.cs" />
+    <Compile Include="Engine\Tasks\SessionKeepAliveMode.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logging\LogLevel.cs" />
     <Compile Include="Migrations\201704012324437_Initial.cs" />
