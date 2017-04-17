@@ -51,6 +51,10 @@ namespace OgameBot.Engine.Parsing.UtilityParsers
                     {
                         resources.Crystal += count;
                     }
+                    else if (asResource == ResourceType.Deuterium)
+                    {
+                        resources.Deuterium += count;
+                    }
                 }
             }
 
