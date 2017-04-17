@@ -75,6 +75,8 @@ namespace OgameBot.Proxy
             if (ctx == null)
                 return;
 
+            
+
             string host = ctx.Request.Url.DnsSafeHost;
             int port = ctx.Request.Url.Port;
 
@@ -102,8 +104,17 @@ namespace OgameBot.Proxy
 
             if (ctx.Request.Url.PathAndQuery == "/")
             {
-                // Asked for root - send the client to the overview page
-                Redirect(overview);
+                // Asked for root - pretend there's nothing here for public addresses, redirect to overview for local
+                var localEndPoint = ctx.Request.LocalEndPoint;
+                if (IsLocal(localEndPoint.Address))
+                {
+                    Redirect(overview);
+                }
+                else
+                {
+                    ctx.Response.Close();
+                }
+
                 return;
             }
             else if (ctx.Request.Url.PathAndQuery.StartsWith($"/{CommandPrefix}/"))
@@ -214,7 +225,24 @@ namespace OgameBot.Proxy
             }
             catch (Exception ex)
             {
-                Logging.Logger.Instance.LogException(ex);
+                Logger.Instance.LogException(ex);
+            }
+        }
+
+        private bool IsLocal(IPAddress address)
+        {
+            byte[] bytes = address.GetAddressBytes();
+            switch (bytes[0])
+            {
+                case 127:
+                case 10:
+                    return true;
+                case 172:
+                    return bytes[1] < 32 && bytes[1] >= 16;
+                case 192:
+                    return bytes[1] == 168;
+                default:
+                    return false;
             }
         }
 
