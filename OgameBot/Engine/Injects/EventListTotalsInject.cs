@@ -24,15 +24,15 @@ namespace OgameBot.Engine.Injects
             StringBuilder repl = new StringBuilder();
 
 
-            string wrapper = "<tr class='eventFleet'><td colspan=11>Total cargo from attacks: <span class='textBeefy friendly'>{0}</span></td></tr>";
+            string wrapper = "<tr class='eventFleet'><td colspan=11>Total cargo from {0}: <span class='textBeefy friendly'>{1}</span></td></tr>";
 
             if (totalAttack.Total > 0)
             {
-                repl.Append(string.Format(wrapper, totalAttack)); 
+                repl.Append(string.Format(wrapper, "attacks", totalAttack)); 
             }
             if (totalTransport.Total > 0)
             {
-                repl.Append(string.Format(wrapper, totalTransport));
+                repl.Append(string.Format(wrapper, "transport", totalTransport));
             }
 
             if (repl.Length > 0)
