@@ -35,5 +35,6 @@ namespace OgameBot
         public LogLevel LogLevel { get; set; }
 
         public HostileWarningSettings HostileWarning { get; set; }
+        public int[] CustomOrder { get; set; }
     }
 }
