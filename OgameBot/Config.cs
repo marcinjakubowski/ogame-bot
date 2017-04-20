@@ -12,23 +12,25 @@ namespace OgameBot
             public string From { get; set; }
             public string To { get; set; }
         }
+
+        public class FarmingSettings
+        {
+            public int DefaultRange { get; set; }
+            public int InactiveMinimumRanking { get; set; }
+            public int HuntMaximumRanking { get; set; }
+        }
             
 
         public string ListenAddress { get; set; } = "127.0.0.1";
         public int ListenPort { get; set; } = 9400;
 
         public string Username { get; set; }
-
         public string Password { get; set; }
-
         public string Server { get; set; }
-
-        public int FarmMinimumRanking { get; set; }
-        public int FarmRange { get; set; }
-        
-        public int HuntMaximumRanking { get; set; }
         
         public int FleetToRecall { get; set; }
+
+        public FarmingSettings Farming { get; set; }
 
         public LogLevel LogLevel { get; set; }
 

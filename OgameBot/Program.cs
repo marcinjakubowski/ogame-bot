@@ -157,7 +157,7 @@ namespace OgameBot
             {
                 IFarmingStrategy strategy = new FleetFinderStrategy()
                 {
-                    MaxRanking = config.HuntMaximumRanking > 0 ? config.HuntMaximumRanking : 400
+                    MaxRanking = config.Farming.HuntMaximumRanking > 0 ? config.Farming.HuntMaximumRanking : 400
                 };
                 Farm(client, config, strategy, parameters).Run();
             });
@@ -180,7 +180,7 @@ namespace OgameBot
                     SlotsLeaveRemaining = parameters["slots"] == null ? 1 : int.Parse(parameters["slots"]),
                     MinimumTotalStorageLevel = 5,
                     ResourcePriority = new Resources(1, 2, 1),
-                    MinimumRanking = config.FarmMinimumRanking
+                    MinimumRanking = config.Farming.InactiveMinimumRanking
                 };
                 Farm(client, config, strategy, parameters).Run();
             });
@@ -219,7 +219,7 @@ namespace OgameBot
         {
             int range;
             if (!int.TryParse(parameters["range"], out range))
-                range = config.FarmRange;
+                range = config.Farming.DefaultRange;
 
             int planetId = 0;
             if (parameters["cp"] != null)
