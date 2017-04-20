@@ -3,6 +3,7 @@ using System.Linq;
 using OgameBot.Objects.Types;
 using System;
 using System.Text;
+using OgameBot.Db.Parts;
 
 namespace OgameBot.Objects
 {
@@ -18,6 +19,11 @@ namespace OgameBot.Objects
         {
             Ships = new Dictionary<ShipType, int>();
             Resources = new Resources();
+        }
+
+        public int Speed(PlayerResearch research)
+        {
+            return Ships.Keys.Cast<Ship>().Min(s => s.GetSpeed(research));
         }
 
         public override string ToString()
