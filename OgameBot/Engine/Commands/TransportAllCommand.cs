@@ -21,9 +21,9 @@ namespace OgameBot.Engine.Commands
 
             FleetComposition fleet = FleetComposition.ToTransport(resources.Resources);
             int needed = fleet.Ships[ShipType.LargeCargo];
-            int available = cargo != null ? cargo.Count : 0;
+            int available = cargo?.Count ?? 0;
 
-            if (cargo == null || needed > cargo.Count)
+            if (needed > available)
             {
                 Logger.Instance.Log(LogLevel.Error, $"Not enough Large Cargos on planet: needed {needed}, only {available} available.");
                 return null;
