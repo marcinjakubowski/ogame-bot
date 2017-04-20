@@ -79,6 +79,13 @@ namespace OgameBot.Objects
             return 1000 + 5 * Math.Abs(other.Planet - Planet);
         }
 
+        public TimeSpan DurationTo(Coordinate other, int fleetSpeed, int missionSpeed = 10, int universeSpeedFactor = 1)
+        {
+            double seconds = (10 + 3500 * Math.Sqrt(10.0 * DistanceTo(other) / fleetSpeed)) / universeSpeedFactor;
+
+            return TimeSpan.FromSeconds(seconds * 10.0 / missionSpeed);
+        }
+
         public bool Equals(Coordinate other)
         {
             return Galaxy == other.Galaxy && System == other.System && Planet == other.Planet && Type == other.Type;
