@@ -13,6 +13,7 @@ namespace OgameBot.Engine.Tasks
         private readonly OGameClient _client;
         private readonly List<int> _planets;
         private int _roundRobin = 0;
+        private Random _rng = new Random();
 
         public SessionKeepAliveMode Mode { get; set; }
         public int PlanetId { get; set; } = 0;
@@ -65,6 +66,8 @@ namespace OgameBot.Engine.Tasks
             // Also get event list to make sure
             var req = _client.RequestBuilder.GetEventList();
             _client.IssueRequest(req);
+
+            ExecutionInterval = TimeSpan.FromMinutes(4) + TimeSpan.FromSeconds(_rng.Next(180));
         }
 
         private void PingPlanet(int cp)
