@@ -157,7 +157,8 @@ namespace OgameBot
             {
                 IFarmingStrategy strategy = new FleetFinderStrategy()
                 {
-                    MaxRanking = config.Farming.HuntMaximumRanking > 0 ? config.Farming.HuntMaximumRanking : 400
+                    MaxRanking = config.Farming.HuntMaximumRanking > 0 ? config.Farming.HuntMaximumRanking : 400,
+                    ProbeCount = config.Farming.HuntProbeCount > 0 ? config.Farming.HuntProbeCount : 4
                 };
                 Farm(client, config, strategy, parameters).Run();
             });

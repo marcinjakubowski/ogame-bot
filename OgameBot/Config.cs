@@ -18,6 +18,7 @@ namespace OgameBot
             public int DefaultRange { get; set; }
             public int InactiveMinimumRanking { get; set; }
             public int HuntMaximumRanking { get; set; }
+            public int HuntProbeCount { get; set; }
         }
             
 
