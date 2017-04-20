@@ -11,7 +11,6 @@ namespace OgameBot.Engine.Commands.Farming.Strategies
 {
     public class FleetFinderStrategy : IFarmingStrategy
     {
-        public int EspionageTechnologyLevel { get; set; } = 8;
         public int MaxRanking { get; set; } = 400;
         public int MinValue { get; set; } = 500000;
         public int ProbeCount { get; set; } = 2;
