@@ -178,6 +178,7 @@ namespace OgameBot.Engine.Tasks
             _client.Settings.ServerUtcOffset = TimeSpan.Parse(model.TimezoneOffset.Replace("+", ""));
             _client.Settings.Galaxies = (byte)model.Galaxies;
             _client.Settings.Systems = (short)model.Systems;
+            _client.Settings.Speed = model.Speed;
         }
 
         private void ProcessData(Universe model)

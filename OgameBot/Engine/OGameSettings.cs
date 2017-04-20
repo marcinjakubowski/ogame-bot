@@ -6,8 +6,8 @@ namespace OgameBot.Engine
     {
         public TimeSpan ServerUtcOffset { get; set; }
 
-        public byte Galaxies { get; set; }
-
-        public short Systems { get; set; }
+        public byte Galaxies { get; set; } = 6;
+        public short Systems { get; set; } = 499;
+        public int Speed { get; set; } = 1;
     }
 }
