@@ -64,7 +64,11 @@ namespace OgameBot.Engine.Commands.Farming
                 // Read messages
                 ReadAllMessagesCommand cmd = new ReadAllMessagesCommand();
                 cmd.Run();
-                var messages = cmd.ParsedObjects.OfType<EspionageReport>();
+
+                // Get the newly read messages, but limit to planets in range, in case there was something else going on in the meantime
+                // or unread messages from earlier
+                var messages = cmd.ParsedObjects.OfType<EspionageReport>()
+                                                .Where(m => m.Coordinate >= _from.LowerCoordinate && m.Coordinate <= _to.UpperCoordinate);
 
                 Logger.Instance.Log(LogLevel.Info, $"{messages.Count()} Messages parsed, sending ships.");
                 if (Strategy.OnBeforeAttack())
