@@ -4,12 +4,13 @@ using OgameBot.Objects.Types;
 using System;
 using System.Text;
 using OgameBot.Db.Parts;
+using OgameBot.Engine.Parsing.Objects;
 
 namespace OgameBot.Objects
 {
     public class FleetComposition
     {
-        public Dictionary<ShipType, int> Ships { get; }
+        public Dictionary<ShipType, int> Ships { get; private set; }
 
         public Resources Resources { get; set; }
 
@@ -23,7 +24,7 @@ namespace OgameBot.Objects
 
         public int Speed(PlayerResearch research)
         {
-            return Ships.Keys.Cast<Ship>().Min(s => s.GetSpeed(research));
+            return Ships.Keys.Min(s => ((Ship)s).GetSpeed(research));
         }
 
         public override string ToString()
@@ -64,6 +65,14 @@ namespace OgameBot.Objects
             fleet.Ships[ShipType.EspionageProbe] = probeCount;
 
             return fleet;
+        }
+
+        public static FleetComposition FromDetected(IEnumerable<DetectedShip> detected)
+        {
+            return new FleetComposition()
+            {
+                Ships = detected.Where(s => s.Count > 0).ToDictionary(s => s.Ship, s => s.Count)
+            };
         }
 
         public static Resources GetPlunder(Resources available)
