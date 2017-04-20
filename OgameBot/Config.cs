@@ -23,14 +23,12 @@ namespace OgameBot
 
         public string Server { get; set; }
 
-        // Temporary for FarmingBot until a better method is implemeted
-        public string FarmPlanet { get; set; }
-        public bool ShouldStartFarm { get; set; }
         public int FarmMinimumRanking { get; set; }
         public int FarmRange { get; set; }
-
-        public int FleetToRecall { get; set; }
+        
         public int HuntMaximumRanking { get; set; }
+        
+        public int FleetToRecall { get; set; }
 
         public LogLevel LogLevel { get; set; }
 
