@@ -141,5 +141,17 @@ namespace OgameBot.Engine.Commands
                 KeyValuePair.Create("pass",password)
             });
         }
+
+        public HttpRequestMessage GetFleetCheckDebris(Coordinate coordinate)
+        {
+            return _client.BuildPost(new Uri("/game/index.php?page=fleetcheck&ajax=1&espionage=0", UriKind.Relative), new[]
+            {
+                KeyValuePair.Create("galaxy", coordinate.Galaxy.ToString()),
+                KeyValuePair.Create("system", coordinate.System.ToString()),
+                KeyValuePair.Create("planet", coordinate.Planet.ToString()),
+                KeyValuePair.Create("type", "2"), // debris field, ignore coord
+                KeyValuePair.Create("recycler", "1") // make them think we're including a recycler
+            });
+        }
     }
 }
