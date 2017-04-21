@@ -13,7 +13,7 @@ namespace ScraperClientLib.Engine
     public class ResponseContainer
     {
         public HttpRequestMessage RequestMessage { get; }
-
+        public HttpRequestMessage OriginalRequest { get; }
         public HttpResponseMessage ResponseMessage { get; }
         public Lazy<string> Raw { get; }
 
@@ -29,9 +29,10 @@ namespace ScraperClientLib.Engine
 
         public List<DataObject> ParsedObjects { get; set; }
 
-        public ResponseContainer(HttpRequestMessage requestMessage, HttpResponseMessage responseMessage)
+        public ResponseContainer(HttpRequestMessage requestMessage, HttpRequestMessage originalRequest, HttpResponseMessage responseMessage)
         {
             RequestMessage = requestMessage;
+            OriginalRequest = originalRequest;
             ResponseMessage = responseMessage;
 
             ParsedObjects = new List<DataObject>();

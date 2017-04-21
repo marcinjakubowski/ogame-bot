@@ -113,13 +113,16 @@ namespace ScraperClientLib.Engine
 
         private ResponseContainer IssueRequestInternal(HttpRequestMessage request, bool save = true)
         {
-            if (save && _retry == 0) _original = CloneHttpRequestMessage(request);
+            if (save && _retry == 0)
+            {
+                _original = CloneHttpRequestMessage(request);
+            }
             try
             {
                 HttpResponseMessage response = _httpClient.SendAsync(request).Sync();
                 LastRequestUtc = DateTime.UtcNow;
 
-                ResponseContainer result = new ResponseContainer(request, response);
+                ResponseContainer result = new ResponseContainer(request, _original, response);
                 _retry = 0;
                 return result;
             }
