@@ -52,6 +52,9 @@
       <HintPath>..\packages\HtmlAgilityPack.1.4.9.5\lib\Net45\HtmlAgilityPack.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="MoreLinq, Version=2.0.20029.0, Culture=neutral, PublicKeyToken=384d532d7e88985d, processorArchitecture=MSIL">
+      <HintPath>..\packages\morelinq.2.3.0\lib\net35\MoreLinq.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -95,6 +98,7 @@
     <Compile Include="Engine\Commands\FakePlanetExclusive.cs" />
     <Compile Include="Engine\Commands\Farming\FarmCommand.cs" />
     <Compile Include="Engine\Commands\FindAllMessagesCommand.cs" />
+    <Compile Include="Engine\Commands\FleetSaveCommand.cs" />
     <Compile Include="Engine\Commands\RunProxyCommand.cs" />
     <Compile Include="Engine\Injects\BuildQueueInject.cs" />
     <Compile Include="Engine\Injects\CustomPlanetOrderInject.cs" />
