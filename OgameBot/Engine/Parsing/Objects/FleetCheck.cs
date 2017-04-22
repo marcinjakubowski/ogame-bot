@@ -6,6 +6,10 @@ namespace OgameBot.Engine.Parsing.Objects
 {
     public class FleetCheck : DataObject
     {
+        public FleetCheck()
+        {
+        }
+
         public FleetCheck(byte galaxy, short system, byte planet, int type)
         {
             Coords = new Coordinate(galaxy, system, planet, (CoordinateType)type);
