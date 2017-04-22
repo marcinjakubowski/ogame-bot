@@ -4,6 +4,8 @@ using OgameBot.Db;
 using OgameBot.Engine.Parsing.Objects;
 using OgameBot.Logging;
 using ScraperClientLib.Engine.Parsing;
+using System;
+using OgameBot.Utilities;
 
 namespace OgameBot.Engine.Savers
 {
@@ -77,6 +79,19 @@ namespace OgameBot.Engine.Savers
                             };
                             db.PlanetShipLog.Add(log);
                         }
+                    }
+
+                    var strippedTime = report.Sent.TruncateToMinute();
+
+                    if (!db.PlanetActivityLog.Where(s => s.LocationId == item.Coordinate.Id && s.CreatedOn == strippedTime).Any())
+                    {
+                        PlanetActivityLog log = new PlanetActivityLog()
+                        {
+                            Planet = item,
+                            Activity = report.Activity,
+                            CreatedOn = strippedTime
+                        };
+                        db.PlanetActivityLog.Add(log);
                     }
                 }
 

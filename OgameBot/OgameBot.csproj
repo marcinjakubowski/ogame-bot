@@ -136,6 +136,7 @@
     <Compile Include="Engine\Parsing\UtilityParsers\SendShipsLinkParser.cs" />
     <Compile Include="Engine\RequestValidation\IRequestValidator.cs" />
     <Compile Include="Engine\RequestValidation\PlanetExclusiveValidator.cs" />
+    <Compile Include="Engine\Savers\GalaxyActivitySaver.cs" />
     <Compile Include="Engine\Savers\HostileAttackEmailSender.cs" />
     <Compile Include="Engine\Savers\MessageSaver.cs" />
     <Compile Include="Engine\Savers\PlayerPlanetSaver.cs" />
@@ -187,6 +188,7 @@
     <Compile Include="Objects\Types\BaseCostEntity.cs" />
     <Compile Include="Objects\Types\Page.cs" />
     <Compile Include="Objects\Types\PageType.cs" />
+    <Compile Include="Utilities\DateTimeOffsetExtensions.cs" />
     <Compile Include="Utilities\EnumerableExtensions.cs" />
     <Compile Include="Utilities\KeyValuePair.cs" />
     <Compile Include="Engine\Commands\OGameRequestBuilder.cs" />
