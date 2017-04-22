@@ -116,7 +116,7 @@ namespace OgameBot.Engine.Parsing
                     systemResult.PresentItems.Add(Coordinate.Create(systemCoordinate, position, CoordinateType.Moon));
 
                     int moonId = moonNode.GetAttributeValue("data-moon-id", 0);
-                    string moonName = row.SelectSingleNode(".//span[@class='textNormal']").InnerText.Trim();
+                    string moonName = moonNode.SelectSingleNode(".//span[@class='textNormal']").InnerText.Trim();
                     int? activity = ParseActivity(moonNode);
 
                     item.Moon = new GalaxyPageInfoPartItem
