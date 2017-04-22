@@ -20,6 +20,8 @@ namespace OgameBot.Engine.Parsing.Objects
 
         public Dictionary<ResearchType, int> DetectedResearch { get; set; }
 
+        public int? Activity { get; set; }
+
         public override string ToString()
         {
             return $"Report {Coordinate}, level: {Details}";
