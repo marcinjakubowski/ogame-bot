@@ -25,6 +25,27 @@ namespace OgameBot.Engine.Parsing
             return container.RequestMessage.RequestUri.Query.Contains("page=galaxyContent");
         }
 
+        private int? ParseActivity(HtmlNode activityParent)
+        {
+            HtmlNode activityNode = activityParent.SelectSingleNode("./div[contains(@class, 'activity')]");
+            int? activity = null;
+
+            if (activityNode != null)
+            {
+                string activityText = activityNode.InnerText.Trim();
+                if (activityText.Length == 0)
+                {
+                    activity = 15;
+                }
+                else
+                {
+                    activity = int.Parse(activityText);
+                }
+            }
+
+            return activity;
+        }
+
         public override IEnumerable<DataObject> ProcessInternal(ClientBase client, ResponseContainer container)
         {
             JObject galaxyJson = JObject.Parse(container.Raw.Value);
@@ -78,11 +99,14 @@ namespace OgameBot.Engine.Parsing
                     int planetId = planetNode.GetAttributeValue("data-planet-id", 0);
                     string planetName = row.SelectSingleNode("./td[contains(@class, 'planetname')]").InnerText.Trim();
 
+                    int? activity = ParseActivity(planetNode.SelectSingleNode("./div[@class='ListImage']"));
+
                     item.Planet = new GalaxyPageInfoPartItem
                     {
                         Coordinate = Coordinate.Create(systemCoordinate, position, CoordinateType.Planet),
                         Id = planetId,
-                        Name = planetName
+                        Name = planetName,
+                        Activity = activity
                     };
                 }
 
@@ -93,12 +117,14 @@ namespace OgameBot.Engine.Parsing
 
                     int moonId = moonNode.GetAttributeValue("data-moon-id", 0);
                     string moonName = row.SelectSingleNode(".//span[@class='textNormal']").InnerText.Trim();
+                    int? activity = ParseActivity(moonNode);
 
                     item.Moon = new GalaxyPageInfoPartItem
                     {
                         Coordinate = Coordinate.Create(systemCoordinate, position, CoordinateType.Moon),
                         Id = moonId,
-                        Name = moonName
+                        Name = moonName,
+                        Activity = activity
                     };
                 }
 

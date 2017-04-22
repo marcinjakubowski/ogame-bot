@@ -10,6 +10,8 @@ namespace OgameBot.Engine.Parsing.Objects
 
         public int Id { get; set; }
 
+        public int? Activity { get; set; }
+
         public SendShipsInfo EspionageLinkInfo { get; set; }
     }
 }
