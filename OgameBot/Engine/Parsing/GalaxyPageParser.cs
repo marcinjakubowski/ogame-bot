@@ -47,7 +47,10 @@ namespace OgameBot.Engine.Parsing
 
             foreach (HtmlNode row in rows)
             {
-                string positionText = row.SelectSingleNode("./td[contains(@class, 'position')]").InnerText;
+                string positionText = row.SelectSingleNode("./td[contains(@class, 'position')]")?.InnerText;
+                // "Surprise" planets event adds a fake planet at the end with a td spanning the entire row and no position class
+                if (positionText == null) continue;
+
                 byte position = byte.Parse(positionText, NumberStyles.Integer, client.ServerCulture);
 
                 HtmlNodeCollection linkNodesWithOnClick = row.SelectNodes(".//a[@onclick]");
