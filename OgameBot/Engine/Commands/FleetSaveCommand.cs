@@ -46,6 +46,7 @@ namespace OgameBot.Engine.Commands
                 var candidate = candidates.MinBy(c => (c.Duration - oneWayTrip).Duration());
                 targets.Add(candidate);
 
+                CheckTargets(targets);
 
                 //Logger.Instance.Log(LogLevel.Warning, $"Best candidate for fleetsave would be {bestCandidate.Key}, would be there home in {bestCandidate.Value}");
 
@@ -53,11 +54,21 @@ namespace OgameBot.Engine.Commands
             return null;
         }
 
+        private void CheckTargets(IEnumerable<FleetSaveTarget> targets)
+        {
+            foreach (FleetSaveTarget target in targets)
+            {
+                var resp = Client.IssueRequest(Client.RequestBuilder.GetFleetCheckDebris(target.Target));
+                target.HasDebris = resp.GetParsedSingle<FleetCheck>().Status == FleetCheckStatus.OK;
+            }
+        }
+
         private class FleetSaveTarget
         {
             public Coordinate Target { get; set; }
             public int Speed { get; set; }
             public TimeSpan Duration { get; set; }
+            public bool HasDebris { get; set; } = false;
 
             public override string ToString()
             {
