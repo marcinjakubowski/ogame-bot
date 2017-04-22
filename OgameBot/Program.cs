@@ -173,6 +173,16 @@ namespace OgameBot
                 cmd.Run();
             });
 
+            proxy.AddCommand("fs", (parameters) =>
+            {
+                FleetSaveCommand cmd = new FleetSaveCommand()
+                {
+                    PlanetId = int.Parse(parameters["cp"]),
+                    ReturnTime = DateTimeOffset.Now.AddMinutes(120)
+                };
+                cmd.Run();
+            });
+
             proxy.AddCommand("farm", (parameters) =>
             {
                 IFarmingStrategy strategy = new InactiveFarmingStrategy()
