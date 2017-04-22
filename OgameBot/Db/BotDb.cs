@@ -15,6 +15,7 @@ namespace OgameBot.Db
         public DbSet<Player> Players { get; set; }
         public DbSet<DebrisField> DebrisFields { get; set; }
         public DbSet<Message> Messages { get; set; }
+        public DbSet<PlanetActivityLog> PlanetActivityLog { get; set; }
         public DbSet<PlanetShipLog> PlanetShipLog { get; set; }
         public DbSet<CommandQueueElement> CommandQueue { get; set; }
 
