@@ -223,6 +223,13 @@ namespace OgameBot
                 };
                 op.Run();
             });
+
+            proxy.AddCommand("fullscan", (parameters) => new ScanCommand()
+            {
+                From = new SystemCoordinate(1, 1),
+                To = new SystemCoordinate(6, 499),
+            }.Run());
+            
         }
 
         private static FarmCommand Farm(OGameClient client, Config config, IFarmingStrategy strategy, NameValueCollection parameters)
