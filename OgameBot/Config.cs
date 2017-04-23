@@ -1,4 +1,5 @@
 ﻿using OgameBot.Logging;
+using System.Collections.Generic;
 
 namespace OgameBot
 {
@@ -37,5 +38,6 @@ namespace OgameBot
 
         public HostileWarningSettings HostileWarning { get; set; }
         public int[] CustomOrder { get; set; }
+        public List<string> SystemsToScan;
     }
 }

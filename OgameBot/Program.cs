@@ -19,6 +19,7 @@ using System.Runtime.Serialization;
 using OgameBot.Db;
 using OgameBot.Engine.Tasks;
 using OgameBot.Objects.Types;
+using System.Linq;
 
 namespace OgameBot
 {
@@ -126,6 +127,13 @@ namespace OgameBot
                 Thread.Sleep(5000);
                 return;
             }
+
+            if (config.SystemsToScan.Count > 0)
+            {
+                SystemScanner sysScanner = new SystemScanner(config.SystemsToScan.Select(z => SystemCoordinate.Parse(z)));
+                sysScanner.Start();
+            }
+
 
             SetupProxyCommands(client, config, proxy);
             // Work
