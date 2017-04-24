@@ -56,14 +56,21 @@ namespace OgameBot.Engine.Commands
                     {
                         Logger.Instance.Log(LogLevel.Debug, $"Running {next.Command} (id: {next.Id})");
                         CommandQueueElement following = next.Command.RunInternal();
-                        next.ScheduledAt = null;
-
                         Logger.Instance.Log(LogLevel.Debug, $"Finished {next.Command} (id: {next.Id})");
+
                         if (following != null)
                         {
-                            following.ScheduledBy = next;
-                            db.CommandQueue.Add(following);
-                            Logger.Instance.Log(LogLevel.Debug, $"Queueing {following.Command} (id: {following.Id}, by: {next.Id})");
+                            if (following.Command == next.Command)
+                            {
+                                next.ScheduledAt = following.ScheduledAt;
+                                Logger.Instance.Log(LogLevel.Debug, $"Requeueing {next.Command} (id: {next.Id})");
+                            }
+                            else
+                            {
+                                next.ScheduledAt = null;
+                                db.CommandQueue.Add(following);
+                                Logger.Instance.Log(LogLevel.Debug, $"Queueing {following.Command} (id: {following.Id}, by: {next.Id})");
+                            }
                         }
                         db.SaveChanges();
                     }
