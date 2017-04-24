@@ -39,49 +39,12 @@ namespace OgameBot.Engine.Commands
 
         public HttpRequestMessage GetBuildBuildingRequest(BuildingType type, string token)
         {
-            PageType page;
-            switch (type)
-            {
-                
-                case BuildingType.CrystalMine:
-                case BuildingType.CrystalStorage:
-                case BuildingType.DeuteriumSynthesizer:
-                case BuildingType.DeuteriumTank:
-                case BuildingType.FusionReactor:
-                case BuildingType.MetalMine:
-                case BuildingType.MetalStorage:
-                case BuildingType.SolarPlant:
-                    page = PageType.Resources;
-                    break;
-
-                case BuildingType.AllianceDepot:
-                case BuildingType.NaniteFactory:
-                case BuildingType.MissileSilo:
-                case BuildingType.ResearchLab:
-                case BuildingType.RoboticFactory:
-                case BuildingType.Shipyard:
-                case BuildingType.Terraformer:
-                    page = PageType.Facilities;
-                    break;
-
-                case BuildingType.JumpGate:
-                case BuildingType.LunarBase:
-                case BuildingType.SensorPhalanx:
-                default:
-                    page = PageType.Unknown;
-                    throw new NotImplementedException($"{type} not supported for building yet");
-            }
-
-            string pageLink = Page.Get(page).Link;
-
-            return _client.BuildPost(new Uri($"/game/index.php?page={pageLink}&deprecated=1", UriKind.Relative), new []
+            return _client.BuildPost(new Uri($"/game/index.php?page=resources&deprecated=1", UriKind.Relative), new []
             {
                 KeyValuePair.Create("type", ((int)type).ToString()), // building id
                 KeyValuePair.Create("modus", "1"), // 1 = build, 2 = cancel, 3 = demolish
                 KeyValuePair.Create("token", token)
             });
-
-
         }
 
         public HttpRequestMessage GetGalaxyContent(SystemCoordinate system)
