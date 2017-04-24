@@ -205,6 +205,19 @@ namespace OgameBot.Engine
         public IDisposable EnterPlanetExclusive(IPlanetExclusiveOperation operation)
         {
             Monitor.Enter(_lockPlanetExclusive);
+            // if the same thread entered here, but invoked an exlusive planet operation for a different planet, it's an error!
+            if (CurrentPlanetExclusiveOperation != null)
+            {
+                // the same planet id, it's all fine, we don't need a new lock because the existing one is still there
+                if (CurrentPlanetExclusiveOperation.Operation.PlanetId == operation.PlanetId)
+                {
+                    return null;
+                }
+                else
+                {
+                    Logger.Instance.Log(LogLevel.Error, $"Current planet exclusive is not released!!! Current: {CurrentPlanetExclusiveOperation.Operation.Name}, new: {operation.Name}.");
+                }
+            }
             CurrentPlanetExclusiveOperation = new PlanetExclusiveOperation(this, operation);
             return CurrentPlanetExclusiveOperation;
         }
@@ -230,10 +243,12 @@ namespace OgameBot.Engine
             {
                 _client = client;
                 Operation = operation;
+                Logger.Instance.Log(LogLevel.Debug, $"Creating PEO {Operation.Name} on planet {Operation.PlanetId}");
             }
 
             public void Dispose()
             {
+                Logger.Instance.Log(LogLevel.Debug, $"Releasing PEO {Operation.Name} on planet {Operation.PlanetId}");
                 _client.CurrentPlanetExclusiveOperation = null;
                 Monitor.Exit(_client._lockPlanetExclusive);
             }
