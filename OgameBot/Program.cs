@@ -41,6 +41,7 @@ namespace OgameBot
 
             Config config = JsonConvert.DeserializeObject<Config>(File.ReadAllText("config.json"));
             Logger.Instance.MinimumLogLevel = config.LogLevel;
+            Logger.Instance.IncludeTimestamp = config.LogIncludeTimestamp;
             Logger.Instance.Log(LogLevel.Info, $"Loaded settings, user: {config.Username}, server: {config.Server}");
 
             // Setup

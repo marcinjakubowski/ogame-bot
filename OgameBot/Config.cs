@@ -35,6 +35,7 @@ namespace OgameBot
         public FarmingSettings Farming { get; set; }
 
         public LogLevel LogLevel { get; set; }
+        public bool LogIncludeTimestamp { get; set; }
 
         public HostileWarningSettings HostileWarning { get; set; }
         public int[] CustomOrder { get; set; }
