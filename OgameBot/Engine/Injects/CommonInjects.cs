@@ -9,12 +9,17 @@ using OgameBot.Proxy;
 
 namespace OgameBot.Engine.Injects
 {
-    public class OGameUrlInject : IInject
+    public class CommonInject : IInject
     {
+        const string ogbcmdFunction = @"
+function ogbcmd(cmd) {
+    $.get('/ogbcmd/'+cmd, function() { fadeBox('OK'); }).fail(function() { fadeBox('Error occured.', 1); });
+}
+";
         public string Inject(OgamePageInfo info, string body, ResponseContainer response, string host, int port)
         {
             if (info?.Page != null)
-                body = body.Replace(@"</body>", $@"<script type=""text/javascript"">ogameUrl = 'http://{host}:{port}';</script></body>");
+                body = body.Replace(@"</body>", $@"<script type=""text/javascript"">ogameUrl = 'http://{host}:{port}';{ogbcmdFunction}</script></body>");
 
             body = body.Replace("no-commander", "");
 

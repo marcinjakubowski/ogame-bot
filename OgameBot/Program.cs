@@ -71,7 +71,7 @@ namespace OgameBot
             client.RegisterInject(new CommandsInject());
             client.RegisterInject(new CargosForTransportInject());
             client.RegisterInject(new PlanetExclusiveInject(client));
-            client.RegisterInject(new OGameUrlInject());
+            client.RegisterInject(new CommonInject());
             client.RegisterInject(new BuildQueueInject());
             client.RegisterInject(new CustomPlanetOrderInject(config.CustomOrder));
             client.RegisterInject(new EventListTotalsInject());

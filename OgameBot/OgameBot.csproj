@@ -101,7 +101,7 @@
     <Compile Include="Engine\Injects\BuildQueueInject.cs" />
     <Compile Include="Engine\Injects\CustomPlanetOrderInject.cs" />
     <Compile Include="Engine\Injects\EventListTotalsInject.cs" />
-    <Compile Include="Engine\Injects\OGameUrlInject.cs" />
+    <Compile Include="Engine\Injects\CommonInjects.cs" />
     <Compile Include="Engine\IPlanetExclusiveOperation.cs" />
     <Compile Include="Engine\Commands\ReadAllMessagesCommand.cs" />
     <Compile Include="Engine\Commands\RecallFleetCommand.cs" />

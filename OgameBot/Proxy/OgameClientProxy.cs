@@ -81,6 +81,7 @@ namespace OgameBot.Proxy
             int port = ctx.Request.Url.Port;
 
             string referer = ctx.Request.Headers.Get("Referer");
+            string requestedWith = ctx.Request.Headers.Get("X-Requested-With");
             // Process the current context
             HttpMethod requestedMethod = new HttpMethod(ctx.Request.HttpMethod);
             if (requestedMethod != HttpMethod.Get && requestedMethod != HttpMethod.Post)
@@ -119,7 +120,14 @@ namespace OgameBot.Proxy
             }
             else if (ctx.Request.Url.PathAndQuery.StartsWith($"/{CommandPrefix}/"))
             {
-                ParseAndRunCommand(ctx.Request.Url.AbsolutePath, ctx.Request.QueryString);
+                bool result = ParseAndRunCommand(ctx.Request.Url.AbsolutePath, ctx.Request.QueryString);
+
+                if (requestedWith == "XMLHttpRequest")
+                {
+                    ctx.Response.StatusCode = (int)(result ? HttpStatusCode.OK : HttpStatusCode.BadRequest);
+                    ctx.Response.Close();
+                }
+
                 Redirect(referer != null ? referer : overview);
                 return;
             }
@@ -155,7 +163,7 @@ namespace OgameBot.Proxy
                 proxyReq.Headers.TryAddWithoutValidation("Referer", referer);
             }
 
-            string requestedWith = ctx.Request.Headers.Get("X-Requested-With");
+            
             if (requestedWith != null)
             {
                 proxyReq.Headers.TryAddWithoutValidation("X-Requested-With", requestedWith);
@@ -273,21 +281,24 @@ namespace OgameBot.Proxy
             Task.Factory.StartNew(() => _commands[command](parameters));
         }
 
-        private void ParseAndRunCommand(string commandPath, NameValueCollection parameters)
+        private bool ParseAndRunCommand(string commandPath, NameValueCollection parameters)
         {
             string[] parts = commandPath.Split('/');
             if (parts.Length != 3 || parts[1] != CommandPrefix)
             {
-                throw new ArgumentException($"Invalid command path: {commandPath}!", nameof(commandPath));
+                Logger.Instance.Log(LogLevel.Error, $"Invalid command path: {commandPath}!");
+                return false;
             }
 
             string command = parts[2];
             if (!_commands.ContainsKey(command))
             {
                 Logger.Instance.Log(LogLevel.Error, $"No such command - {command}");
-                return;
+                return false;
             }
             RunCommand(command, parameters);
+
+            return true;
         }
 
         public void AddCommand(string name, Action<NameValueCollection> command)
