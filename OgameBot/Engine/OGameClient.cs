@@ -211,6 +211,7 @@ namespace OgameBot.Engine
                 // the same planet id, it's all fine, we don't need a new lock because the existing one is still there
                 if (CurrentPlanetExclusiveOperation.Operation.PlanetId == operation.PlanetId)
                 {
+                    Monitor.Exit(_lockPlanetExclusive);
                     return null;
                 }
                 else
