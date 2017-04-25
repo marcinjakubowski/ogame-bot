@@ -72,8 +72,8 @@ namespace OgameBot.Engine.Parsing
             CoordinateType type = CoordinateType.Unknown;
 
             if (typeClass.Contains(" planet ")) type = CoordinateType.Planet;
-            else if (typeClass.Contains("moon")) type = CoordinateType.Moon;
-            else if (typeClass.Contains("debris")) type = CoordinateType.DebrisField;
+            else if (typeClass.Contains(" moon ")) type = CoordinateType.Moon;
+            else if (typeClass.Contains(" tf ")) type = CoordinateType.DebrisField;
 
             string coordsText = coordsNode.InnerText;
             string playerName = coordsNode.GetAttributeValue("title", "");
