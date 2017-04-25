@@ -197,7 +197,7 @@ namespace OgameBot
                 FleetSaveCommand cmd = new FleetSaveCommand()
                 {
                     PlanetId = int.Parse(parameters["cp"]),
-                    ReturnTime = DateTimeOffset.Now.AddHours(7)
+                    ReturnTime = DateTimeOffset.Now.AddMinutes(int.Parse(parameters["in"]))
                 };
                 cmd.Run();
             });

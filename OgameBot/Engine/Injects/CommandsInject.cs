@@ -25,7 +25,14 @@ namespace OgameBot.Engine.Injects
             
             sb.Append(GetLink("farm?cp=$2", "Farm")).Append(" (").Append(GetLink("farm?cp=$2&slots=0", "0 slots")).Append(")").Append(NewLine);
             sb.Append(GetLink("hunt?cp=$2", "Hunt")).Append(", range: ").Append(GetLink("hunt?cp=$2&range=40", "40")).Append(" ").Append(GetLink("hunt?cp=$2&range=20", "20")).Append(NewLine);
-            sb.Append("Transport All: ").Append(GetLink($"transport?from=$2&to={current.PlanetId}", "From")).Append(" / ").Append(GetLink($"transport?from={current.PlanetId}&to=$2", "To"));
+            sb.Append("Transport All: ").Append(GetLink($"transport?from=$2&to={current.PlanetId}", "From")).Append(" / ").Append(GetLink($"transport?from={current.PlanetId}&to=$2", "To")).Append(NewLine);
+            sb.Append("Fleetsave: ")
+                .Append(GetLink($"fs?cp=$2&in=360", "6h")).Append(" ")
+                .Append(GetLink($"fs?cp=$2&in=390", "6.5h")).Append(" ")
+                .Append(GetLink($"fs?cp=$2&in=420", "7h")).Append(" ")
+                .Append(GetLink($"fs?cp=$2&in=450", "7.5h")).Append(" ")
+                .Append(GetLink($"fs?cp=$2&in=480", "8h"));
+
             body = submenuRegex.Replace(body, sb.ToString());
             return body;
         }
