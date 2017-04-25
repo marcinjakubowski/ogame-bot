@@ -1,5 +1,6 @@
 ﻿using OgameBot.Logging;
 using System.Collections.Generic;
+using OgameBot.Engine.Tasks;
 
 namespace OgameBot
 {
@@ -39,6 +40,9 @@ namespace OgameBot
 
         public HostileWarningSettings HostileWarning { get; set; }
         public int[] CustomOrder { get; set; }
+        public SessionKeepAliveMode SessionKeepaliveMode { get; set; } = SessionKeepAliveMode.All;
+        public int SessionKeepalivePlanet { get; set; }
+
         public List<string> SystemsToScan;
     }
 }

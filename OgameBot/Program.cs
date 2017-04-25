@@ -107,7 +107,11 @@ namespace OgameBot
             job1.Start();
 
             
-            SessionKeepAliveJob job3 = new SessionKeepAliveJob(client, SessionKeepAliveMode.All);
+            SessionKeepAliveJob job3 = new SessionKeepAliveJob(client, config.SessionKeepaliveMode);
+            if (config.SessionKeepaliveMode == SessionKeepAliveMode.Single)
+            {
+                job3.PlanetId = config.SessionKeepalivePlanet;
+            }
             job3.Start();
 
             commander.Start();
