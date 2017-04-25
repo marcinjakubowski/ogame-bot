@@ -56,6 +56,7 @@ namespace OgameBot.Engine.Commands
                     {
                         Logger.Instance.Log(LogLevel.Debug, $"Running {next.Command} (id: {next.Id})");
                         CommandQueueElement following = next.Command.RunInternal();
+                        next.ScheduledAt = null;
                         Logger.Instance.Log(LogLevel.Debug, $"Finished {next.Command} (id: {next.Id})");
 
                         if (following != null)
@@ -67,7 +68,6 @@ namespace OgameBot.Engine.Commands
                             }
                             else
                             {
-                                next.ScheduledAt = null;
                                 db.CommandQueue.Add(following);
                                 Logger.Instance.Log(LogLevel.Debug, $"Queueing {following.Command} (id: {following.Id}, by: {next.Id})");
                             }
