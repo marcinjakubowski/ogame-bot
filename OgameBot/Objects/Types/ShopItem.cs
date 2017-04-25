@@ -4,6 +4,8 @@
     {
         public string Reference { get; }
 
+        public static ShopItem Unknown = new ShopItem();
+
         public static ShopItem MetalBoosterBronze = new ShopItem(ShopItemType.MetalBooster, ShopItemRank.Bronze, "de922af379061263a56d7204d1c395cefcfb7d75");
         public static ShopItem MetalBoosterSilver = new ShopItem(ShopItemType.MetalBooster, ShopItemRank.Silver, "ba85cc2b8a5d986bbfba6954e2164ef71af95d4a");
         public static ShopItem MetalBoosterGold   = new ShopItem(ShopItemType.MetalBooster, ShopItemRank.Gold  , "05294270032e5dc968672425ab5611998c409166");
@@ -40,9 +42,22 @@
         public static ShopItem MOONSSilver = new ShopItem(ShopItemType.MOONS, ShopItemRank.Silver, "fd895a5c9fd978b9c5c7b65158099773ba0eccef");
         public static ShopItem MOONSGold   = new ShopItem(ShopItemType.MOONS, ShopItemRank.Gold  , "45d6660308689c65d97f3c27327b0b31f880ae75");
 
+        static ShopItem()
+        {
+        }
+
         private ShopItem(ShopItemType type, ShopItemRank rank, string reference) : base((int)type + (int)rank)
         {
             Reference = reference;
+        }
+
+        public ShopItem() : base(0)
+        {
+        }
+
+        public override string ToString()
+        {
+            return $"{(ShopItemRank)this} {(ShopItemType)this}";
         }
 
         public static implicit operator ShopItem(int shopItem)
