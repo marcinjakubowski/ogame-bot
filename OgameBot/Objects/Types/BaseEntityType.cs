@@ -24,5 +24,15 @@ namespace OgameBot.Objects.Types
         {
             return Index[type];
         }
+
+        public static IEnumerable<TValue> All()
+        {
+            return Index.Values;
+        }
+
+        public static IEnumerable<TType> AllTypes()
+        {
+            return Index.Keys;
+        }
     }
 }
