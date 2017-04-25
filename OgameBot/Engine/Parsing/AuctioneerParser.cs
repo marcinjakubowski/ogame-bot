@@ -56,7 +56,7 @@ namespace OgameBot.Engine.Parsing
 
             var bidder = content.SelectSingleNode("./a[contains(@class, 'currentPlayer')]");
             status.HighestBidderName = bidder.InnerText.Trim();
-            status.HighestBidderId = int.Parse(bidder.Attributes["data-player-id"].Value);
+            status.HighestBidderId = int.Parse(bidder.Attributes["data-player-id"]?.Value ?? "0");
 
             var item = content.SelectSingleNode(".//a[contains(@class, 'detail_button')]");
 

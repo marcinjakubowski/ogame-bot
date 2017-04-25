@@ -49,7 +49,7 @@ namespace OgameBot.Engine.Tasks
 
             string color;
 
-            if (_current.MinutesRemaining == 0) return body;
+            if ((_current?.MinutesRemaining ?? 0) == 0) return body;
             else if (_current.MinutesRemaining >= 20) color = "color:#99CC00;";
             else if (_current.MinutesRemaining >= 10) color = "color:#ffa500";
             else if (_current.MinutesRemaining == 5) color = "color:#ff0000";
