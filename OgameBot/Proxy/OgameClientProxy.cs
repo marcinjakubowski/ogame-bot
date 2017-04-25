@@ -232,7 +232,12 @@ namespace OgameBot.Proxy
                 ctx.Response.OutputStream.Write(data, 0, data.Length);
                 ctx.Response.Close();
             }
-            catch (Exception ex)
+            // Specified name is no longer available, ignore, another request was made
+            catch (HttpListenerException ex) when (ex.ErrorCode == 64)
+            {
+                
+            }
+            catch (HttpListenerException ex)
             {
                 Logger.Instance.LogException(ex);
             }
