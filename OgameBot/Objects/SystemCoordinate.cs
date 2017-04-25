@@ -1,9 +1,13 @@
 ﻿using Newtonsoft.Json;
+using System;
+using System.Text.RegularExpressions;
 
 namespace OgameBot.Objects
 {
     public struct SystemCoordinate
     {
+        private static readonly Regex ParseRegex = new Regex(@"([\d]+):([\d]+)", RegexOptions.Compiled);
+
         public byte Galaxy { get; set; }
 
         public short System { get; set; }
@@ -94,6 +98,20 @@ namespace OgameBot.Objects
         public static bool operator !=(SystemCoordinate left, SystemCoordinate right)
         {
             return !left.Equals(right);
+        }
+
+        public static SystemCoordinate Parse(string input)
+        {
+            Match match = ParseRegex.Match(input);
+
+            if (!match.Success)
+                throw new ArgumentException("Unable to find a coordinate", nameof(input));
+
+            return new SystemCoordinate
+            {
+                Galaxy = Convert.ToByte(match.Groups[1].Value),
+                System = Convert.ToInt16(match.Groups[2].Value),
+            };
         }
 
         public static int Compare(SystemCoordinate x, SystemCoordinate y)

@@ -19,6 +19,7 @@ using System.Runtime.Serialization;
 using OgameBot.Db;
 using OgameBot.Engine.Tasks;
 using OgameBot.Objects.Types;
+using System.Linq;
 
 namespace OgameBot
 {
@@ -40,6 +41,7 @@ namespace OgameBot
 
             Config config = JsonConvert.DeserializeObject<Config>(File.ReadAllText("config.json"));
             Logger.Instance.MinimumLogLevel = config.LogLevel;
+            Logger.Instance.IncludeTimestamp = config.LogIncludeTimestamp;
             Logger.Instance.Log(LogLevel.Info, $"Loaded settings, user: {config.Username}, server: {config.Server}");
 
             // Setup
@@ -62,16 +64,18 @@ namespace OgameBot
             client.RegisterSaver(new GalaxyPageDebrisSaver());
             client.RegisterSaver(new MessageSaver());
             client.RegisterSaver(new PlayerPlanetSaver());
+            client.RegisterSaver(new GalaxyActivitySaver());
             client.RegisterSaver(new HostileAttackEmailSender(config.HostileWarning.From, config.HostileWarning.To, config.HostileWarning.Server, config.HostileWarning.Login, config.HostileWarning.Password));
 
             // Injects
             client.RegisterInject(new CommandsInject());
             client.RegisterInject(new CargosForTransportInject());
             client.RegisterInject(new PlanetExclusiveInject(client));
-            client.RegisterInject(new OGameUrlInject());
+            client.RegisterInject(new CommonInject());
             client.RegisterInject(new BuildQueueInject());
             client.RegisterInject(new CustomPlanetOrderInject(config.CustomOrder));
             client.RegisterInject(new EventListTotalsInject());
+            
             // UA stuff
             client.RegisterDefaultHeader("Accept-Language", "en-GB,en;q=0.8,da;q=0.6");
             client.RegisterDefaultHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
@@ -103,8 +107,16 @@ namespace OgameBot
             ApiImporterJob job1 = new ApiImporterJob(client, new DirectoryInfo("temp"));
             job1.Start();
 
-            
-            SessionKeepAliveJob job3 = new SessionKeepAliveJob(client, SessionKeepAliveMode.All);
+            AuctionMonitor monitor = new AuctionMonitor(client);
+            monitor.Start();
+            client.RegisterInject(monitor);
+
+
+            SessionKeepAliveJob job3 = new SessionKeepAliveJob(client, config.SessionKeepaliveMode);
+            if (config.SessionKeepaliveMode == SessionKeepAliveMode.Single)
+            {
+                job3.PlanetId = config.SessionKeepalivePlanet;
+            }
             job3.Start();
 
             commander.Start();
@@ -125,6 +137,13 @@ namespace OgameBot
                 Thread.Sleep(5000);
                 return;
             }
+
+            if (config.SystemsToScan?.Count > 0)
+            {
+                SystemScanner sysScanner = new SystemScanner(config.SystemsToScan.Select(z => SystemCoordinate.Parse(z)));
+                sysScanner.Start();
+            }
+
 
             SetupProxyCommands(client, config, proxy);
             // Work
@@ -224,6 +243,13 @@ namespace OgameBot
                 };
                 op.Run();
             });
+
+            proxy.AddCommand("fullscan", (parameters) => new ScanCommand()
+            {
+                From = new SystemCoordinate(1, 1),
+                To = new SystemCoordinate(6, 499),
+            }.Run());
+            
         }
 
         private static FarmCommand Farm(OGameClient client, Config config, IFarmingStrategy strategy, NameValueCollection parameters)

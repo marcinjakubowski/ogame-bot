@@ -61,6 +61,14 @@ namespace OgameBot.Engine.Parsing
             CoordinateType coordinateType = locationType == "moon" ? CoordinateType.Moon : CoordinateType.Planet;
             result.Coordinate = Coordinate.Parse(locationLink.InnerText, coordinateType);
 
+            // Activity
+            string activityText = message.SelectSingleNode(".//div[@class='detail_txt']/div/font[@color='red']")?.InnerText;
+
+            if (activityText != null)
+            {
+                result.Activity = int.Parse(activityText);
+            }
+
             // Parts
             HtmlNodeCollection partsNodesList = message.SelectNodes(".//ul[@data-type and not(./li[@class='detail_list_fail'])]");
             Dictionary<string, HtmlNode> partsNodes = partsNodesList.ToDictionary(s => s.GetAttributeValue("data-type", ""));

@@ -38,8 +38,18 @@ namespace OgameBot.Engine.Injects
             foreach (int cp in _planetOrder)
             {
                 sb.Append(caps[cp]);
+                caps.Remove(cp);
             }
+            // Add any that aren't in the custom order setting
+
+            foreach (var element in caps.Values)
+            {
+                sb.Append(element);
+            }
+
             body = body.Insert(firstIndex, sb.ToString());
+
+            
 
             return body;
         }

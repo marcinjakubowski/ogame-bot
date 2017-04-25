@@ -1,21 +1,9 @@
-﻿using System;
-using OgameBot.Db.Interfaces;
-using System.ComponentModel.DataAnnotations.Schema;
-using OgameBot.Db.Parts;
-using System.ComponentModel.DataAnnotations;
+﻿using OgameBot.Db.Parts;
 
 namespace OgameBot.Db
 {
-    public class PlanetShipLog
+    public class PlanetShipLog : PlanetLog
     {
-        [Key, Column(Order = 0)]
-        public long LocationId { get; set; }
-        [Key, Column(Order = 1)]
-        public DateTimeOffset CreatedOn { get; set; }
-
         public PlanetShips Ships { get; set; }
-
-        [ForeignKey(nameof(LocationId))]
-        public virtual Planet Planet { get; set; }
     }
 }

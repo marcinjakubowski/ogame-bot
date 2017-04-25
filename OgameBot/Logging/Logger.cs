@@ -6,6 +6,7 @@ namespace OgameBot.Logging
     {
         public static Logger Instance { get; } = new Logger();
         public LogLevel MinimumLogLevel { get; set; } = LogLevel.Info;
+        public bool IncludeTimestamp { get; set; } = false;
 
         private Logger()
         {
@@ -15,47 +16,44 @@ namespace OgameBot.Logging
         public void Log(LogLevel level, string message)
         {
             if (level < MinimumLogLevel) return;
+            Console.Write("[");
+
+            if (IncludeTimestamp)
+            {
+                Console.ForegroundColor = ConsoleColor.Magenta;
+                Console.Write(DateTime.Now);
+                Console.ResetColor();
+                Console.Write("|");
+            }
 
             switch (level)
             {
                 case LogLevel.Debug:
-                    Console.Write("[");
                     Console.ForegroundColor = ConsoleColor.Cyan;
                     Console.Write("DBG");
-                    Console.ResetColor();
-                    Console.Write("] ");
                     break;
                 case LogLevel.Info:
-                    Console.Write("[");
                     Console.ForegroundColor = ConsoleColor.White;
                     Console.Write("INF");
-                    Console.ResetColor();
-                    Console.Write("] ");
                     break;
                 case LogLevel.Warning:
-                    Console.Write("[");
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.Write("WRN");
-                    Console.ResetColor();
-                    Console.Write("] ");
                     break;
                 case LogLevel.Error:
-                    Console.Write("[");
                     Console.ForegroundColor = ConsoleColor.DarkRed;
                     Console.Write("ERR");
-                    Console.ResetColor();
-                    Console.Write("] ");
                     break;
                 case LogLevel.Success:
-                    Console.Write("[");
                     Console.ForegroundColor = ConsoleColor.DarkGreen;
                     Console.Write("SUC");
-                    Console.ResetColor();
-                    Console.Write("] ");
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(level), level, null);
             }
+
+            Console.ResetColor();
+            Console.Write("] ");
 
             Console.WriteLine(message);
         }

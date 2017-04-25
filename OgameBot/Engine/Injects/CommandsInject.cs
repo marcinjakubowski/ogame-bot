@@ -32,7 +32,7 @@ namespace OgameBot.Engine.Injects
 
         private string GetLink(string command, string label)
         {
-            return $"&lt;a href=&quot;http://{_host}:{_port}/ogbcmd/{command}&quot;&gt;{label}&lt;/a&gt;";
+            return $"&lt;a href=&quot;javascript:void(0)&quot; onclick=ogbcmd(&quot;{command}&quot);&gt;{label}&lt;/a&gt;";
         }
 
         private const string NewLine = "&lt;/br&gt;";

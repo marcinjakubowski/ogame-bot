@@ -45,10 +45,10 @@ namespace OgameBot.Engine.Parsing
             NameValueCollection query = HttpUtility.ParseQueryString(container.RequestMessage.RequestUri.Query);
             if (query["page"] != null)
             {
-                IEnumerable<PageType> pages = (PageType[])Enum.GetValues(typeof(PageType));
+                IEnumerable<Page> pages = Page.All(); //will this work or cause an exception?
                 try
                 {
-                    res.Page = pages.Where(s => ((Page)s).Link == query["page"]).FirstOrDefault();
+                    res.Page = pages.Where(s => s.Link == query["page"]).FirstOrDefault();
                 }
                 catch (KeyNotFoundException)
                 {
