@@ -126,6 +126,7 @@ namespace OgameBot.Proxy
                 {
                     ctx.Response.StatusCode = (int)(result ? HttpStatusCode.OK : HttpStatusCode.BadRequest);
                     ctx.Response.Close();
+                    return;
                 }
 
                 Redirect(referer != null ? referer : overview);
