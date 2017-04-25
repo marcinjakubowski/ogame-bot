@@ -83,6 +83,7 @@ namespace OgameBot.Engine
             RegisterParser(new OngoingActivityParser());
             RegisterParser(new EventListParser());
             RegisterParser(new MinifleetParser());
+            RegisterParser(new AuctioneerParser());
 
             RegisterIntervention(new OGameAutoLoginner(this));
             RegisterValidator(new PlanetExclusiveValidator(this));

@@ -75,6 +75,7 @@ namespace OgameBot
             client.RegisterInject(new BuildQueueInject());
             client.RegisterInject(new CustomPlanetOrderInject(config.CustomOrder));
             client.RegisterInject(new EventListTotalsInject());
+            
             // UA stuff
             client.RegisterDefaultHeader("Accept-Language", "en-GB,en;q=0.8,da;q=0.6");
             client.RegisterDefaultHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
@@ -106,7 +107,11 @@ namespace OgameBot
             ApiImporterJob job1 = new ApiImporterJob(client, new DirectoryInfo("temp"));
             job1.Start();
 
-            
+            AuctionMonitor monitor = new AuctionMonitor(client);
+            monitor.Start();
+            client.RegisterInject(monitor);
+
+
             SessionKeepAliveJob job3 = new SessionKeepAliveJob(client, config.SessionKeepaliveMode);
             if (config.SessionKeepaliveMode == SessionKeepAliveMode.Single)
             {
