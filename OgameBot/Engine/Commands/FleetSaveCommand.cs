@@ -30,6 +30,7 @@ namespace OgameBot.Engine.Commands
                 var info = resp.GetParsedSingle<OgamePageInfo>();
 
                 PlayerResearch research = db.Players.Where(p => p.PlayerId == info.PlayerId).Select(p => p.Research).First();
+                // #todo check if recycler is available in the fleet
                 FleetComposition fleet = FleetComposition.FromDetected(resp.GetParsed<DetectedShip>());
                 fleet.Resources = resp.GetParsedSingle<PlanetResources>().Resources;
 
@@ -43,7 +44,8 @@ namespace OgameBot.Engine.Commands
 
                 int fleetSpeed = fleet.Speed(research);
 
-                var local = currentSystemPlanets.Cartesian(Enumerable.Range(1, 10), (target, speed) => new FleetSaveTarget { Target = target, Duration = here.DurationTo(target, fleetSpeed, speed, Client.Settings.Speed), Speed = speed });
+                // #todo spaghetti code
+                List<FleetSaveTarget> local = currentSystemPlanets.Cartesian(Enumerable.Range(1, 10), (target, speed) => new FleetSaveTarget { Target = target, Duration = here.DurationTo(target, fleetSpeed, speed, Client.Settings.Speed), Speed = speed }).ToList();
 
                 FleetSaveTarget best = null;
 
@@ -71,13 +73,16 @@ namespace OgameBot.Engine.Commands
 
                             if ((duration - _oneWayTrip).Duration() < AcceptableWindow)
                             {
-                                var targets = db.Planets.Where(p => (p.LocationId >= sysLeft.LowerCoordinate && p.LocationId <= sysLeft.UpperCoordinate) ||
+                                List<FleetSaveTarget> targets = db.Planets.Where(p => (p.LocationId >= sysLeft.LowerCoordinate && p.LocationId <= sysLeft.UpperCoordinate) ||
                                                                     (p.LocationId >= sysRight.LowerCoordinate && p.LocationId <= sysRight.UpperCoordinate))
-                                                        .Select(p => new FleetSaveTarget { Target = p.LocationId, Duration = duration, Speed = speed });
+                                                        .Select(p => p.LocationId)
+                                                        .ToList()
+                                                        .Select(p => new FleetSaveTarget { Target = p, Duration = duration, Speed = speed })
+                                                        .ToList();
 
                                 if (CheckTargets(targets))
                                 {
-                                    best = local.Where(fs => fs.Valid).MinBy(fs => fs.GetDifference(_oneWayTrip));
+                                    best = targets.Where(fs => fs.Valid).MinBy(fs => fs.GetDifference(_oneWayTrip));
                                     break;
                                 }
                             }
@@ -85,13 +90,28 @@ namespace OgameBot.Engine.Commands
                     }
                 }
 
-                Logger.Instance.Log(LogLevel.Warning, $"Best candidate for fleetsave would be {best.Target} at speed {best.Speed}; one way trip {best.Duration}");
+                if (best != null)
+                {
+                    Logger.Instance.Log(LogLevel.Success, $"Best candidate for fleetsave is {best.Target} at speed {best.Speed}; one way trip {best.Duration}");
+                    new SendFleetCommand()
+                    {
+                        PlanetId = PlanetId,
+                        Destination = Coordinate.Create(best.Target, CoordinateType.DebrisField),
+                        Speed = best.Speed,
+                        Mission = MissionType.Recycle,
+                        Fleet = fleet
+                    }.Run();
+                }
+                else
+                {
+                    Logger.Instance.Log(LogLevel.Error, $"Could not find a good candidate for fleetsave");
+                }
 
             }
             return null;
         }
 
-        private bool CheckTargets(IEnumerable<FleetSaveTarget> targets)
+        private bool CheckTargets(IList<FleetSaveTarget> targets)
         {
             bool found = false;
             foreach (FleetSaveTarget target in targets)
