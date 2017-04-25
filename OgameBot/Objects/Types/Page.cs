@@ -36,6 +36,8 @@ namespace OgameBot.Objects.Types
         public static Page ResourceUpdate   { get; } = new Page(PageType.ResourceUpdate  , "fetchResources");
         public static Page Messages         { get; } = new Page(PageType.Messages        , "messages");
         public static Page AjaxChat         { get; } = new Page(PageType.AjaxChat        , "ajaxChat");
+        public static Page Premium          { get; } = new Page(PageType.Premium         , "premium");
+        public static Page Shop             { get; } = new Page(PageType.Shop            , "shop");
 
         static Page()
         {

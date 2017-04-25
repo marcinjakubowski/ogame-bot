@@ -28,6 +28,8 @@
         AjaxChat,
         ResourceUpdate,
         Messages,
-        Chat
+        Chat,
+        Premium,
+        Shop
     }
 }
