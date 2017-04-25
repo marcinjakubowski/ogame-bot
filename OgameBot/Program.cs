@@ -133,7 +133,7 @@ namespace OgameBot
                 return;
             }
 
-            if (config.SystemsToScan.Count > 0)
+            if (config.SystemsToScan?.Count > 0)
             {
                 SystemScanner sysScanner = new SystemScanner(config.SystemsToScan.Select(z => SystemCoordinate.Parse(z)));
                 sysScanner.Start();
