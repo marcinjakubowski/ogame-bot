@@ -108,8 +108,8 @@ namespace OgameBot
             job1.Start();
 
             AuctionMonitor monitor = new AuctionMonitor(client);
+            client.RegisterInject(new AuctionStatusInject(monitor));
             monitor.Start();
-            client.RegisterInject(monitor);
 
 
             SessionKeepAliveJob job3 = new SessionKeepAliveJob(client, config.SessionKeepaliveMode);
