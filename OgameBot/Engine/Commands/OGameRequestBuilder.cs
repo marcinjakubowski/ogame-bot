@@ -73,9 +73,10 @@ namespace OgameBot.Engine.Commands
             return _client.BuildRequest(new Uri($"/game/index.php?page=messages&messageId={messageId}&tabid={(int)tabType}&ajax=1", UriKind.Relative));
         }
 
-        public HttpRequestMessage GetOverviewPage()
+        public HttpRequestMessage GetOverviewPage(int planetId = 0)
         {
-            return _client.BuildRequest(new Uri($"/game/index.php?page=overview", UriKind.Relative));
+            string cp = planetId != 0 ? $"&cp={planetId}" : string.Empty;
+            return _client.BuildRequest(new Uri($"/game/index.php?page=overview{cp}", UriKind.Relative));
         }
 
         public HttpRequestMessage GetMiniFleetSendMessage(MissionType mission, Coordinate coordinate, int shipCount, string token)
