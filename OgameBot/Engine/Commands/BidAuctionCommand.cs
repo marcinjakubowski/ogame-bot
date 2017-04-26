@@ -44,7 +44,7 @@ namespace OgameBot.Engine.Commands
                 checkCount++;
                 if (status.HighestBidderId != info.PlayerId && status.MinutesRemaining != 0)
                 {
-                    int bidValue = (int)Math.Ceiling(status.Shortfall / multiplier);
+                    int bidValue = 1 + (int)Math.Ceiling(status.Shortfall / multiplier);
 
                     var req = Client.BuildPost(new Uri("/game/index.php?page=auctioneer", UriKind.Relative), new[]
                     {
@@ -59,9 +59,9 @@ namespace OgameBot.Engine.Commands
                     var bid = Client.IssueRequest(req);
 
                     last = bid.GetParsedSingle<AuctionBidResponse>(false);
-                    Logger.Instance.Log(LogLevel.Info, $"Bid {bidCount++}/{checkCount} was for {status.CurrentBid + bidValue}: {last?.Message}");
+                    Logger.Instance.Log(LogLevel.Info, $"Bid {bidCount++}/{checkCount} was for {status.OwnBid + bidValue}: {last?.Message}");
                 }
-                if (!last.Error) Thread.Sleep(1000);
+                if (!last.Error) Thread.Sleep(300);
             } while (status.MinutesRemaining != 0);
 
             Logger.Instance.Log(status.HighestBidderId == info.PlayerId ? LogLevel.Success : LogLevel.Warning, $"Auction for {status.Item} won by {status.HighestBidderName} at {status.CurrentBid}");
