@@ -104,5 +104,14 @@ namespace OgameBot.Engine.Commands
                 KeyValuePair.Create("pass",password)
             });
         }
+
+        public HttpRequestMessage GetAuctioneer()
+        {
+            return _client.BuildPost(new Uri("/game/index.php?page=traderOverview", UriKind.Relative), new[]
+            {
+                KeyValuePair.Create("show", "auctioneer"),
+                KeyValuePair.Create("ajax", "1")
+            });
+        }
     }
 }

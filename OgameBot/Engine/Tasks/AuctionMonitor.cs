@@ -62,11 +62,7 @@ namespace OgameBot.Engine.Tasks
         protected override void RunInternal()
         {
             if (DateTimeOffset.UtcNow - _lastRequest < ExecutionInterval) return;
-            var req = _client.BuildPost(new Uri("/game/index.php?page=traderOverview", UriKind.Relative), new[]
-            {
-                KeyValuePair.Create("show", "auctioneer"),
-                KeyValuePair.Create("ajax", "1")
-            });
+            var req = _client.RequestBuilder.GetAuctioneer();
 
             _selfIssued = true;
             var resp = _client.IssueRequest(req);
