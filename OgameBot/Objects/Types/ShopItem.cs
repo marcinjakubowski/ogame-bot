@@ -20,11 +20,11 @@
 
         public static ShopItem ConstructionBoosterBronze = new ShopItem(ShopItemType.ConstructionBooster, ShopItemRank.Bronze, "40f6c78e11be01ad3389b7dccd6ab8efa9347f3c");
         public static ShopItem ConstructionBoosterSilver = new ShopItem(ShopItemType.ConstructionBooster, ShopItemRank.Silver, "4a58d4978bbe24e3efb3b0248e21b3b4b1bfbd8a");
-        public static ShopItem ConstructionBoosterGold   = new ShopItem(ShopItemType.ConstructionBooster, ShopItemRank.Gold  , "???"); // #todo
+        public static ShopItem ConstructionBoosterGold   = new ShopItem(ShopItemType.ConstructionBooster, ShopItemRank.Gold  , "929d5e15709cc51a4500de4499e19763c879f7f7");
 
         public static ShopItem ResearchBoosterBronze = new ShopItem(ShopItemType.ResearchBooster, ShopItemRank.Bronze, "da4a2a1bb9afd410be07bc9736d87f1c8059e66d");
         public static ShopItem ResearchBoosterSilver = new ShopItem(ShopItemType.ResearchBooster, ShopItemRank.Silver, "d26f4dab76fdc5296e3ebec11a1e1d2558c713ea");
-        public static ShopItem ResearchBoosterGold   = new ShopItem(ShopItemType.ResearchBooster, ShopItemRank.Gold  , "???"); // #todo
+        public static ShopItem ResearchBoosterGold   = new ShopItem(ShopItemType.ResearchBooster, ShopItemRank.Gold  , "8a4f9e8309e1078f7f5ced47d558d30ae15b4a1b");
 
         public static ShopItem ShipyardBoosterBronze = new ShopItem(ShopItemType.ShipyardBooster, ShopItemRank.Bronze, "d3d541ecc23e4daa0c698e44c32f04afd2037d84");
         public static ShopItem ShipyardBoosterSilver = new ShopItem(ShopItemType.ShipyardBooster, ShopItemRank.Silver, "27cbcd52f16693023cb966e5026d8a1efbbfc0f9");
