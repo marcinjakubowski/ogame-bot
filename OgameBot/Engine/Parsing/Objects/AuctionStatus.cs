@@ -9,10 +9,16 @@ namespace OgameBot.Engine.Parsing.Objects
         public ShopItem Item { get; set; } = ShopItem.Unknown;
         public int CurrentBid { get; set; }
         public int BidCount { get; set; }
+
+        public int OwnBid { get; set; }
+        public int MinimumBid { get; set; }
+        public int Shortfall => MinimumBid - OwnBid;
+
         public string HighestBidderName { get; set; }
         public int HighestBidderId { get; set; }
         public int MinutesRemaining { get; set; }
         public TimeSpan NextIn { get; set; }
+        public string Token { get; internal set; }
 
         public override string ToString()
         {

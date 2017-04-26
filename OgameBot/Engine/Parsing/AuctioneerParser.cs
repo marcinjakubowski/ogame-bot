@@ -10,12 +10,14 @@ using OgameBot.Engine.Parsing.Objects;
 using System.Text.RegularExpressions;
 using OgameBot.Objects.Types;
 using System.Globalization;
+using HtmlAgilityPack;
 
 namespace OgameBot.Engine.Parsing
 {
     public class AuctioneerParser : BaseParser
     {
         private static Regex timeParser = new Regex(@"(\d+)(m?)", RegexOptions.Compiled);
+        private static readonly Regex TokenRegex = new Regex(@"var auctioneerToken=""(.*?)""", RegexOptions.Compiled);
 
         public override bool ShouldProcessInternal(ResponseContainer container)
         {
@@ -28,13 +30,14 @@ namespace OgameBot.Engine.Parsing
 
             
 
-            var content = doc.SelectSingleNode(".//div[@class='left_content']");
+            var leftContent = doc.SelectSingleNode(".//div[@class='left_content']");
+            var rightContent = doc.SelectSingleNode(".//div[@class='right_content']");
 
-            if (content == null) yield break;
+            if (leftContent == null) yield break;
 
             AuctionStatus status = new AuctionStatus();
 
-            var auctionInfo = content.SelectSingleNode("./p[@class='auction_info']");
+            var auctionInfo = leftContent.SelectSingleNode("./p[@class='auction_info']");
             var remaining = auctionInfo.SelectSingleNode("./span")?.InnerText ?? string.Empty;
 
             Match match = timeParser.Match(remaining);
@@ -48,23 +51,42 @@ namespace OgameBot.Engine.Parsing
                     status.NextIn = TimeSpan.FromSeconds(time);
             }
 
-            var bid = content.SelectSingleNode("./div[contains(@class, 'currentSum')]");
+            var bid = leftContent.SelectSingleNode("./div[contains(@class, 'currentSum')]");
             status.CurrentBid = int.Parse(bid.InnerText, NumberStyles.AllowThousands | NumberStyles.Integer, client.ServerCulture);
 
-            var count = content.SelectSingleNode("./div[contains(@class, 'numberOfBids')]");
+            var count = leftContent.SelectSingleNode("./div[contains(@class, 'numberOfBids')]");
             status.BidCount = int.Parse(count.InnerText, NumberStyles.Integer);
 
-            var bidder = content.SelectSingleNode("./a[contains(@class, 'currentPlayer')]");
+            var bidder = leftContent.SelectSingleNode("./a[contains(@class, 'currentPlayer')]");
             status.HighestBidderName = bidder.InnerText.Trim();
             status.HighestBidderId = int.Parse(bidder.Attributes["data-player-id"]?.Value ?? "0");
 
-            var item = content.SelectSingleNode(".//a[contains(@class, 'detail_button')]");
+            var item = leftContent.SelectSingleNode(".//a[contains(@class, 'detail_button')]");
 
             string reference = item.Attributes["ref"].Value;
 
             IEnumerable<ShopItem> all = ShopItem.All();
             status.Item = all.Where(si => si.Reference == reference).FirstOrDefault();
 
+            var ownBid = rightContent.SelectSingleNode(".//td[contains(@class, 'js_alreadyBidden')]");
+            status.OwnBid = int.Parse(ownBid.InnerText, NumberStyles.AllowThousands | NumberStyles.Integer, client.ServerCulture);
+
+            var minBid = rightContent.SelectSingleNode(".//td[contains(@class, 'js_price')]");
+            status.MinimumBid = int.Parse(minBid.InnerText, NumberStyles.AllowThousands | NumberStyles.Integer, client.ServerCulture);
+
+            HtmlNodeCollection scriptBlocks = doc.SelectNodes("//script[@type='text/javascript' and not(@src)]");
+            if (scriptBlocks != null)
+            {
+                foreach (HtmlNode block in scriptBlocks)
+                {
+                    Match tokenMatch = TokenRegex.Match(block.InnerText);
+                    if (tokenMatch.Success)
+                    {
+                        status.Token = tokenMatch.Groups[1].Value;
+                        break;
+                    }
+                }
+            }
             yield return status;
         }
     }
