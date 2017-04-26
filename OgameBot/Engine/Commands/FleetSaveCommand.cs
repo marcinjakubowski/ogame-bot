@@ -14,90 +14,46 @@ namespace OgameBot.Engine.Commands
     public class FleetSaveCommand : CommandBase, IPlanetExclusiveOperation
     {
         public DateTimeOffset ReturnTime { get; set; }
-        private TimeSpan _oneWayTrip;
-
-        static readonly TimeSpan AcceptableWindow = TimeSpan.FromMinutes(5);
+        public TimeSpan AcceptableWindow { get; set; } = TimeSpan.FromMinutes(5);
 
         public string Name => "Fleet save";
         public string Progress { get; }
 
+        private TimeSpan _oneWayTrip;
+
         protected override CommandQueueElement RunInternal()
         {
+            _oneWayTrip = TimeSpan.FromSeconds((ReturnTime - DateTimeOffset.Now).TotalSeconds / 2);
+
             using (BotDb db = new BotDb())
             using (Client.EnterPlanetExclusive(this))
             {
                 var resp = Client.IssueRequest(Client.RequestBuilder.GetPage(PageType.Fleet, PlanetId));
                 var info = resp.GetParsedSingle<OgamePageInfo>();
 
-                PlayerResearch research = db.Players.Where(p => p.PlayerId == info.PlayerId).Select(p => p.Research).First();
-                // #todo check if recycler is available in the fleet
                 FleetComposition fleet = FleetComposition.FromDetected(resp.GetParsed<DetectedShip>());
+                if (!fleet.Ships.ContainsKey(ShipType.Recycler))
+                {
+                    Logger.Instance.Log(LogLevel.Error, "Planet does not have a recycler, cannot fleetsave");
+                    return null;
+                }
                 fleet.Resources = resp.GetParsedSingle<PlanetResources>().Resources;
 
-                Coordinate here = info.PlanetCoord;
-                _oneWayTrip = TimeSpan.FromSeconds((ReturnTime - DateTimeOffset.Now).TotalSeconds / 2);
-
-                SystemCoordinate currentSystem = here;
-                var currentSystemPlanets = db.Planets.Where(p => p.LocationId >= currentSystem.LowerCoordinate && p.LocationId <= currentSystem.UpperCoordinate && p.LocationId != here.Id && p.LocationId != here.Id - 2)
-                                                     .Select(p => p.LocationId)
-                                                     .ToList();
-
+                PlayerResearch research = db.Players.Where(p => p.PlayerId == info.PlayerId).Select(p => p.Research).First();
                 int fleetSpeed = fleet.Speed(research);
 
-                // #todo spaghetti code
-                List<FleetSaveTarget> local = currentSystemPlanets.Cartesian(Enumerable.Range(1, 10), (target, speed) => new FleetSaveTarget { Target = target, Duration = here.DurationTo(target, fleetSpeed, speed, Client.Settings.Speed), Speed = speed }).ToList();
+                Coordinate here = info.PlanetCoord;
+                FleetSaveTarget candidate = CandidateFromSystem(db, here, fleetSpeed) ?? CandidateFromGalaxy(db, here, fleetSpeed);
 
-                FleetSaveTarget best = null;
-
-                if (CheckTargets(local))
+                if (candidate != null)
                 {
-                    best = local.Where(fs => fs.Valid).MinBy(fs => fs.GetDifference(_oneWayTrip));
-                }
-                else
-                {
-                    for (int speed = 1; speed <= 10 && best == null; speed++)
-                    {
-                        for (short r = 1; r < 100; r++)
-                        {
-                            short systemLeft = (short)(currentSystem.System - r);
-                            short systemRight = (short)(currentSystem.System + r);
-                            if (systemLeft <= 0) systemLeft = 0;
-                            else if (systemRight >= 499) systemRight = systemLeft;
+                    Logger.Instance.Log(LogLevel.Success, $"Best candidate for fleetsave is {candidate.Target} at speed {candidate.Speed}; one way trip {candidate.Duration}");
 
-                            SystemCoordinate sysLeft = new SystemCoordinate(currentSystem.Galaxy, systemLeft);
-                            SystemCoordinate sysRight = new SystemCoordinate(currentSystem.Galaxy, systemRight);
-
-                            SystemCoordinate check = systemLeft != 0 ? sysLeft : sysRight;
-
-                            var duration = here.DurationTo(check.LowerCoordinate, fleetSpeed, speed, OGameClient.Instance.Settings.Speed);
-
-                            if ((duration - _oneWayTrip).Duration() < AcceptableWindow)
-                            {
-                                List<FleetSaveTarget> targets = db.Planets.Where(p => (p.LocationId >= sysLeft.LowerCoordinate && p.LocationId <= sysLeft.UpperCoordinate) ||
-                                                                    (p.LocationId >= sysRight.LowerCoordinate && p.LocationId <= sysRight.UpperCoordinate))
-                                                        .Select(p => p.LocationId)
-                                                        .ToList()
-                                                        .Select(p => new FleetSaveTarget { Target = p, Duration = duration, Speed = speed })
-                                                        .ToList();
-
-                                if (CheckTargets(targets))
-                                {
-                                    best = targets.Where(fs => fs.Valid).MinBy(fs => fs.GetDifference(_oneWayTrip));
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (best != null)
-                {
-                    Logger.Instance.Log(LogLevel.Success, $"Best candidate for fleetsave is {best.Target} at speed {best.Speed}; one way trip {best.Duration}");
                     new SendFleetCommand()
                     {
                         PlanetId = PlanetId,
-                        Destination = Coordinate.Create(best.Target, CoordinateType.DebrisField),
-                        Speed = best.Speed,
+                        Destination = Coordinate.Create(candidate.Target, CoordinateType.DebrisField),
+                        Speed = candidate.Speed,
                         Mission = MissionType.Recycle,
                         Fleet = fleet
                     }.Run();
@@ -106,26 +62,89 @@ namespace OgameBot.Engine.Commands
                 {
                     Logger.Instance.Log(LogLevel.Error, $"Could not find a good candidate for fleetsave");
                 }
-
             }
             return null;
         }
 
-        private bool CheckTargets(IList<FleetSaveTarget> targets)
+        private FleetSaveTarget CandidateFromGalaxy(BotDb db, Coordinate here, int fleetSpeed)
         {
-            bool found = false;
-            foreach (FleetSaveTarget target in targets)
+            SystemCoordinate hereSystem = here;
+            FleetSaveTarget best = null;
+            for (int speed = 1; speed <= 10 && best == null; speed++)
             {
-                if (target.GetDifference(_oneWayTrip) > AcceptableWindow) {
-                    target.Valid = false;
-                    continue;
+                for (short range = 1; range <= 100 && best == null; range++)
+                {
+                    short systemCoordLeft = (short)(hereSystem.System - range);
+                    short systemCoordRight = (short)(hereSystem.System + range);
+                    if (systemCoordLeft <= 0) systemCoordLeft = 0;
+                    else if (systemCoordRight >= 499) systemCoordRight = systemCoordLeft;
+
+                    SystemCoordinate systemLeft = new SystemCoordinate(hereSystem.Galaxy, systemCoordLeft);
+                    SystemCoordinate systemRight = new SystemCoordinate(hereSystem.Galaxy, systemCoordRight);
+
+                    var duration = here.DurationTo(systemRight.LowerCoordinate, fleetSpeed, speed, OGameClient.Instance.Settings.Speed);
+
+                    if (GetDifference(duration, _oneWayTrip) > AcceptableWindow)
+                        continue;
+
+                    var targets = db.Planets
+                                    .Where(p => (p.LocationId >= systemLeft.LowerCoordinate && p.LocationId <= systemLeft.UpperCoordinate)
+                                             || (p.LocationId >= systemRight.LowerCoordinate && p.LocationId <= systemRight.UpperCoordinate))
+                                    .Select(p => p.LocationId)
+                                    .AsEnumerable()
+                                    .Select(target => new FleetSaveTarget { Target = target, Duration = duration, Speed = speed });
+
+                    best = FilterDebrisAvailable(targets).FirstOrDefault();
                 }
-                var resp = Client.IssueRequest(Client.RequestBuilder.GetFleetCheckDebris(target.Target));
-                target.Valid = resp.GetParsedSingle<FleetCheck>().Status == FleetCheckStatus.OK;
-                if (target.Valid) found = true;
             }
 
-            return found;
+            return best;
+        }
+
+        private FleetSaveTarget CandidateFromSystem(BotDb db, Coordinate here, int fleetSpeed)
+        {
+            SystemCoordinate hereSystem = here;
+            Coordinate herePlanet = Coordinate.Create(here, CoordinateType.Planet);
+            Coordinate hereMoon = Coordinate.Create(here, CoordinateType.Moon);
+            var currentSystemPlanets = db.Planets.Where(p => p.LocationId >= hereSystem.LowerCoordinate && p.LocationId <= hereSystem.UpperCoordinate
+                                                          && p.LocationId != herePlanet.Id
+                                                          && p.LocationId != hereMoon.Id)
+                                                 .Select(p => p.LocationId)
+                                                 .AsEnumerable();
+
+            IEnumerable<FleetSaveTarget> candidates = currentSystemPlanets.Cartesian(Enumerable.Range(1, 10), (target, speed) => new FleetSaveTarget
+            {
+                Target = target,
+                Duration = here.DurationTo(target, fleetSpeed, speed, Client.Settings.Speed),
+                Speed = speed
+            });
+
+            return FilterDebrisAvailable(FilterTime(candidates)).FirstOrDefault();
+        }
+
+        private IEnumerable<FleetSaveTarget> FilterTime(IEnumerable<FleetSaveTarget> candidates)
+        {
+            return candidates.Where(c => GetDifference(c.Duration, _oneWayTrip) <= AcceptableWindow);
+        }
+
+        private IEnumerable<FleetSaveTarget> FilterDebrisAvailable(IEnumerable<FleetSaveTarget> candidates)
+        {
+            return candidates.Where(c => CheckDebris(c));
+        }
+
+        private bool CheckDebris(FleetSaveTarget candidate)
+        {
+            var resp = Client.IssueRequest(Client.RequestBuilder.GetFleetCheckDebris(candidate.Target));
+            return resp.GetParsedSingle<FleetCheck>().Status == FleetCheckStatus.OK;
+        }
+
+        private static TimeSpan GetDifference(TimeSpan current, TimeSpan desired)
+        {
+            TimeSpan ts = current - desired;
+
+            if (ts.Ticks < 0) return TimeSpan.FromDays(10);
+
+            return ts;
         }
 
         private class FleetSaveTarget
@@ -133,13 +152,6 @@ namespace OgameBot.Engine.Commands
             public Coordinate Target { get; set; }
             public int Speed { get; set; }
             public TimeSpan Duration { get; set; }
-
-            public TimeSpan GetDifference(TimeSpan ts)
-            {
-                return (Duration - ts).Duration();
-            }
-
-            public bool Valid { get; set; } = false;
 
             public override string ToString()
             {
