@@ -17,7 +17,7 @@ namespace OgameBot.Engine.Commands
             var resp = Client.IssueRequest(Client.RequestBuilder.GetOverviewPage(PlanetId));
             var info = resp.GetParsedSingle<OgamePageInfo>();
 
-            int bidCount = 0, checkCount = 0;
+            int bidCount = 1, checkCount = 0;
 
             double multiplier = 1;
 
@@ -59,11 +59,12 @@ namespace OgameBot.Engine.Commands
                     var bid = Client.IssueRequest(req);
 
                     last = bid.GetParsedSingle<AuctionBidResponse>(false);
-                    Logger.Instance.Log(LogLevel.Warning, $"Bid {bidCount++}/{checkCount}: {last?.Message}");
+                    Logger.Instance.Log(LogLevel.Info, $"Bid {bidCount++}/{checkCount} was for {status.CurrentBid + bidValue}: {last?.Message}");
                 }
                 if (!last.Error) Thread.Sleep(1000);
             } while (status.MinutesRemaining != 0);
 
+            Logger.Instance.Log(status.HighestBidderId == info.PlayerId ? LogLevel.Success : LogLevel.Warning, $"Auction for {status.Item} won by {status.HighestBidderName} at {status.CurrentBid}");
             return null;
         }
     }
