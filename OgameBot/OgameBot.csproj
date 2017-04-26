@@ -89,6 +89,7 @@
     <Compile Include="Db\Parts\PlanetBuildings.cs" />
     <Compile Include="Db\Parts\PlanetDefences.cs" />
     <Compile Include="Db\Parts\PlanetShips.cs" />
+    <Compile Include="Engine\Commands\BidAuctionCommand.cs" />
     <Compile Include="Engine\Commands\BuildCommand.cs" />
     <Compile Include="Engine\Commands\CommandBase.cs" />
     <Compile Include="Config.cs" />

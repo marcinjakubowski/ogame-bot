@@ -157,6 +157,28 @@ namespace OgameBot
 
         private static void SetupProxyCommands(OGameClient client, Config config, OgameClientProxy proxy)
         {
+            proxy.AddCommand("bid", (parameters) =>
+            {
+                ResourceType resourceType = ResourceType.Deuterium;
+                string resource = parameters["resource"];
+                if (resource != null)
+                {
+                    if (resource.Equals("m", StringComparison.InvariantCultureIgnoreCase) || resource.Equals("metal", StringComparison.InvariantCultureIgnoreCase))
+                        resourceType = ResourceType.Metal;
+                    else if (resource.Equals("c", StringComparison.InvariantCultureIgnoreCase) || resource.Equals("crystal", StringComparison.InvariantCultureIgnoreCase))
+                        resourceType = ResourceType.Crystal;
+                    else if (resource.Equals("d", StringComparison.InvariantCultureIgnoreCase) || resource.Equals("deuterium", StringComparison.InvariantCultureIgnoreCase))
+                        resourceType = ResourceType.Deuterium;
+                }
+
+                BidAuctionCommand bid = new BidAuctionCommand()
+                {
+                    PlanetId = int.Parse(parameters["cp"]),
+                    BidResource = resourceType
+                };
+                bid.Run();
+            });
+
             proxy.AddCommand("transport", (parameters) =>
             {
                 TransportAllCommand transportAll = new TransportAllCommand()
