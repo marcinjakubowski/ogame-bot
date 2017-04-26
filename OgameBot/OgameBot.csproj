@@ -112,10 +112,12 @@
     <Compile Include="Engine\Injects\CargosForTransportInject.cs" />
     <Compile Include="Engine\Injects\PlanetExclusiveInject.cs" />
     <Compile Include="Engine\Interventions\RetryIntervention.cs" />
+    <Compile Include="Engine\Parsing\AuctionBidParser.cs" />
     <Compile Include="Engine\Parsing\AuctioneerParser.cs" />
     <Compile Include="Engine\Parsing\EventListParser.cs" />
     <Compile Include="Engine\Parsing\FleetPageParser.cs" />
     <Compile Include="Engine\Parsing\MinifleetParser.cs" />
+    <Compile Include="Engine\Parsing\Objects\AuctionBidResponse.cs" />
     <Compile Include="Engine\Parsing\Objects\AuctionStatus.cs" />
     <Compile Include="Engine\Parsing\Objects\DetectedOngoingConstruction.cs" />
     <Compile Include="Engine\Parsing\Objects\DetectedOngoingResearch.cs" />
