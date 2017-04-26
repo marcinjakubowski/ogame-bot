@@ -33,8 +33,10 @@ namespace OgameBot.Engine.Parsing
             {
                 Logger.Instance.LogException(ex);
             }
-
-            yield return response;
+            if (response != null)
+                yield return response;
+            else
+                yield break;
         }
     }
 }
