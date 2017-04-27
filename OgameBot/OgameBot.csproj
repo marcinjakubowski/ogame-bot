@@ -52,6 +52,9 @@
       <HintPath>..\packages\HtmlAgilityPack.1.4.9.5\lib\Net45\HtmlAgilityPack.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Mono.Posix, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Posix.4.0.0.0\lib\net40\Mono.Posix.dll</HintPath>
+    </Reference>
     <Reference Include="MoreLinq, Version=2.0.20029.0, Culture=neutral, PublicKeyToken=384d532d7e88985d, processorArchitecture=MSIL">
       <HintPath>..\packages\morelinq.2.3.0\lib\net35\MoreLinq.dll</HintPath>
     </Reference>
@@ -209,6 +212,7 @@
     <Compile Include="Objects\Types\PageType.cs" />
     <Compile Include="Utilities\DateTimeOffsetExtensions.cs" />
     <Compile Include="Utilities\EnumerableExtensions.cs" />
+    <Compile Include="Utilities\IExitSignal.cs" />
     <Compile Include="Utilities\KeyValuePair.cs" />
     <Compile Include="Engine\Commands\OGameRequestBuilder.cs" />
     <Compile Include="Db\BotDb.cs" />
@@ -268,6 +272,8 @@
     <Compile Include="Engine\Tasks\WorkerBase.cs" />
     <Compile Include="Utilities\DictionaryExtensions.cs" />
     <Compile Include="Utilities\HtmlNodeExtensions.cs" />
+    <Compile Include="Utilities\UnixExitSignal.cs" />
+    <Compile Include="Utilities\WindowsExitSignal.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

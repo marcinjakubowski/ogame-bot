@@ -15,11 +15,11 @@ using OgameBot.Engine.Injects;
 using OgameBot.Proxy;
 using System.Collections.Specialized;
 using System.Threading;
-using System.Runtime.Serialization;
 using OgameBot.Db;
 using OgameBot.Engine.Tasks;
 using OgameBot.Objects.Types;
 using System.Linq;
+using OgameBot.Utilities;
 
 namespace OgameBot
 {
@@ -37,6 +37,17 @@ namespace OgameBot
             {
                 Console.WriteLine("Please copy config.template.json to config.json and fill it out");
                 return;
+            }
+
+            IExitSignal onExitSignal = null;
+
+            if (IsRunningOnMono())
+            {
+                onExitSignal = new UnixExitSignal();
+            }
+            else
+            {
+                onExitSignal = new WindowsExitSignal();
             }
 
             Config config = JsonConvert.DeserializeObject<Config>(File.ReadAllText("config.json"));
@@ -143,11 +154,16 @@ namespace OgameBot
                 SystemScanner sysScanner = new SystemScanner(config.SystemsToScan.Select(z => SystemCoordinate.Parse(z)));
                 sysScanner.Start();
             }
-
-
             SetupProxyCommands(client, config, proxy);
-            // Work
-            Console.ReadLine();
+
+            onExitSignal.Exit += (sender, eventArgs) =>
+            {
+                client.SaveCookies();
+            };
+
+            Console.TreatControlCAsInput = true;
+            Console.ReadKey(true);
+            client.SaveCookies();
         }
 
         public static bool IsRunningOnMono()
