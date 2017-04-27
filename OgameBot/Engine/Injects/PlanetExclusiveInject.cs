@@ -26,7 +26,10 @@ namespace OgameBot.Engine.Injects
 
             using (BotDb db = new BotDb())
             {
-                IPlanetExclusiveOperation op = _client.CurrentPlanetExclusiveOperation.Operation;
+                IPlanetExclusiveOperation op = _client.CurrentPlanetExclusiveOperation?.Operation;
+                // Disposed since check was made
+                if (op == null) return body;
+
                 Planet planet = db.Planets.Where(p => p.PlanetId == op.PlanetId).First();
 
                 // 
