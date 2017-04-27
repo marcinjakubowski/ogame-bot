@@ -1,7 +1,9 @@
 ﻿using OgameBot.Engine.Parsing.Objects;
 using OgameBot.Engine.Tasks;
 using ScraperClientLib.Engine;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Web;
 
 namespace OgameBot.Engine.Injects
 {
@@ -19,18 +21,24 @@ namespace OgameBot.Engine.Injects
 
         public string Inject(OgamePageInfo info, string body, ResponseContainer response, string host, int port)
         {
-            if (info?.Page == null) return body;
+            if (info?.Page == null || (Auction?.MinutesRemaining ?? 0) == 0) return body;
 
 
             string color;
 
-            if ((Auction?.MinutesRemaining ?? 0) == 0) return body;
-            else if (Auction.MinutesRemaining >= 20) color = "color:#99CC00;";
+            if (Auction.MinutesRemaining >= 20) color = "color:#99CC00;";
             else if (Auction.MinutesRemaining >= 10) color = "color:#ffa500";
             else if (Auction.MinutesRemaining == 5) color = "color:#ff0000";
             else color = string.Empty;
 
-            body = clockRegex.Replace(body, $"$1<li style='float:right'><a href='/game/index.php?page=traderOverview#animation=false&page=traderAuctioneer' class='tooltip' title='{Auction.Item} @ {Auction.CurrentBid}'>Auctioneer: <span style='{color};font-weight:bold;'>{Auction.MinutesRemaining}m</span></a></li>");
+            StringBuilder tooltipBuilder = new StringBuilder($"<b>{Auction.Item}</b><br/><b>Bid:</b> {Auction.CurrentBid}<br/><b>Bidder:</b> {Auction.HighestBidderName}<hr/><b>Bid using: </b>");
+            tooltipBuilder.Append(InjectHelper.GenerateCommandLink($"bid?cp={info.PlanetId}&resource=m", "Metal")).Append(' ')
+                   .Append(InjectHelper.GenerateCommandLink($"bid?cp={info.PlanetId}&resource=c", "Crystal")).Append(' ')
+                   .Append(InjectHelper.GenerateCommandLink($"bid?cp={info.PlanetId}&resource=d", "Deuterium"));
+
+            string tooltip = InjectHelper.EncodeTooltip(tooltipBuilder.ToString());
+
+            body = clockRegex.Replace(body, $"$1<li style='float:right'><a href='/game/index.php?page=traderOverview#animation=false&page=traderAuctioneer' class='tooltipClose' title='{tooltip}'>Auctioneer: <span style='{color};font-weight:bold;'>{Auction.MinutesRemaining}m</span></a></li>");
             return body;
         }
     }
