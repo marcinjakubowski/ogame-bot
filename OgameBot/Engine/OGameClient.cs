@@ -188,12 +188,16 @@ namespace OgameBot.Engine
             return _cookieContainer;
         }
 
+        private object _cookieLock = new object();
+
         public void SaveCookies()
         {
-            BinaryFormatter formatter = new BinaryFormatter();
-            FileInfo fi = new FileInfo(_cookiePath);
-            using (var fs = fi.OpenWrite())
-                formatter.Serialize(fs, _cookieContainer);
+            lock (_cookieLock) {
+                BinaryFormatter formatter = new BinaryFormatter();
+                FileInfo fi = new FileInfo(_cookiePath);
+                using (var fs = fi.OpenWrite())
+                    formatter.Serialize(fs, _cookieContainer);
+            }
         }
                 
         public override string Inject(string body, ResponseContainer response, string host, int port)
