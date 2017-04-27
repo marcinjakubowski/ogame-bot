@@ -11,6 +11,9 @@ using System.Text.RegularExpressions;
 using OgameBot.Objects.Types;
 using System.Globalization;
 using HtmlAgilityPack;
+using ScraperClientLib.Utilities;
+using System.Collections.Specialized;
+using System.Web;
 
 namespace OgameBot.Engine.Parsing
 {
@@ -21,7 +24,12 @@ namespace OgameBot.Engine.Parsing
 
         public override bool ShouldProcessInternal(ResponseContainer container)
         {
-            return container.RequestMessage.RequestUri.AbsoluteUri.Contains("page=traderOverview") && container.RequestMessage.Method == HttpMethod.Post;
+            bool uriMatch = container.RequestMessage.RequestUri.AbsoluteUri.Contains("page=traderOverview") && container.RequestMessage.Method == HttpMethod.Post;
+            if (!uriMatch) return false;
+
+            var post = container.OriginalRequest.Content.ReadAsStringAsync().Sync();
+            NameValueCollection postParams = HttpUtility.ParseQueryString(post);
+            return (postParams["show"] ?? string.Empty) == "auctioneer";
         }
 
         public override IEnumerable<DataObject> ProcessInternal(ClientBase client, ResponseContainer container)
