@@ -24,21 +24,35 @@ namespace OgameBot.Engine.Tasks
 
         private void OnResponseReceived(ResponseContainer response)
         {
-            string path = response.RequestMessage.RequestUri.AbsolutePath;
-            if (!_selfIssued && (path.Contains("page=traderOverview") || path.Contains("page=auctioneer")))
+            string path = response.RequestMessage.RequestUri.AbsoluteUri;
+            if (path.Contains("page=traderOverview") || path.Contains("page=auctioneer"))
             {
-                _lastRequest = DateTimeOffset.UtcNow;
+                if (!_selfIssued)
+                {
+                    _lastRequest = DateTimeOffset.UtcNow;
+                }
+                ParseResponse(response);
             }
-            ParseResponse(response);
         }
 
         private void ParseResponse(ResponseContainer response)
         {
             AuctionStatus status = response.GetParsedSingle<AuctionStatus>(false);
-            if (status == null) return;
-
-            Auction = status;
-
+            switch (status?.MinutesRemaining ?? 10)
+            {
+                case 0:
+                    ExecutionInterval = status.NextIn.Add(TimeSpan.FromMinutes(1));
+                    break;
+                case 5:
+                    ExecutionInterval = TimeSpan.FromMinutes(1);
+                    break;
+                default:
+                    ExecutionInterval = TimeSpan.FromMinutes(2);
+                    break;
+            }
+            if (status != null)
+                Auction = status;
+            Restart();
         }
 
         protected override void RunInternal()

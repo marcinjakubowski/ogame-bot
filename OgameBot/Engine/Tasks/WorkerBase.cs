@@ -55,5 +55,13 @@ namespace OgameBot.Engine.Tasks
             _timer.Stop();
             _isRunning = false;
         }
+
+        public void Restart()
+        {
+            _timer.Stop();
+            _timer.Interval = ExecutionInterval.TotalMilliseconds;
+            _timer.Start();
+        }
+
     }
 }
