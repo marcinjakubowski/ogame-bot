@@ -210,6 +210,19 @@ namespace OgameBot
                 (new ReadAllMessagesCommand()).Run();
             });
 
+            proxy.AddCommand("scanaround", (parameters) =>
+            {
+                int range = 60;
+
+                if (parameters["range"] != null) range = int.Parse(parameters["range"]);
+
+                new ScanAroundOwnCommand()
+                {
+                    Range = range
+                }.Run();
+            });
+
+
             proxy.AddCommand("hunt", (parameters) =>
             {
                 IFarmingStrategy strategy = new FleetFinderStrategy()

@@ -106,6 +106,7 @@
     <Compile Include="Engine\Commands\FindAllMessagesCommand.cs" />
     <Compile Include="Engine\Commands\FleetSaveCommand.cs" />
     <Compile Include="Engine\Commands\RunProxyCommand.cs" />
+    <Compile Include="Engine\Commands\ScanAroundOwnCommand.cs" />
     <Compile Include="Engine\Injects\AuctionStatusInject.cs" />
     <Compile Include="Engine\Injects\BuildQueueInject.cs" />
     <Compile Include="Engine\Injects\CustomPlanetOrderInject.cs" />
