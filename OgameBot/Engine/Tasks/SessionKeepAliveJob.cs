@@ -1,4 +1,5 @@
 ﻿using OgameBot.Db;
+using OgameBot.Engine.Parsing.Objects;
 using OgameBot.Logging;
 using System;
 using System.Collections.Generic;
@@ -34,15 +35,36 @@ namespace OgameBot.Engine.Tasks
 
             Mode = mode;
             PlanetId = planetId;
+        }
+
+        public override void Start()
+        {
             if (Mode == SessionKeepAliveMode.Single && PlanetId == 0)
                 throw new ArgumentException("PlanetId has to be specified when Single mode is selected", nameof(PlanetId));
+
+            base.Start();
         }
 
         protected override void RunInternal()
         {
-            TimeSpan lastReqAge = DateTime.UtcNow - _client.LastRequestUtc;
-            if (lastReqAge < _sessionAgeLimit)
-                return;
+            var req = _client.RequestBuilder.GetEventList();
+            var resp = _client.IssueRequest(req);
+            var events = resp.GetParsed<EventInfo>();
+
+            int own = 0, friendly = 0, hostile = 0;
+            foreach (EventInfo ev in events)
+            {
+                switch (ev.Type)
+                {
+                    case EventType.Own:
+                        own++; break;
+                    case EventType.Friendly:
+                        friendly++; break;
+                    case EventType.Hostile:
+                        hostile++; break;
+                }
+            }
+            Logger.Instance.Log(LogLevel.Info, $"Events: {own} own, {friendly} friendly, {hostile} hostile");
 
             if (Mode == SessionKeepAliveMode.All)
             {
@@ -62,10 +84,6 @@ namespace OgameBot.Engine.Tasks
             {
                 PingPlanet(PlanetId);
             }
-
-            // Also get event list to make sure
-            var req = _client.RequestBuilder.GetEventList();
-            _client.IssueRequest(req);
 
             ExecutionInterval = TimeSpan.FromMinutes(4) + TimeSpan.FromSeconds(_rng.Next(180));
         }

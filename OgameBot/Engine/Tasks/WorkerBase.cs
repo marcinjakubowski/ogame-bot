@@ -44,13 +44,13 @@ namespace OgameBot.Engine.Tasks
 
         protected abstract void RunInternal();
 
-        public void Start()
+        public virtual void Start()
         {
             _isRunning = true;
             Task.Factory.StartNew(() => TimerOnElapsed(null, null));
         }
 
-        public void Stop()
+        public virtual void Stop()
         {
             _timer.Stop();
             _isRunning = false;
