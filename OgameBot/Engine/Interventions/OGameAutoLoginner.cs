@@ -10,6 +10,7 @@ namespace OgameBot.Engine.Interventions
     public class OGameAutoLoginner : IInterventionHandler
     {
         private readonly OGameClient _client;
+        private int _loginRetry = 0;
 
         public OGameAutoLoginner(OGameClient client)
         {
@@ -23,12 +24,17 @@ namespace OgameBot.Engine.Interventions
             {
                 return true;
             }
-
+            _loginRetry = 0;
             return false;
         }
 
         public InterventionResult Handle(ResponseContainer offendingTask)
         {
+            if( ++_loginRetry > 1 )
+            {
+                Logger.Instance.Log(LogLevel.Error, "Login failed!");
+                return new InterventionResult(InterventionResultState.Abort);
+            }
             // Build login request
             Logger.Instance.Log(LogLevel.Warning, "Login necessary");
             HttpRequestMessage loginReq = _client.PrepareLogin();
