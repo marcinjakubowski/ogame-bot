@@ -5,6 +5,9 @@ using OgameBot.Utilities;
 using OgameBot.Logging;
 using System.Threading;
 using OgameBot.Objects.Types;
+using System.Collections.Generic;
+using System.Linq;
+using MoreLinq;
 
 namespace OgameBot.Engine.Commands
 {
@@ -12,10 +15,19 @@ namespace OgameBot.Engine.Commands
     {
         public ResourceType BidResource { get; set; } = ResourceType.Deuterium;
 
+        private static string BidFormat = "bid[planets][{0}][{1}]";
+
         protected override CommandQueueElement RunInternal()
         {
             var resp = Client.IssueRequest(Client.RequestBuilder.GetOverviewPage(PlanetId));
             var info = resp.GetParsedSingle<OgamePageInfo>();
+
+            var planetList = resp.GetParsed<PlanetListItem>();
+            var postParams = planetList.Cartesian(new[] { "metal", "crystal", "deuterium" }, (pi, res) => string.Format(BidFormat, pi.Id, res)).ToDictionary(k => k, v => "0");
+            // bidding key
+            string key = string.Format(BidFormat, PlanetId, BidResource.ToString().ToLower());
+            postParams["ajax"] = "1";
+            postParams["bid[honor]"] = "0";
 
             int bidCount = 1, checkCount = 0;
 
@@ -56,15 +68,10 @@ namespace OgameBot.Engine.Commands
                     bidValue += 1;
                     int bid = (int)(Math.Ceiling(bidValue / multiplier));
 
-                    var req = Client.BuildPost(new Uri("/game/index.php?page=auctioneer", UriKind.Relative), new[]
-                    {
-                        KeyValuePair.Create("ajax", "1"),
-                        KeyValuePair.Create($"bid[planets][{PlanetId}][metal]", BidResource == ResourceType.Metal ? bid.ToString() : "0"),
-                        KeyValuePair.Create($"bid[planets][{PlanetId}][crystal]", BidResource == ResourceType.Crystal ? bid.ToString() : "0"),
-                        KeyValuePair.Create($"bid[planets][{PlanetId}][deuterium]", BidResource == ResourceType.Deuterium ? bid.ToString() : "0"),
-                        KeyValuePair.Create($"bid[honor]", "0"),
-                        KeyValuePair.Create("token", status.Token)
-                    });
+                    postParams["token"] = status.Token;
+                    postParams[key] = bid.ToString();
+
+                    var req = Client.BuildPost(new Uri("/game/index.php?page=auctioneer", UriKind.Relative), postParams);
 
                     resp = Client.IssueRequest(req);
                     last = resp.GetParsedSingle<AuctionBidResponse>(false);
