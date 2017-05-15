@@ -5,6 +5,7 @@
         Single,
         RoundRobin,
         All,
-        Random
+        Random,
+        Last
     }
 }

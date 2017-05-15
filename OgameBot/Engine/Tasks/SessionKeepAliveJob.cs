@@ -66,29 +66,33 @@ namespace OgameBot.Engine.Tasks
             }
             Logger.Instance.Log(LogLevel.Info, $"Events: {own} own, {friendly} friendly, {hostile} hostile");
 
-            if (Mode == SessionKeepAliveMode.All)
+            switch (Mode)
             {
-                _planets.ForEach(PingPlanet);
-            }
-            else if (Mode == SessionKeepAliveMode.Random)
-            {
-                Random rand = new Random();
-                PingPlanet(_planets[rand.Next(_planets.Count)]);
-            }
-            else if (Mode == SessionKeepAliveMode.RoundRobin)
-            {
-                PingPlanet(_planets[_roundRobin++]);
-                if (_roundRobin == _planets.Count) _roundRobin = 0;
-            }
-            else if (Mode == SessionKeepAliveMode.Single)
-            {
-                PingPlanet(PlanetId);
+                case SessionKeepAliveMode.All:
+                    _planets.ForEach(x => PingPlanet(x));
+                    break;
+                case SessionKeepAliveMode.Random:
+                    Random rand = new Random();
+                    PingPlanet(_planets[rand.Next(_planets.Count)]);
+                    break;
+                case SessionKeepAliveMode.RoundRobin:
+                    PingPlanet(_planets[_roundRobin++]);
+                    if (_roundRobin == _planets.Count) _roundRobin = 0;
+                    break;
+                case SessionKeepAliveMode.Single:
+                    PingPlanet(PlanetId);
+                    break;
+                case SessionKeepAliveMode.Last:
+                    PingPlanet(null);
+                    break;
+                default:
+                    throw new ArgumentException("Unknown mode", nameof(Mode));
             }
 
             ExecutionInterval = TimeSpan.FromMinutes(4) + TimeSpan.FromSeconds(_rng.Next(180));
         }
 
-        private void PingPlanet(int cp)
+        private void PingPlanet(int? cp)
         {
             HttpRequestMessage req = _client.RequestBuilder.GetPage(Objects.Types.PageType.Overview, cp);
             _client.IssueRequest(req);
