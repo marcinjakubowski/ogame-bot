@@ -101,11 +101,13 @@ namespace OgameBot.Engine.Commands.Farming
 
             Coordinate self = resp.GetParsedSingle<OgamePageInfo>().PlanetCoord;
 
-            int count = farms.Count();
+            var farmList = farms.OrderBy(f => f.LocationId).ToList();
+
+            int count = farmList.Count;
             int retry = 0;
             int failedInARow = 0;
 
-            foreach (Planet farm in farms)
+            foreach (Planet farm in farmList)
             {
                 if (farm.Coordinate == self) continue;
 
