@@ -100,6 +100,8 @@ namespace OgameBot.Engine.Commands.Farming
             ResponseContainer resp = Client.IssueRequest(req);
 
             Coordinate self = resp.GetParsedSingle<OgamePageInfo>().PlanetCoord;
+            Coordinate selfPlanet = Coordinate.Create(self, CoordinateType.Planet);
+            Coordinate selfMoon = Coordinate.Create(self, CoordinateType.Moon);
 
             var farmList = farms.OrderBy(f => f.LocationId).ToList();
 
@@ -109,7 +111,7 @@ namespace OgameBot.Engine.Commands.Farming
 
             foreach (Planet farm in farmList)
             {
-                if (farm.Coordinate == self) continue;
+                if (farm.Coordinate == selfPlanet || farm.Coordinate == selfMoon) continue;
 
                 MinifleetResponse minifleet;
                 retry = 0;
