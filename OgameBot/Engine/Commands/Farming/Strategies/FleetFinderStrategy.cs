@@ -12,6 +12,8 @@ namespace OgameBot.Engine.Commands.Farming.Strategies
     public class FleetFinderStrategy : IFarmingStrategy
     {
         public int MaxRanking { get; set; } = 400;
+        public int MinRanking { get; set; } = 600;
+        public bool MoonsOnly { get; set; } = false;
         public int MinValue { get; set; } = 500000;
         public int ProbeCount { get; set; } = 2;
 
@@ -28,11 +30,13 @@ namespace OgameBot.Engine.Commands.Farming.Strategies
                                      && !s.Player.Status.HasFlag(PlayerStatus.Admin)
                                      && !s.Player.Status.HasFlag(PlayerStatus.Noob)
                                      && (!s.Player.Status.HasFlag(PlayerStatus.Strong) || s.Player.Status.HasFlag(PlayerStatus.Outlaw))
-                                     && (s.Player.Ranking > MaxRanking)
+                                     && (s.Player.Ranking >= MaxRanking && s.Player.Ranking <= MinRanking)
+                                     && (!MoonsOnly || ((s.LocationId & 0xFF) == (int)CoordinateType.Moon))
                                      // Either it's the first time we're scanning this target, and we've never learned its technologies
                                      // or their espionage technology is no higher than one than our own                                     
                                      //&& (s.LastResourcesTime == null || (s.Player.Research.EspionageTechnology ?? 99) <= EspionageTechnologyLevel + 1)
                                 ).ToList();
+                                
 
                 return farms;
             }

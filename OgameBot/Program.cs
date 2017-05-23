@@ -228,6 +228,8 @@ namespace OgameBot
                 IFarmingStrategy strategy = new FleetFinderStrategy()
                 {
                     MaxRanking = config.Farming.HuntMaximumRanking > 0 ? config.Farming.HuntMaximumRanking : 400,
+                    MinRanking = config.Farming.HuntMinimumRanking > 0 ? config.Farming.HuntMinimumRanking : 600,
+                    MoonsOnly = config.Farming.HuntMoonsOnly,
                     ProbeCount = config.Farming.HuntProbeCount > 0 ? config.Farming.HuntProbeCount : 4
                 };
                 Farm(client, config, strategy, parameters).Run();
