@@ -33,6 +33,8 @@ namespace OgameBot.Engine.Injects
 
             sb.Append(InjectHelper.GenerateCommandLink("hunt?cp=$2", "Hunt"))
                 .Append(", range: ")
+                .Append(InjectHelper.GenerateCommandLink("hunt?cp=$2&range=100", "100"))
+                .Append(" ")
                 .Append(InjectHelper.GenerateCommandLink("hunt?cp=$2&range=40", "40"))
                 .Append(" ")
                 .Append(InjectHelper.GenerateCommandLink("hunt?cp=$2&range=20", "20"))

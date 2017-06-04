@@ -10,7 +10,7 @@ namespace OgameBot.Engine.Commands.Farming
 {
     public class ScanCommand : CommandBase
     {
-        private static readonly TimeSpan RescanInterval = TimeSpan.FromHours(6);
+        private static readonly TimeSpan RescanInterval = TimeSpan.FromHours(12);
 
         public SystemCoordinate From { get; set; }
         public SystemCoordinate To { get; set; }
