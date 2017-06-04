@@ -72,6 +72,7 @@ namespace OgameBot.Engine.Commands.Farming.Strategies
 
         public bool OnBeforeAttack()
         {
+            if (MoonsOnly) return false;
             return true;
         }
     }
