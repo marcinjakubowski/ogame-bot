@@ -55,7 +55,11 @@ namespace OgameBot.Engine.Injects
                 .Append(" ")
                 .Append(InjectHelper.GenerateCommandLink($"fs?cp=$2&in=450", "7.5h"))
                 .Append(" ")
-                .Append(InjectHelper.GenerateCommandLink($"fs?cp=$2&in=480", "8h"));
+                .Append(InjectHelper.GenerateCommandLink($"fs?cp=$2&in=480", "8h"))
+                .Append(NewLine);
+
+
+            sb.Append(InjectHelper.GenerateCommandLink("expedition?cp=$2", "Expedition"));
 
             body = submenuRegex.Replace(body, InjectHelper.EncodeTooltip(sb.ToString()));
             return body;

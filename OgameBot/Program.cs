@@ -19,6 +19,7 @@ using OgameBot.Db;
 using OgameBot.Engine.Tasks;
 using OgameBot.Objects.Types;
 using System.Linq;
+using System.Security;
 using OgameBot.Utilities;
 
 namespace OgameBot
@@ -271,8 +272,43 @@ namespace OgameBot
             proxy.AddCommand("schedule", (parameters) =>
             {
                 long unixTime = 0;
-                if (parameters["at"] != null) unixTime = long.Parse(parameters["at"]);
-                else if (parameters["in"] != null) unixTime = DateTimeOffset.Now.AddSeconds(int.Parse(parameters["in"])).ToUnixTimeSeconds();
+
+
+                var runAt = parameters["at"];
+                var runIn = parameters["in"];
+
+                if (runAt != null) unixTime = long.Parse(runAt);
+                else if (runIn != null)
+                {
+                    int secs = 0;
+
+                    if (runIn.Contains('h') || runIn.Contains('m'))
+                    {
+                        // this should be a function, or maybe there's a way to use TimeSpan.ParseExact to parse this correctly
+                        int hours = 0, minutes = 0;
+
+                        int hIx = runIn.IndexOf('h');
+                        int mIx = runIn.IndexOf('m');
+
+                        if (hIx != -1)
+                        {
+                            hours = int.Parse(runIn.Substring(0, hIx));
+                        }
+                        if (mIx != -1)
+                        {
+                            hIx++;
+                            minutes = int.Parse(runIn.Substring(hIx, mIx - hIx));
+                        }
+
+                        secs = hours * 3600 + minutes * 60;
+                    }
+                    else
+                    {
+                        secs = int.Parse(runIn);
+                    }
+
+                    unixTime = DateTimeOffset.Now.AddSeconds(secs).ToUnixTimeSeconds();
+                }
                 string cmd = parameters["cmd"];
 
                 parameters.Remove("cmd");
@@ -302,6 +338,32 @@ namespace OgameBot
                 From = new SystemCoordinate(1, 1),
                 To = new SystemCoordinate(6, 499),
             }.Run());
+
+            proxy.AddCommand("expedition", (parameters) =>
+            {
+                int cp = int.Parse(parameters["cp"]);
+                Coordinate dest;
+                using (BotDb db = new BotDb())
+                {
+                    var here = db.Planets.FirstOrDefault(p => p.PlanetId == cp);
+
+                    dest = Coordinate.Create(here.Coordinate, 16, CoordinateType.Planet);
+                }
+
+                SendFleetCommand cmd = new SendFleetCommand()
+                {
+                    PlanetId = cp,
+                    Destination = dest,
+                    Mission = MissionType.Expedition
+                };
+                cmd.Fleet = new FleetComposition();
+                cmd.Fleet.Ships[ShipType.Bomber] = 1;
+                cmd.Fleet.Ships[ShipType.LightFighter] = 5;
+                cmd.Fleet.Ships[ShipType.LargeCargo] = 192;
+                cmd.Fleet.Ships[ShipType.EspionageProbe] = 1;
+
+                cmd.Run();
+            });
             
         }
 

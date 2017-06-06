@@ -16,7 +16,7 @@ namespace OgameBot.Engine.Injects
 
         public static string GenerateCommandLink(string command, string label)
         {
-            return $@"<a href=""javascript:void(0)"" onclick=ogbcmd(""{command}"")>{label}</a>";
+            return $@"<a href=""/ogbcmd/{command}"" onclick='ogbcmd(""{command}"");return false'>{label}</a>";
         }
     }
 }
