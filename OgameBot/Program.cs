@@ -347,7 +347,7 @@ namespace OgameBot
                 {
                     var here = db.Planets.FirstOrDefault(p => p.PlanetId == cp);
 
-                    dest = Coordinate.Create(here.Coordinate, 16, CoordinateType.Planet);
+                    dest = Coordinate.Create(here.Coordinate, 16, CoordinateType.Unknown);
                 }
 
                 SendFleetCommand cmd = new SendFleetCommand()
