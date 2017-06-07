@@ -17,9 +17,14 @@ namespace OgameBot.Engine.Commands
         {
             var resp = Client.IssueRequest(Client.RequestBuilder.GetPage(PageType.Fleet, PlanetId));
             PlanetResources resources = resp.GetParsedSingle<PlanetResources>();
-            DetectedShip cargo = resp.GetParsed<DetectedShip>().Where(s => s.Ship == ShipType.LargeCargo).FirstOrDefault();
+            DetectedShip cargo = resp.GetParsed<DetectedShip>().FirstOrDefault(s => s.Ship == ShipType.LargeCargo);
 
             FleetComposition fleet = FleetComposition.ToTransport(resources.Resources);
+            // if on a moon, leave 10% of deuterium, or else no other ship will be able to travel
+            if (resp.GetParsedSingle<OgamePageInfo>().PlanetCoord.Type == CoordinateType.Moon)
+            {
+                fleet.Resources.Deuterium = (int)(fleet.Resources.Deuterium * 0.9f);
+            }
             int needed = fleet.Ships[ShipType.LargeCargo];
             int available = cargo?.Count ?? 0;
 
