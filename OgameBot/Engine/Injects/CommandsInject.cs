@@ -28,8 +28,6 @@ namespace OgameBot.Engine.Injects
             sb.Append(InjectHelper.GenerateCommandLink("farm?cp=$2", "Farm"))
                      .Append(" (")
                      .Append(InjectHelper.GenerateCommandLink("farm?cp=$2&slots=0", "0 slots"))
-                     .Append(", ")
-                     .Append(InjectHelper.GenerateCommandLink("schedule?in=0m&cmd=farm&cp=$2&slots=0", "Sch"))
                      .Append(")")
                      .Append(NewLine);
 
