@@ -24,7 +24,7 @@ namespace OgameBot.Engine.Parsing
         public override IEnumerable<DataObject> ProcessInternal(ClientBase client, ResponseContainer container)
         {
             HtmlDocument doc = container.ResponseHtml.Value;
-            HtmlNodeCollection imageFields = doc.DocumentNode.SelectNodes("//tr[starts-with(@id, 'eventRow')]");
+            HtmlNodeCollection imageFields = doc.DocumentNode.SelectNodes("//tr[contains(@class, 'eventFleet') and @data-mission-type]");
 
             if (imageFields == null)
                 yield break;
@@ -39,7 +39,7 @@ namespace OgameBot.Engine.Parsing
                     MissionType = missionDetails.Mission
                 };
                 
-                string idText = node.GetAttributeValue("id", null);
+                string idText = node.GetAttributeValue("id", "0");
                 info.Id = int.Parse(idText.Substring(9, idText.Length - 9));
 
                 string @class = node.ChildNodes[1].GetAttributeValue("class", string.Empty);
