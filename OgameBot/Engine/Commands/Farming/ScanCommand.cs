@@ -49,7 +49,7 @@ namespace OgameBot.Engine.Commands.Farming
                     GalaxyScan exists;
                     if (existing.TryGetValue(coord, out exists))
                     {
-                        if (DateTimeOffset.Now - exists.LastScan < RescanInterval)
+                        if (DateTimeOffset.Now - exists.LastScan < RescanInterval && exists.LastScan.Date == DateTimeOffset.Now.Date)
                             // Ignore
                             continue;
                     }
