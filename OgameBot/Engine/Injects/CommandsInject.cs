@@ -2,6 +2,7 @@
 using ScraperClientLib.Engine;
 using OgameBot.Engine.Parsing.Objects;
 using System.Text.RegularExpressions;
+using OgameBot.Objects.Types;
 using OgameBot.Proxy;
 
 namespace OgameBot.Engine.Injects
@@ -60,6 +61,12 @@ namespace OgameBot.Engine.Injects
 
 
             sb.Append(InjectHelper.GenerateCommandLink("expedition?cp=$2", "Expedition"));
+
+            if (current.PlanetCoord.Type == CoordinateType.Moon)
+            {
+                sb.Append(NewLine);
+                sb.Append(InjectHelper.GenerateCommandLink($"jump?from={current.PlanetId}&to=$2", "Gate Jump"));
+            }
 
             body = submenuRegex.Replace(body, InjectHelper.EncodeTooltip(sb.ToString()));
             return body;

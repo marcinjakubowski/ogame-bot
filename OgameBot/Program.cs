@@ -20,6 +20,7 @@ using OgameBot.Engine.Tasks;
 using OgameBot.Objects.Types;
 using System.Linq;
 using System.Security;
+using OgameBot.Engine.Parsing;
 using OgameBot.Utilities;
 
 namespace OgameBot
@@ -364,6 +365,20 @@ namespace OgameBot
 
                 cmd.Run();
             });
+
+            proxy.AddCommand("jump", (parameters) =>
+            {
+                int cp = int.Parse(parameters["from"]);
+                int dest = int.Parse(parameters["to"]); ;
+
+                GateJumpCommand cmd = new GateJumpCommand()
+                {
+                    PlanetId = cp,
+                    Destination = dest,
+                    Fleet = null
+                };
+                cmd.Run();
+            }) ;
             
         }
 

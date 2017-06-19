@@ -30,6 +30,8 @@
         Messages,
         Chat,
         Premium,
-        Shop
+        Shop,
+        JumpGate,
+        JumpGateExecute
     }
 }

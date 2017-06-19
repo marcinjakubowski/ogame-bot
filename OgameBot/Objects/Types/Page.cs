@@ -38,6 +38,8 @@ namespace OgameBot.Objects.Types
         public static Page AjaxChat         { get; } = new Page(PageType.AjaxChat        , "ajaxChat");
         public static Page Premium          { get; } = new Page(PageType.Premium         , "premium");
         public static Page Shop             { get; } = new Page(PageType.Shop            , "shop");
+        public static Page JumpGate         { get; } = new Page(PageType.JumpGate        , "jumpgatelayer");
+        public static Page JumpGateExecute  { get; } = new Page(PageType.JumpGateExecute , "jumpgate_execute");
 
         static Page()
         {
