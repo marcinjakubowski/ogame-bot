@@ -40,7 +40,14 @@ namespace OgameBot.Engine.Parsing
                 };
                 
                 string idText = node.GetAttributeValue("id", "0");
-                info.Id = int.Parse(idText.Substring(9, idText.Length - 9));
+                if (idText.Length > 9)
+                {
+                    info.Id = int.Parse(idText.Substring(9, idText.Length - 9));
+                }
+                else
+                {
+                    info.Id = info.ArrivalTime.Hour * 3600 + info.ArrivalTime.Minute * 60 + info.ArrivalTime.Millisecond;
+                }
 
                 string @class = node.ChildNodes[1].GetAttributeValue("class", string.Empty);
                 if (@class.Contains("friendly"))
