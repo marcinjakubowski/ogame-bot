@@ -86,6 +86,19 @@ namespace OgameBot.Engine.Parsing
                     .Replace("Mn", oneThousandAdd)
                     .Replace("Bn", oneThousandAdd + oneThousandAdd)).ToArray();
 
+
+                // When val = 9.82Mn, the string from above will result in 9.82.000, which will end up being parsed to 982000
+                // This ensures that the second group is always 3 characters long
+                for (var i=0; i<vals.Length; ++i)
+                {
+                    var groups = vals[i].Split('.');
+                    if (groups.Length == 3)
+                    {
+                        groups[1] = groups[1].PadRight(3, '0');
+                    }
+                    vals[i] = string.Join(oClient.ServerCulture.NumberFormat.NumberGroupSeparator, groups);
+                }
+
                 Resources resources = new Resources
                 {
                     Metal = int.Parse(vals[0], NumberStyles.AllowThousands | NumberStyles.Integer, oClient.ServerCulture),
